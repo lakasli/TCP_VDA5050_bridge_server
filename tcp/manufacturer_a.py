@@ -89,11 +89,11 @@ class ManufacturerATCPProtocol:
                 'data': data
             }
             
-            logger.info(f"📦 构建TCP数据包 - 车辆: {vehicle_id}, 地址: {ip_address}:{port}, 类型: {message_type}")
+            logger.info(f"[INFO] 构建TCP数据包 - 车辆: {vehicle_id}, 地址: {ip_address}:{port}, 类型: {message_type}")
             return tcp_packet
             
         except Exception as e:
-            logger.error(f"❌ 构建TCP数据包失败: {e}")
+            logger.error(f"[ERROR] 构建TCP数据包失败: {e}")
             return {'error': str(e)}
     
     def create_tcp_message_json(self, message_type: int, data: Dict[str, Any]) -> str:
@@ -116,11 +116,11 @@ class ManufacturerATCPProtocol:
             
             # 移除JSON中的空格以减少数据包大小
             json_str = json.dumps(tcp_message, ensure_ascii=False, separators=(',', ':'))
-            logger.debug(f"📝 创建TCP JSON消息 - 类型: {message_type}, 长度: {len(json_str)}")
+            logger.debug(f"[JSON] 创建TCP JSON消息 - 类型: {message_type}, 长度: {len(json_str)}")
             return json_str
             
         except Exception as e:
-            logger.error(f"❌ 创建TCP JSON消息失败: {e}")
+            logger.error(f"[ERROR] 创建TCP JSON消息失败: {e}")
             return json.dumps({'error': str(e)})
     
     def create_tcp_message_bytes(self, message_type: int, data: Dict[str, Any]) -> bytes:
@@ -138,11 +138,11 @@ class ManufacturerATCPProtocol:
             json_str = self.create_tcp_message_json(message_type, data)
             message_bytes = json_str.encode('utf-8')
             
-            logger.debug(f"🔢 创建TCP字节消息 - 类型: {message_type}, 字节数: {len(message_bytes)}")
+            logger.debug(f"[INFO] 创建TCP字节消息 - 类型: {message_type}, 字节数: {len(message_bytes)}")
             return message_bytes
             
         except Exception as e:
-            logger.error(f"❌ 创建TCP字节消息失败: {e}")
+            logger.error(f"[ERROR] 创建TCP字节消息失败: {e}")
             return str(e).encode('utf-8')
     
     def create_binary_tcp_packet(self, message_type: int, data: Dict[str, Any], 
@@ -180,13 +180,13 @@ class ManufacturerATCPProtocol:
             # 添加数据内容
             packet.extend(data_bytes)
             
-            logger.info(f"🔧 构建二进制TCP包 - 类型: {message_type}, 序列: {sequence}, 数据长度: {data_length}")
+            logger.info(f"[INFO] 构建二进制TCP包 - 类型: {message_type}, 序列: {sequence}, 数据长度: {data_length}")
             logger.debug(f"   十六进制数据: {packet.hex().upper()}")
             
             return bytes(packet)
             
         except Exception as e:
-            logger.error(f"❌ 创建二进制TCP数据包失败: {e}")
+            logger.error(f"[ERROR] 创建二进制TCP数据包失败: {e}")
             return b''
     
     def create_binary_tcp_packet_hex(self, message_type: int, hex_data: str, 
@@ -236,14 +236,14 @@ class ManufacturerATCPProtocol:
             # 添加数据内容
             packet.extend(data_bytes)
             
-            logger.info(f"🔧 构建十六进制二进制TCP包 - 类型: {message_type}, 序列: {sequence}, 数据长度: {data_length}")
+            logger.info(f"[INFO] 构建十六进制二进制TCP包 - 类型: {message_type}, 序列: {sequence}, 数据长度: {data_length}")
             logger.debug(f"   原始十六进制数据: {clean_hex_data}")
             logger.debug(f"   完整数据包: {packet.hex().upper()}")
             
             return bytes(packet)
             
         except Exception as e:
-            logger.error(f"❌ 创建十六进制二进制TCP数据包失败: {e}")
+            logger.error(f"[ERROR] 创建十六进制二进制TCP数据包失败: {e}")
             return b''
     
     def parse_tcp_packet(self, data: bytes) -> Optional[Dict[str, Any]]:
@@ -258,7 +258,7 @@ class ManufacturerATCPProtocol:
         """
         try:
             if len(data) < 16:  # 最小包头长度检查
-                logger.warning(f"⚠️  数据包太短，长度: {len(data)}")
+                logger.warning(f"[WARNING] 数据包太短，长度: {len(data)}")
                 return None
             
             # 尝试直接解析JSON格式
@@ -274,7 +274,7 @@ class ManufacturerATCPProtocol:
                     'raw_json': parsed_data
                 }
                 
-                logger.debug(f"📋 解析JSON格式TCP包 - 类型: {result['message_type']}")
+                logger.debug(f"[JSON] 解析JSON格式TCP包 - 类型: {result['message_type']}")
                 return result
                 
             except (UnicodeDecodeError, json.JSONDecodeError):
@@ -282,7 +282,7 @@ class ManufacturerATCPProtocol:
                 return self._parse_binary_packet(data)
                 
         except Exception as e:
-            logger.error(f"❌ 解析TCP数据包失败: {e}")
+            logger.error(f"[ERROR] 解析TCP数据包失败: {e}")
             return None
     
     def _parse_binary_packet(self, data: bytes) -> Optional[Dict[str, Any]]:
@@ -333,11 +333,11 @@ class ManufacturerATCPProtocol:
                 'raw_payload': payload_data.hex() if payload_data else None
             }
             
-            logger.debug(f"📋 解析二进制TCP包 - 类型: {message_type}, 序列: {sequence}")
+            logger.debug(f"[BINARY] 解析二进制TCP包 - 类型: {message_type}, 序列: {sequence}")
             return result
             
         except Exception as e:
-            logger.error(f"❌ 解析二进制TCP包失败: {e}")
+            logger.error(f"[ERROR] 解析二进制TCP包失败: {e}")
             return None
     
     def get_action_config(self, action_type: str) -> Optional[Dict[str, Any]]:
@@ -356,10 +356,10 @@ class ManufacturerATCPProtocol:
             result = config.copy()
             result['tcp_operation'] = tcp_operation
             result['action_type'] = action_type
-            logger.debug(f"🔍 获取动作配置 - {action_type}: 端口={config['port']}, 类型={config['messageType']}")
+            logger.debug(f"[CONFIG] 获取动作配置 - {action_type}: 端口={config['port']}, 类型={config['messageType']}")
             return result
         else:
-            logger.warning(f"⚠️  未找到动作类型配置: {action_type}")
+            logger.warning(f"[WARNING] 未找到动作类型配置: {action_type}")
             return None
     
     def build_robot_identification_message(self, vehicle_id: str, ip_address: str, 
@@ -393,7 +393,7 @@ class ManufacturerATCPProtocol:
             }
         }
         
-        logger.info(f"🆔 构建机器人标识消息 - 车辆: {vehicle_id}, IP: {ip_address}")
+        logger.info(f"[INFO] 构建机器人标识消息 - 车辆: {vehicle_id}, IP: {ip_address}")
         return identification
     
     def build_response_message(self, original_message_type: int, robot_id: str, 
@@ -421,7 +421,7 @@ class ManufacturerATCPProtocol:
             }
         }
         
-        logger.debug(f"📤 构建响应消息 - 机器人: {robot_id}, 端口: {port}, 状态: {status}")
+        logger.debug(f"[RESPONSE] 构建响应消息 - 机器人: {robot_id}, 端口: {port}, 状态: {status}")
         return response
     
     def extract_network_info(self, tcp_packet: Dict[str, Any]) -> Dict[str, Any]:
@@ -443,7 +443,7 @@ class ManufacturerATCPProtocol:
             'message_type': tcp_packet.get('protocol_info', {}).get('messageType', 0)
         }
         
-        logger.debug(f"🌐 提取网络信息 - IP: {network_info['ip_address']}:{network_info['port']}")
+        logger.debug(f"[NETWORK] 提取网络信息 - IP: {network_info['ip_address']}:{network_info['port']}")
         return network_info
     
     def validate_tcp_packet(self, tcp_packet: Dict[str, Any]) -> Tuple[bool, str]:
@@ -478,12 +478,12 @@ class ManufacturerATCPProtocol:
             if not isinstance(protocol_info.get('messageType'), int):
                 return False, "消息类型必须是整数"
             
-            logger.debug(f"✅ TCP数据包验证通过")
+            logger.debug(f"[INFO] TCP数据包验证通过")
             return True, "验证通过"
             
         except Exception as e:
-            error_msg = f"验证TCP数据包时出错: {e}"
-            logger.error(f"❌ {error_msg}")
+            error_msg = f"[ERROR] 验证TCP数据包时出错: {e}"
+            logger.error(f"[ERROR] {error_msg}")
             return False, error_msg
     
     def generate_task_id(self, base_id: str = '') -> str:
@@ -503,7 +503,7 @@ class ManufacturerATCPProtocol:
             task_id = f"TASK_{timestamp}_{self.task_id_counter}"
         
         self.task_id_counter += 1
-        logger.debug(f"🔢 生成任务ID: {task_id}")
+        logger.debug(f"[INFO] 生成任务ID: {task_id}")
         return task_id
     
     def _get_next_sequence(self) -> int:

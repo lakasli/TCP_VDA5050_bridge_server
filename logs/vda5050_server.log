@@ -9051,3 +9051,87 @@
 2025-07-01 23:36:16,299 - __main__ - INFO - AGV连接已断开 - 端口: 19206, 地址: ('127.0.0.1', 49779)
 2025-07-01 23:36:16,299 - __main__ - INFO - AGV连接已断开 - 端口: 19207, 地址: ('127.0.0.1', 49777)
 2025-07-01 23:36:16,300 - __main__ - INFO - AGV连接已断开 - 端口: 19301, 地址: ('127.0.0.1', 49778)
+2025-07-01 23:44:17,155 - __main__ - INFO - 使用配置文件中的MQTT设置
+2025-07-01 23:44:17,156 - __main__ - INFO - 正在启动VDA5050协议转换服务器...
+2025-07-01 23:44:17,156 - __main__ - INFO - 正在连接MQTT代理: 172.31.232.152:1883
+2025-07-01 23:44:17,156 - __main__ - INFO - 使用客户端ID: vda5050_tcp_server_f6ab6c27
+2025-07-01 23:44:17,331 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 23:44:17,331 - __main__ - INFO - 订阅topic: /uagv/v2/+/+/order
+2025-07-01 23:44:17,332 - __main__ - INFO - 订阅topic: /uagv/v2/+/+/instantActions
+2025-07-01 23:44:17,360 - __main__ - INFO - MQTT连接成功
+2025-07-01 23:44:17,361 - __main__ - INFO - 启动TCP服务器 - 端口: 19204, 类型: stateAPI
+2025-07-01 23:44:17,361 - __main__ - INFO - TCP服务器已启动 - 端口: 19204
+2025-07-01 23:44:17,362 - __main__ - INFO - 启动TCP服务器 - 端口: 19205, 类型: controlAPI
+2025-07-01 23:44:17,362 - __main__ - INFO - TCP服务器已启动 - 端口: 19205
+2025-07-01 23:44:17,363 - __main__ - INFO - 启动TCP服务器 - 端口: 19206, 类型: navigationAPI
+2025-07-01 23:44:17,363 - __main__ - INFO - TCP服务器已启动 - 端口: 19206
+2025-07-01 23:44:17,363 - __main__ - INFO - 启动TCP服务器 - 端口: 19207, 类型: configAPI
+2025-07-01 23:44:17,364 - __main__ - INFO - TCP服务器已启动 - 端口: 19207
+2025-07-01 23:44:17,364 - __main__ - INFO - 启动TCP服务器 - 端口: 19210, 类型: otherAPI
+2025-07-01 23:44:17,364 - __main__ - INFO - TCP服务器已启动 - 端口: 19210
+2025-07-01 23:44:17,364 - __main__ - INFO - 启动TCP服务器 - 端口: 19301, 类型: pushAPI
+2025-07-01 23:44:17,365 - __main__ - INFO - TCP服务器已启动 - 端口: 19301
+2025-07-01 23:44:17,365 - __main__ - INFO - VDA5050协议转换服务器启动成功
+2025-07-01 23:44:17,365 - __main__ - INFO - 服务器运行中，按Ctrl+C停止...
+2025-07-01 23:44:21,210 - __main__ - INFO - AGV连接成功 - 端口: 19210, 地址: ('127.0.0.1', 52099)
+2025-07-01 23:44:21,210 - __main__ - INFO - AGV连接成功 - 端口: 19207, 地址: ('127.0.0.1', 52102)
+2025-07-01 23:44:21,210 - __main__ - INFO - AGV连接成功 - 端口: 19206, 地址: ('127.0.0.1', 52100)
+2025-07-01 23:44:21,210 - __main__ - INFO - AGV连接成功 - 端口: 19205, 地址: ('127.0.0.1', 52101)
+2025-07-01 23:44:21,210 - __main__ - INFO - AGV连接成功 - 端口: 19301, 地址: ('127.0.0.1', 52103)
+2025-07-01 23:44:21,216 - __main__ - INFO - ============================================================
+2025-07-01 23:44:21,216 - __main__ - INFO - 【控制权抢夺】实际发送的TCP数据包详情:
+2025-07-01 23:44:21,216 - __main__ - INFO - 目标端口: 19207
+2025-07-01 23:44:21,216 - __main__ - INFO - 报文类型: 4005
+2025-07-01 23:44:21,216 - __main__ - INFO - 数据内容: {"nick_name": "srd-seer-mizhan"}
+2025-07-01 23:44:21,218 - __main__ - INFO - 数据包长度: 47 字节
+2025-07-01 23:44:21,218 - __main__ - INFO - 十六进制数据: 5A0100010000001F0FA50000000000007B226E69636B5F6E616D65223A227372642D736565722D6D697A68616E227D
+2025-07-01 23:44:21,218 - __main__ - INFO - 二进制数据包结构解析:
+2025-07-01 23:44:21,219 - __main__ - INFO -   - 同步头: 0x5A
+2025-07-01 23:44:21,219 - __main__ - INFO -   - 版本: 0x01
+2025-07-01 23:44:21,219 - __main__ - INFO -   - 序列号: 1
+2025-07-01 23:44:21,220 - __main__ - INFO -   - 数据长度: 31
+2025-07-01 23:44:21,220 - __main__ - INFO -   - 报文类型: 4005
+2025-07-01 23:44:21,220 - __main__ - INFO -   - 保留字段: 000000000000
+2025-07-01 23:44:21,220 - __main__ - INFO -   - 数据内容: {"nick_name":"srd-seer-mizhan"}
+2025-07-01 23:44:21,220 - __main__ - INFO - ============================================================
+2025-07-01 23:44:21,220 - __main__ - INFO - 控制权抢夺指令发送成功 - 端口: 19207
+2025-07-01 23:44:24,209 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-01 23:44:24,210 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-01 23:44:24,212 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-01 23:44:24,212 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-01 23:44:27,210 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-01 23:44:27,212 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-01 23:44:27,213 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-01 23:44:27,214 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-01 23:44:30,212 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-01 23:44:30,213 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-01 23:44:30,213 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-01 23:44:30,214 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-01 23:44:33,213 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-01 23:44:33,214 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-01 23:44:33,215 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-01 23:44:33,217 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-01 23:44:36,215 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-01 23:44:36,216 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-01 23:44:36,217 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-01 23:44:36,217 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-01 23:44:39,216 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-01 23:44:39,217 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-01 23:44:39,218 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-01 23:44:39,219 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-01 23:44:42,218 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-01 23:44:42,218 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-01 23:44:42,219 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-01 23:44:42,220 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-01 23:44:45,219 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-01 23:44:45,220 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-01 23:44:45,221 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-01 23:44:45,221 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-01 23:44:48,221 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-01 23:44:48,223 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-01 23:44:48,224 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-01 23:44:48,225 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-01 23:44:51,223 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-01 23:44:51,224 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-01 23:44:51,226 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-01 23:44:51,227 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection

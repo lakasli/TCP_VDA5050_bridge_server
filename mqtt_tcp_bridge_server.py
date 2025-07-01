@@ -5,13 +5,28 @@ VDA5050-MQTT-TCP协议转换服务器
 实现VDA5050协议与TCP协议之间的双向转换，通过MQTT与上层系统通信
 """
 
+# Windows编码兼容性设置
+import os
+import sys
+if sys.platform.startswith('win'):
+    # 设置控制台编码
+    if hasattr(os, 'system'):
+        os.system('chcp 65001 >nul 2>&1')  # 设置控制台为UTF-8编码
+    
+    # 重新配置标准输出编码
+    try:
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    except (AttributeError, OSError):
+        import codecs
+        sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'replace')
+        sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'replace')
+
 import json
 import socket
 import threading
 import time
 import logging
-import sys
-import os
 import uuid
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional, List
@@ -59,15 +74,27 @@ logs_dir = 'logs'
 if not os.path.exists(logs_dir):
     os.makedirs(logs_dir)
 
-# 配置日志
+# 配置日志 - 修复Windows编码问题
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler(os.path.join(logs_dir, 'vda5050_server.log')),
+        logging.FileHandler(os.path.join(logs_dir, 'vda5050_server.log'), encoding='utf-8'),
         logging.StreamHandler(sys.stdout)
     ]
 )
+
+# 设置控制台输出编码（Windows兼容性）
+if sys.platform.startswith('win'):
+    import codecs
+    # 尝试设置控制台编码为UTF-8
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    except (AttributeError, OSError):
+        # 如果失败，使用codecs包装器
+        sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'replace')
+        sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'replace')
 logger = logging.getLogger(__name__)
 
 

@@ -139,7 +139,7 @@ class MQTTStateMonitor:
             
             # 根据topic类型显示不同信息
             if 'state' in topic:
-                self._display_state_message(message_data, topic)
+                self._show_state_message(topic, message_data)
             elif 'visualization' in topic:
                 self._display_visualization_message(message_data, topic)
             elif 'connection' in topic:
@@ -152,56 +152,62 @@ class MQTTStateMonitor:
             logger.error(f"处理MQTT消息失败: {e}")
             logger.error(f"原始消息 - Topic: {msg.topic}, Payload: {msg.payload}")
     
-    def _display_state_message(self, data: Dict[str, Any], topic: str):
+    def _show_state_message(self, topic, data):
         """显示状态消息"""
         logger.info("=" * 60)
-        logger.info(f"📊 收到AGV状态消息 #{self.message_count} - {datetime.now().strftime('%H:%M:%S')}")
+        logger.info(f"[STATS] 收到AGV状态消息 #{self.message_count} - {datetime.now().strftime('%H:%M:%S')}")
         logger.info(f"Topic: {topic}")
         
-        # 基本信息
+        # 显示基本信息
+        if 'header_id' in data:
+            logger.info(f"消息ID: {data['header_id']}")
+        
+        if 'timestamp' in data:
+            logger.info(f"时间戳: {data['timestamp']}")
+        
         if 'vehicle_id' in data:
-            logger.info(f"🚗 车辆ID: {data['vehicle_id']}")
+            logger.info(f"车辆ID: {data['vehicle_id']}")
+        
         if 'manufacturer' in data:
-            logger.info(f"🏭 制造商: {data['manufacturer']}")
+            logger.info(f"制造商: {data['manufacturer']}")
         
-        # 位置信息
-        if 'position' in data:
+        # 显示位置信息
+        if 'position' in data and data['position']:
             pos = data['position']
-            logger.info(f"📍 位置: X={pos.get('x', 0):.2f}, Y={pos.get('y', 0):.2f}, θ={pos.get('theta', 0):.1f}°")
+            logger.info(f"位置: x={pos.get('x', 'N/A')}, y={pos.get('y', 'N/A')}, theta={pos.get('theta', 'N/A')}")
         
-        # 速度信息
-        if 'velocity' in data:
+        # 显示速度信息
+        if 'velocity' in data and data['velocity']:
             vel = data['velocity']
-            logger.info(f"🏃 速度: Vx={vel.get('vx', 0):.2f}, Vy={vel.get('vy', 0):.2f}, ω={vel.get('omega', 0):.2f}")
+            logger.info(f"速度: vx={vel.get('vx', 'N/A')}, vy={vel.get('vy', 'N/A')}, omega={vel.get('omega', 'N/A')}")
         
-        # 电池和状态
-        if 'battery_level' in data:
-            battery = data['battery_level']
-            battery_icon = "🔋" if battery > 20 else "🪫"
-            logger.info(f"{battery_icon} 电池: {battery:.1f}%")
-        
+        # 显示运行模式
         if 'operating_mode' in data:
-            logger.info(f"🔧 运行模式: {data['operating_mode']}")
+            logger.info(f"[MODE] 运行模式: {data['operating_mode']}")
         
+        # 显示安全状态
         if 'safety_state' in data:
-            safety_icon = "✅" if data['safety_state'] == 'NORMAL' else "⚠️"
-            logger.info(f"{safety_icon} 安全状态: {data['safety_state']}")
+            safety_icon = "[OK]" if data['safety_state'] == 'NORMAL' else "[WARNING]"
+            logger.info(f"安全状态: {safety_icon} {data['safety_state']}")
         
-        if 'task_status' in data:
-            logger.info(f"📋 任务状态: {data['task_status']}")
+        # 显示电池电量
+        if 'battery_level' in data:
+            logger.info(f"电池电量: {data['battery_level']}%")
         
-        # 错误和警告
+        # 显示错误和警告
         if 'errors' in data and data['errors']:
-            logger.warning(f"❌ 错误: {', '.join(data['errors'])}")
+            logger.error(f"错误: {', '.join(data['errors'])}")
         
         if 'warnings' in data and data['warnings']:
-            logger.warning(f"⚠️ 警告: {', '.join(data['warnings'])}")
+            logger.warning(f"[WARNING] 警告: {', '.join(data['warnings'])}")
         
-        # 载荷状态
-        if 'load_status' in data:
-            load = data['load_status']
-            load_icon = "📦" if load.get('has_load', False) else "📭"
-            logger.info(f"{load_icon} 载荷: {'有货' if load.get('has_load', False) else '空载'}")
+        # 显示当前任务
+        if 'current_task' in data and data['current_task']:
+            logger.info(f"当前任务: {data['current_task']}")
+        
+        # 显示任务状态
+        if 'task_status' in data:
+            logger.info(f"任务状态: {data['task_status']}")
         
         logger.info("=" * 60)
     
@@ -249,9 +255,9 @@ def main():
         if not monitor.connect():
             return
         
-        logger.info("🚀 MQTT状态监控器启动成功！")
-        logger.info("📡 正在监听AGV状态消息...")
-        logger.info("⏹️  按Ctrl+C停止监控")
+        logger.info("[START] MQTT状态监控器启动成功！")
+        logger.info("[LISTEN] 正在监听AGV状态消息...")
+        logger.info("[CTRL+C] 按Ctrl+C停止监控")
         
         # 保持运行
         while True:

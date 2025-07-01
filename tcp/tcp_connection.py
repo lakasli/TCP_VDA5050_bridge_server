@@ -42,11 +42,11 @@ class RobotConfig:
             with open(self.config_path, 'r', encoding='utf-8') as f:
                 self.config_data = yaml.safe_load(f)
             
-            logger.info(f"✅ 机器人配置文件加载成功: {self.config_path}")
+            logger.info(f"[INFO] 机器人配置文件加载成功: {self.config_path}")
             return self.config_data
             
         except Exception as e:
-            logger.error(f"❌ 加载机器人配置文件失败: {e}")
+            logger.error(f"[ERROR] 加载机器人配置文件失败: {e}")
             return {}
     
     @property
@@ -118,9 +118,9 @@ class TCPConnectionManager:
             self.server_socket.bind((host, port))
             self.server_socket.listen(5)
             
-            logger.info(f"🔗 TCP连接监听器启动 - 机器人: {self.robot_config.vehicle_id}")
-            logger.info(f"📡 监听地址: {host}:{port}")
-            logger.info(f"📨 期望消息类型: {self.robot_config.status_message_type}")
+            logger.info(f"[TCP] TCP连接监听器启动 - 机器人: {self.robot_config.vehicle_id}")
+            logger.info(f"[LISTEN] 监听地址: {host}:{port}")
+            logger.info(f"[MSG] 期望消息类型: {self.robot_config.status_message_type}")
             
             # 启动心跳检查线程
             heartbeat_thread = threading.Thread(target=self._heartbeat_monitor, daemon=True)
@@ -132,7 +132,7 @@ class TCPConnectionManager:
                     client_socket, addr = self.server_socket.accept()
                     client_key = f"{addr[0]}:{addr[1]}"
                     
-                    logger.info(f"🤖 机器人连接: {self.robot_config.vehicle_id} ({client_key})")
+                    logger.info(f"[CONNECT] 机器人连接: {self.robot_config.vehicle_id} ({client_key})")
                     
                     # 记录连接信息
                     self.client_connections[client_key] = {
@@ -156,11 +156,11 @@ class TCPConnectionManager:
                     
                 except socket.error as e:
                     if self.running:
-                        logger.error(f"❌ 接受连接失败: {e}")
+                        logger.error(f"[ERROR] 接受连接失败: {e}")
                     break
                     
         except Exception as e:
-            logger.error(f"❌ TCP连接监听器启动失败: {e}")
+            logger.error(f"[ERROR] TCP连接监听器启动失败: {e}")
             raise
     
     def _handle_client(self, client_socket: socket.socket, client_key: str):
@@ -183,11 +183,11 @@ class TCPConnectionManager:
                 except socket.timeout:
                     continue
                 except socket.error as e:
-                    logger.warning(f"⚠️  客户端通信错误: {e}")
+                    logger.warning(f"[WARNING] 客户端通信错误: {e}")
                     break
                     
         except Exception as e:
-            logger.error(f"❌ 处理客户端连接失败: {e}")
+            logger.error(f"[ERROR] 处理客户端连接失败: {e}")
         finally:
             self._cleanup_client_connection(client_key)
     
@@ -209,12 +209,12 @@ class TCPConnectionManager:
                     pass
             
             if not parsed_data:
-                logger.warning(f"⚠️  无法解析数据包 - 长度: {len(data)}")
+                logger.warning(f"[WARNING] 无法解析数据包 - 长度: {len(data)}")
                 self.message_stats['unknown_messages'] += 1
                 return
             
             message_type = parsed_data.get('message_type', parsed_data.get('messageType', 0))
-            logger.debug(f"📨 收到消息 - 类型: {message_type}, 来源: {client_key}")
+            logger.debug(f"[MSG] 收到消息 - 类型: {message_type}, 来源: {client_key}")
             
             # 检查是否为状态推送消息
             if message_type == self.robot_config.status_message_type:
@@ -224,7 +224,7 @@ class TCPConnectionManager:
                 self._handle_heartbeat_message(parsed_data, client_key)
                 self.message_stats['heartbeat_messages'] += 1
             else:
-                logger.debug(f"📋 未处理的消息类型: {message_type}")
+                logger.debug(f"[OTHER] 未处理的消息类型: {message_type}")
                 self.message_stats['unknown_messages'] += 1
             
             # 定期打印统计信息
@@ -232,12 +232,12 @@ class TCPConnectionManager:
                 self._print_message_stats()
                 
         except Exception as e:
-            logger.error(f"❌ 处理接收数据失败: {e}")
+            logger.error(f"[ERROR] 处理接收数据失败: {e}")
     
     def _handle_status_message(self, parsed_data: Dict[str, Any], client_key: str):
         """处理状态消息"""
         try:
-            logger.info(f"📊 收到机器人状态消息 - 车辆: {self.robot_config.vehicle_id}")
+            logger.info(f"[INFO] 收到机器人状态消息 - 车辆: {self.robot_config.vehicle_id}")
             
             # 从消息数据中提取状态信息
             data_content = parsed_data.get('data', {})
@@ -246,12 +246,12 @@ class TCPConnectionManager:
             self._publish_connection_state("ONLINE")
             
         except Exception as e:
-            logger.error(f"❌ 处理状态消息失败: {e}")
+            logger.error(f"[ERROR] 处理状态消息失败: {e}")
     
     def _handle_heartbeat_message(self, parsed_data: Dict[str, Any], client_key: str):
         """处理心跳消息"""
         try:
-            logger.debug(f"💓 收到心跳消息 - 车辆: {self.robot_config.vehicle_id}")
+            logger.debug(f"[HEARTBEAT] 收到心跳消息 - 车辆: {self.robot_config.vehicle_id}")
             
             # 记录心跳时间
             self.last_heartbeat_time[client_key] = time.time()
@@ -260,7 +260,7 @@ class TCPConnectionManager:
             self._publish_connection_state("ONLINE")
             
         except Exception as e:
-            logger.error(f"❌ 处理心跳消息失败: {e}")
+            logger.error(f"[ERROR] 处理心跳消息失败: {e}")
     
     def _heartbeat_monitor(self):
         """心跳监控线程"""
@@ -276,7 +276,7 @@ class TCPConnectionManager:
                 
                 # 清理超时的连接
                 for client_key in disconnected_clients:
-                    logger.warning(f"⏰ 连接超时 - 客户端: {client_key}")
+                    logger.warning(f"[TIMEOUT] 连接超时 - 客户端: {client_key}")
                     self._cleanup_client_connection(client_key)
                 
                 # 如果没有活跃连接，发布离线状态
@@ -286,7 +286,7 @@ class TCPConnectionManager:
                 time.sleep(self.heartbeat_check_interval)
                 
             except Exception as e:
-                logger.error(f"❌ 心跳监控错误: {e}")
+                logger.error(f"[ERROR] 心跳监控错误: {e}")
     
     def _cleanup_client_connection(self, client_key: str):
         """清理客户端连接"""
@@ -302,14 +302,14 @@ class TCPConnectionManager:
                 
                 del self.client_connections[client_key]
                 
-                logger.info(f"🔌 机器人断开连接: {self.robot_config.vehicle_id} ({client_key})")
+                logger.info(f"[DISCONNECT] 机器人断开连接: {self.robot_config.vehicle_id} ({client_key})")
                 
                 # 如果没有其他连接，发布离线状态
                 if not self.client_connections:
                     self._publish_connection_state("OFFLINE")
                     
         except Exception as e:
-            logger.error(f"❌ 清理客户端连接失败: {e}")
+            logger.error(f"[ERROR] 清理客户端连接失败: {e}")
     
     def _publish_connection_state(self, state: str):
         """发布连接状态到MQTT"""
@@ -345,21 +345,21 @@ class TCPConnectionManager:
             # 发布消息
             self.mqtt_publisher(topic, json.dumps(message_dict, ensure_ascii=False))
             
-            logger.info(f"📡 发布连接状态: {self.robot_config.vehicle_id} -> {state}")
+            logger.info(f"[CONNECTION] 发布连接状态: {self.robot_config.vehicle_id} -> {state}")
             
         except Exception as e:
-            logger.error(f"❌ 发布连接状态失败: {e}")
+            logger.error(f"[ERROR] 发布连接状态失败: {e}")
     
     def _print_message_stats(self):
         """打印消息统计信息"""
         try:
             stats = self.message_stats
-            logger.info(f"📊 消息统计 - 总计: {stats['total_received']}, "
+            logger.info(f"[STATS] 消息统计 - 总计: {stats['total_received']}, "
                        f"状态: {stats['status_messages']}, "
                        f"心跳: {stats['heartbeat_messages']}, "
                        f"未知: {stats['unknown_messages']}")
         except Exception as e:
-            logger.error(f"❌ 打印统计信息失败: {e}")
+            logger.error(f"[ERROR] 打印统计信息失败: {e}")
     
     def stop(self):
         """停止TCP连接监听器"""
@@ -377,10 +377,10 @@ class TCPConnectionManager:
             # 发布离线状态
             self._publish_connection_state("OFFLINE")
             
-            logger.info(f"🛑 TCP连接监听器已停止 - 机器人: {self.robot_config.vehicle_id}")
+            logger.info(f"[STOP] TCP连接监听器已停止 - 机器人: {self.robot_config.vehicle_id}")
             
         except Exception as e:
-            logger.error(f"❌ 停止TCP连接监听器失败: {e}")
+            logger.error(f"[ERROR] 停止TCP连接监听器失败: {e}")
 
 
 class TCPConnectionListener:
@@ -407,11 +407,11 @@ class TCPConnectionListener:
                 self.mqtt_config_loader = MQTTConfigLoader(self.mqtt_config_file)
                 if self.mqtt_config_loader.validate_config():
                     self.mqtt_config = self.mqtt_config_loader.get_full_config()
-                    logger.info("✅ MQTT配置加载成功")
+                    logger.info("[INFO] MQTT配置加载成功")
             else:
-                logger.warning("⚠️  MQTT配置加载器不可用，使用默认配置")
+                logger.warning("[WARNING] MQTT配置加载器不可用，使用默认配置")
         except Exception as e:
-            logger.error(f"❌ 加载MQTT配置失败: {e}")
+            logger.error(f"[ERROR] 加载MQTT配置失败: {e}")
     
     def _setup_mqtt_client(self):
         """设置MQTT客户端"""
@@ -440,10 +440,10 @@ class TCPConnectionListener:
             self.mqtt_client.connect(host, port, keepalive)
             self.mqtt_client.loop_start()
             
-            logger.info(f"📡 MQTT客户端连接成功: {host}:{port}")
+            logger.info(f"[MQTT] MQTT客户端连接成功: {host}:{port}")
             
         except Exception as e:
-            logger.error(f"❌ MQTT客户端设置失败: {e}")
+            logger.error(f"[ERROR] MQTT客户端设置失败: {e}")
             raise
 
     def _mqtt_publisher(self, topic: str, payload: str):
@@ -455,13 +455,13 @@ class TCPConnectionListener:
                 
                 result = self.mqtt_client.publish(topic, payload, qos=qos, retain=retain)
                 if result.rc == 0:
-                    logger.debug(f"📤 MQTT消息发布成功: {topic}")
+                    logger.debug(f"[PUBLISH] MQTT消息发布成功: {topic}")
                 else:
-                    logger.warning(f"⚠️  MQTT消息发布失败: {topic}, 错误码: {result.rc}")
+                    logger.warning(f"[WARNING] MQTT消息发布失败: {topic}, 错误码: {result.rc}")
             else:
-                logger.warning("⚠️  MQTT客户端未连接，无法发布消息")
+                logger.warning("[WARNING] MQTT客户端未连接，无法发布消息")
         except Exception as e:
-            logger.error(f"❌ MQTT消息发布失败: {e}")
+            logger.error(f"[ERROR] MQTT消息发布失败: {e}")
     
     def start(self):
         """启动监听器"""
@@ -480,7 +480,7 @@ class TCPConnectionListener:
             if not config_files:
                 raise FileNotFoundError(f"配置目录中没有找到YAML文件: {self.config_dir}")
             
-            logger.info(f"🔍 找到 {len(config_files)} 个机器人配置文件")
+            logger.info(f"[INFO] 找到 {len(config_files)} 个机器人配置文件")
             
             # 为每个机器人创建连接管理器
             for config_file in config_files:
@@ -502,12 +502,12 @@ class TCPConnectionListener:
                 
                 self.connection_managers[robot_config.vehicle_id] = connection_manager
                 
-                logger.info(f"🤖 启动连接监听器: {robot_config.vehicle_id} -> 端口 {robot_config.status_port}")
+                logger.info(f"[INFO] 启动连接监听器: {robot_config.vehicle_id} -> 端口 {robot_config.status_port}")
             
-            logger.info(f"✅ TCP连接监听器启动完成 - 监听 {len(self.connection_managers)} 个机器人")
+            logger.info(f"[INFO] TCP连接监听器启动完成 - 监听 {len(self.connection_managers)} 个机器人")
             
         except Exception as e:
-            logger.error(f"❌ TCP连接监听器启动失败: {e}")
+            logger.error(f"[ERROR] TCP连接监听器启动失败: {e}")
             raise
     
     def stop(self):
@@ -519,20 +519,20 @@ class TCPConnectionListener:
             for vehicle_id, manager in self.connection_managers.items():
                 try:
                     manager.stop()
-                    logger.info(f"🛑 停止连接监听器: {vehicle_id}")
+                    logger.info(f"[STOP] 停止连接监听器: {vehicle_id}")
                 except Exception as e:
-                    logger.error(f"❌ 停止连接监听器失败 {vehicle_id}: {e}")
+                    logger.error(f"[ERROR] 停止连接监听器失败 {vehicle_id}: {e}")
             
             # 停止MQTT客户端
             if self.mqtt_client:
                 self.mqtt_client.loop_stop()
                 self.mqtt_client.disconnect()
-                logger.info("📡 MQTT客户端已断开")
+                logger.info("[MQTT] MQTT客户端已断开")
                 
-            logger.info("✅ TCP连接监听器已停止")
+            logger.info("[INFO] TCP连接监听器已停止")
             
         except Exception as e:
-            logger.error(f"❌ 停止TCP连接监听器失败: {e}")
+            logger.error(f"[ERROR] 停止TCP连接监听器失败: {e}")
 
 
 def main():
@@ -551,9 +551,9 @@ def main():
     try:
         listener.start()
         
-        print("🚀 TCP连接监听器已启动")
-        print("💡 监听机器人状态推送，生成VDA5050连接消息")
-        print("🛑 按 Ctrl+C 停止服务")
+        print("[START] TCP连接监听器已启动")
+        print("[INFO] 监听机器人状态推送，生成VDA5050连接消息")
+        print("[INFO] 按 Ctrl+C 停止服务")
         
         # 保持运行
         while listener.running:

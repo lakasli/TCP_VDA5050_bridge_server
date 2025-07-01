@@ -16,6 +16,7 @@ from typing import Dict, Any, Optional, Union
 from datetime import datetime, timezone
 import sys
 import os
+import logging
 
 # 添加父目录到Python路径，以便导入vda5050模块
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -25,6 +26,8 @@ from vda5050.visualization_message import VisualizationMessage, AGVPosition, Vel
 # 配置常量
 TCP_STATE_PORT = 19301      # AGV状态上报端口
 STATE_MESSAGE_TYPE = 9300   # 状态数据报文类型
+
+logger = logging.getLogger(__name__)
 
 class TCPStateToVisualizationConverter:
     """TCP状态数据转VDA5050可视化消息转换器"""
@@ -56,7 +59,7 @@ class TCPStateToVisualizationConverter:
         # 验证数据来源（可选验证）
         message_type = tcp_state.get('messageType')
         if message_type and message_type != STATE_MESSAGE_TYPE:
-            print(f"⚠️ 警告：数据报文类型 {message_type} 与期望的状态报文类型 {STATE_MESSAGE_TYPE} 不匹配")
+            logger.warning(f"[WARNING] 数据报文类型 {message_type} 与期望的状态报文类型 {STATE_MESSAGE_TYPE} 不匹配")
         
         # 提取基础消息字段
         header_id = self._generate_header_id_from_timestamp(tcp_state.get('create_on'))
@@ -106,24 +109,21 @@ class TCPStateToVisualizationConverter:
         angle = tcp_state.get('angle')
         current_map = tcp_state.get('current_map')
         
+        # 检查位置信息的完整性
         if x is None or y is None or angle is None:
-            print(f"⚠️ 位置信息不完整：x={x}, y={y}, angle={angle}")
-            return None
+            logger.warning(f"[WARNING] 位置信息不完整：x={x}, y={y}, angle={angle}")
+            # 使用默认值
+            x = x or 0.0
+            y = y or 0.0
+            angle = angle or 0.0
         
-        # 转换角度（从小车的角度格式转换为VDA5050的theta格式）
-        # VDA5050要求theta为弧度制，范围通常在-π到π之间
-        if isinstance(angle, (int, float)):
-            # 如果角度值大于2π，假设是角度制，转换为弧度
-            if abs(angle) > math.pi * 2:
-                theta = math.radians(angle)
-            else:
-                # 假设已经是弧度制
-                theta = angle
-            # 规范化到[-π, π]范围
-            theta = ((theta + math.pi) % (2 * math.pi)) - math.pi
-        else:
-            print(f"⚠️ 无效的角度值：{angle}")
-            theta = 0.0
+        # 角度值验证和转换
+        if not isinstance(angle, (int, float)):
+            logger.warning(f"[WARNING] 无效的角度值：{angle}")
+            angle = 0.0
+        
+        # 确保角度在0-360范围内
+        angle = angle % 360
         
         # 确定位置是否已初始化
         position_initialized = True  # 如果有位置数据，认为已初始化
@@ -131,12 +131,9 @@ class TCPStateToVisualizationConverter:
         # 获取定位置信度（VDA5050要求范围0.0-1.0）
         localization_score = tcp_state.get('confidence')
         if localization_score is not None:
-            if isinstance(localization_score, (int, float)):
-                # 确保置信度在0.0-1.0范围内
-                localization_score = max(0.0, min(1.0, float(localization_score)))
-            else:
-                print(f"⚠️ 无效的置信度值：{localization_score}")
-                localization_score = None
+            if not isinstance(localization_score, (int, float)) or localization_score < 0 or localization_score > 1:
+                logger.warning(f"[WARNING] 无效的置信度值：{localization_score}")
+                localization_score = 0.5  # 默认值
         
         # 获取偏差范围（如果有的话）
         deviation_range = tcp_state.get('deviation_range')
@@ -146,7 +143,7 @@ class TCPStateToVisualizationConverter:
         return AGVPosition(
             x=float(x),
             y=float(y),
-            theta=float(theta),
+            theta=float(angle),
             map_id=current_map or "unknown_map",
             position_initialized=position_initialized,
             localization_score=localization_score,
@@ -171,40 +168,27 @@ class TCPStateToVisualizationConverter:
         vy = tcp_state.get('vy')
         w = tcp_state.get('w')  # 角速度
         
+        # 速度验证
+        if not isinstance(vx, (int, float)):
+            logger.warning(f"[WARNING] 无效的vx值：{vx}")
+            vx = 0.0
+        
+        if not isinstance(vy, (int, float)):
+            logger.warning(f"[WARNING] 无效的vy值：{vy}")
+            vy = 0.0
+        
+        if not isinstance(w, (int, float)):
+            logger.warning(f"[WARNING] 无效的角速度值：{w}")
+            w = 0.0
+        
         # 如果没有任何速度数据，返回None
         if vx is None and vy is None and w is None:
             return None
         
-        # 转换数据类型并验证
-        vx_float = None
-        if vx is not None:
-            if isinstance(vx, (int, float)):
-                vx_float = float(vx)
-            else:
-                print(f"⚠️ 无效的vx值：{vx}")
-        
-        vy_float = None  
-        if vy is not None:
-            if isinstance(vy, (int, float)):
-                vy_float = float(vy)
-            else:
-                print(f"⚠️ 无效的vy值：{vy}")
-        
-        omega_float = None
-        if w is not None:
-            if isinstance(w, (int, float)):
-                omega_float = float(w)
-            else:
-                print(f"⚠️ 无效的角速度值：{w}")
-        
-        # 如果转换后所有值都是None，返回None
-        if vx_float is None and vy_float is None and omega_float is None:
-            return None
-        
         return Velocity(
-            vx=vx_float,
-            vy=vy_float,
-            omega=omega_float
+            vx=vx,
+            vy=vy,
+            omega=w
         )
     
     def _generate_header_id_from_timestamp(self, timestamp_str: Optional[str]) -> int:
