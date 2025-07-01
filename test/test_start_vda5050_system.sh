@@ -92,6 +92,61 @@ if [ "$DEBUG_MODE" = true ]; then
     echo -e "${CYAN}       $SCRIPT_DIR/mqtt_state_monitor.py: $([ -f "$SCRIPT_DIR/mqtt_state_monitor.py" ] && echo '✓' || echo '✗')${NC}"
 fi
 
+# 函数：检查TCP端口是否开放
+check_tcp_port() {
+    local host="$1"
+    local port="$2"
+    local timeout="$3"
+    
+    if command -v nc &> /dev/null; then
+        # 使用netcat检查端口
+        nc -z -w"$timeout" "$host" "$port" 2>/dev/null
+        return $?
+    elif command -v telnet &> /dev/null; then
+        # 使用telnet检查端口
+        timeout "$timeout" bash -c "echo > /dev/tcp/$host/$port" 2>/dev/null
+        return $?
+    else
+        # 使用Python检查端口
+        ${PYTHON_CMD} -c "
+import socket
+import sys
+try:
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout($timeout)
+    result = sock.connect_ex(('$host', $port))
+    sock.close()
+    sys.exit(0 if result == 0 else 1)
+except:
+    sys.exit(1)
+" 2>/dev/null
+        return $?
+    fi
+}
+
+# 函数：等待TCP服务启动
+wait_for_tcp_service() {
+    local service_name="$1"
+    local port="$2"
+    local max_attempts="$3"
+    local delay="$4"
+    
+    echo -e "${CYAN}[等待] 等待${service_name}的TCP端口${port}启动...${NC}"
+    
+    for ((i=1; i<=max_attempts; i++)); do
+        if check_tcp_port "localhost" "$port" 3; then
+            echo -e "${GREEN}[成功] ${service_name}端口${port}已就绪 (尝试${i}/${max_attempts})${NC}"
+            return 0
+        else
+            echo -e "${YELLOW}[等待] ${service_name}端口${port}未就绪，等待${delay}秒... (尝试${i}/${max_attempts})${NC}"
+            sleep "$delay"
+        fi
+    done
+    
+    echo -e "${RED}[失败] ${service_name}端口${port}在${max_attempts}次尝试后仍未就绪${NC}"
+    return 1
+}
+
 # 函数：启动服务并记录PID
 start_service() {
     local service_name="$1"
@@ -198,21 +253,42 @@ echo -e "${BLUE}[步骤1/4] 启动MQTT-TCP桥接服务器...${NC}"
 start_service "MQTT-TCP Bridge Server" "$PARENT_DIR/mqtt_tcp_bridge_server.py" "$PARENT_DIR" \
     "$PID_DIR/bridge_server.pid" "$PARENT_DIR/logs/bridge_server.log"
 
-echo -e "${CYAN}[信息] 等待5秒让TCP服务器完全启动...${NC}"
-sleep 5
+# 等待TCP服务器的关键端口启动
+if wait_for_tcp_service "MQTT-TCP桥接服务器" "19301" 10 2; then
+    echo -e "${GREEN}[信息] TCP桥接服务器已完全启动${NC}"
+else
+    echo -e "${RED}[警告] TCP桥接服务器可能未完全启动，但继续启动其他组件${NC}"
+fi
+
+echo -e "${CYAN}[信息] 等待3秒让TCP服务器稳定...${NC}"
+sleep 3
 
 # 启动第二个组件：AGV模拟器
 echo -e "${BLUE}[步骤2/4] 启动AGV模拟器...${NC}"
 start_service "AGV Simulator" "$SCRIPT_DIR/agv_simulator.py" "$SCRIPT_DIR" \
     "$PID_DIR/agv_simulator.pid" "$SCRIPT_DIR/logs/agv_simulator.log"
 
-echo -e "${CYAN}[信息] 等待3秒让AGV模拟器连接...${NC}"
-sleep 3
+echo -e "${CYAN}[信息] 等待5秒让AGV模拟器连接...${NC}"
+sleep 5
 
-# 启动第三个组件：MQTT测试客户端
+# 启动第三个组件：MQTT测试客户端 (非交互模式)
 echo -e "${BLUE}[步骤3/4] 启动MQTT测试客户端...${NC}"
-start_service "MQTT Test Client" "$SCRIPT_DIR/mqtt_test_client.py" "$SCRIPT_DIR" \
-    "$PID_DIR/mqtt_test_client.pid" "$SCRIPT_DIR/logs/mqtt_test_client.log"
+# 修改启动参数，添加非交互模式
+cd "$SCRIPT_DIR"
+nohup ${PYTHON_CMD} mqtt_test_client.py --non-interactive --auto-send > "$SCRIPT_DIR/logs/mqtt_test_client.log" 2>&1 &
+client_pid=$!
+echo $client_pid > "$PID_DIR/mqtt_test_client.pid"
+cd "$SCRIPT_DIR"
+
+# 检查进程状态
+sleep 2
+if kill -0 $client_pid 2>/dev/null; then
+    echo -e "${GREEN}[成功] MQTT Test Client 已启动 (PID: $client_pid)${NC}"
+    echo -e "${CYAN}[日志] 日志文件: $SCRIPT_DIR/logs/mqtt_test_client.log${NC}"
+else
+    echo -e "${RED}[失败] MQTT Test Client 启动失败${NC}"
+    rm -f "$PID_DIR/mqtt_test_client.pid"
+fi
 
 echo -e "${CYAN}[信息] 等待2秒让MQTT客户端连接...${NC}"
 sleep 2
@@ -235,7 +311,7 @@ echo -e "${GREEN}  4. MQTT状态监控器 (监听AGV状态消息)${NC}"
 echo ""
 echo -e "${PURPLE}📱 MQTTX客户端配置建议：${NC}"
 echo -e "${PURPLE}  服务器: 172.31.232.152:1883${NC}"
-echo -e "${PURPLE}  客户端ID: test_server${NC}"
+echo -e "${PURPLE}  客户端ID: mqttx_virtual_test_client${NC}"
 echo -e "${PURPLE}  协议: MQTT 3.1.1${NC}"
 echo ""
 echo -e "${PURPLE}📡 订阅以下Topic接收AGV状态：${NC}"

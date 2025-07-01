@@ -913,7 +913,7 @@ def main():
     else:
         # 使用默认配置，但避免客户端ID冲突
         mqtt_config = {
-            'host': 'broker.emqx.io',  # 移除mqtt://前缀
+            'host': '172.31.232.152',  # 与测试组件保持一致
             'port': 1883,
             'client_id': None  # 让系统自动生成唯一ID
         }

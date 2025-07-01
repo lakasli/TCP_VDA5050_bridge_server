@@ -391,11 +391,14 @@ class MQTTTestClient:
 def main():
     """主函数"""
     import argparse
+    import sys
     
     parser = argparse.ArgumentParser(description='MQTT测试客户端')
     parser.add_argument('--broker', default='broker.emqx.io', help='MQTT代理地址')
     parser.add_argument('--port', type=int, default=1883, help='MQTT代理端口')
     parser.add_argument('--client-id', default='mqtt_test_client', help='MQTT客户端ID')
+    parser.add_argument('--non-interactive', action='store_true', help='非交互模式，用于后台运行')
+    parser.add_argument('--auto-send', action='store_true', help='自动发送测试消息')
     
     args = parser.parse_args()
     
@@ -407,32 +410,61 @@ def main():
         if not client.connect():
             return
         
-        logger.info("可用命令:")
-        logger.info("  1 - 发送Order消息")
-        logger.info("  2 - 发送InstantActions消息")
-        logger.info("  q - 退出")
+        # 检测是否在交互环境中运行
+        is_interactive = not args.non_interactive and sys.stdin.isatty()
         
-        while True:
-            try:
-                command = input("\n请输入命令: ").strip()
-                
-                if command == '1':
-                    client.send_order()
-                elif command == '2':
-                    client.send_instant_actions()
-                elif command.lower() == 'q':
-                    logger.info("退出测试客户端")
+        if is_interactive:
+            # 交互模式
+            logger.info("可用命令:")
+            logger.info("  1 - 发送Order消息")
+            logger.info("  2 - 发送InstantActions消息")
+            logger.info("  q - 退出")
+            
+            while True:
+                try:
+                    command = input("\n请输入命令: ").strip()
+                    
+                    if command == '1':
+                        client.send_order()
+                    elif command == '2':
+                        client.send_instant_actions()
+                    elif command.lower() == 'q':
+                        logger.info("退出测试客户端")
+                        break
+                    else:
+                        logger.warning("未知命令，请重新输入")
+                    
+                    time.sleep(0.5)  # 短暂延迟
+                    
+                except KeyboardInterrupt:
+                    logger.info("收到退出信号")
                     break
-                else:
-                    logger.warning("未知命令，请重新输入")
-                
-                time.sleep(0.5)  # 短暂延迟
-                
-            except KeyboardInterrupt:
-                logger.info("收到退出信号")
-                break
-            except Exception as e:
-                logger.error(f"测试异常: {e}")
+                except EOFError:
+                    logger.info("输入流结束，退出交互模式")
+                    break
+                except Exception as e:
+                    logger.error(f"测试异常: {e}")
+        else:
+            # 非交互模式 - 后台运行
+            logger.info("运行在非交互模式，仅监听MQTT消息")
+            
+            if args.auto_send:
+                # 自动发送测试消息
+                logger.info("启用自动发送测试消息模式")
+                test_count = 0
+                while test_count < 3:  # 发送3次测试消息
+                    logger.info(f"发送第{test_count + 1}次测试消息")
+                    if test_count % 2 == 0:
+                        client.send_order()
+                    else:
+                        client.send_instant_actions()
+                    test_count += 1
+                    time.sleep(30)  # 每30秒发送一次
+            
+            # 保持运行，仅监听消息
+            logger.info("MQTT测试客户端已启动，按Ctrl+C停止...")
+            while True:
+                time.sleep(1)
             
     except KeyboardInterrupt:
         logger.info("收到停止信号...")
