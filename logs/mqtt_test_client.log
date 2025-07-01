@@ -46830,3 +46830,27 @@
   "serialNumber": "VWED-0010",
   "connectionState": "ONLINE"
 }
+2025-07-01 13:46:06,806 - __main__ - INFO - 正在连接MQTT代理: broker.emqx.io:1883
+2025-07-01 13:46:07,346 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 13:46:07,415 - __main__ - INFO - MQTT连接成功
+2025-07-01 13:46:07,416 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/state
+2025-07-01 13:46:07,417 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/visualization
+2025-07-01 13:46:07,418 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/connection
+2025-07-01 13:46:07,418 - __main__ - INFO - 可用命令:
+2025-07-01 13:46:07,419 - __main__ - INFO -   1 - 发送Order消息
+2025-07-01 13:46:07,419 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-01 13:46:07,419 - __main__ - INFO -   q - 退出
+2025-07-01 14:47:15,307 - __main__ - INFO - 正在连接MQTT代理: broker.emqx.io:1883
+2025-07-01 14:47:15,832 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 14:47:15,890 - __main__ - INFO - MQTT连接成功
+2025-07-01 14:47:15,892 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/state
+2025-07-01 14:47:15,892 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/visualization
+2025-07-01 14:47:15,893 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/connection
+2025-07-01 14:47:15,893 - __main__ - INFO - 可用命令:
+2025-07-01 14:47:15,893 - __main__ - INFO -   1 - 发送Order消息
+2025-07-01 14:47:15,893 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-01 14:47:15,893 - __main__ - INFO -   q - 退出
+2025-07-01 14:47:17,423 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 14:47:18,925 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 14:47:20,498 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 14:47:21,996 - __main__ - INFO - MQTT连接建立成功

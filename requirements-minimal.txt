@@ -1,0 +1,8 @@
+# VDA5050 TCP Bridge Server 核心依赖包
+# 最小化依赖，仅包含项目运行必需的包
+
+# MQTT客户端库 - 用于MQTT消息传输
+paho-mqtt>=1.6.0,<2.0.0
+
+# YAML解析库 - 用于解析配置文件
+PyYAML>=6.0,<7.0 

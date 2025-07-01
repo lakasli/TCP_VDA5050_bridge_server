@@ -13,10 +13,39 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
+# 检查是否开启了调试模式
+DEBUG_MODE=false
+if [[ "$1" == "--debug" || "$1" == "-d" ]]; then
+    DEBUG_MODE=true
+    echo -e "${YELLOW}[调试模式] 启用详细输出${NC}"
+fi
+
 echo -e "${BLUE}=================================================${NC}"
 echo -e "${BLUE}       VDA5050 真实AGV连接系统启动脚本${NC}"
 echo -e "${BLUE}=================================================${NC}"
 echo ""
+
+# 检查工作目录
+echo -e "${CYAN}[检查] 验证工作目录...${NC}"
+if [ ! -f "mqtt_tcp_bridge_server.py" ] || [ ! -f "mqtt_test_client.py" ]; then
+    echo -e "${RED}[错误] 未在项目根目录运行此脚本${NC}"
+    echo -e "${RED}[当前目录] $(pwd)${NC}"
+    echo -e "${RED}[建议] 请先切换到项目根目录，然后运行:${NC}"
+    echo -e "${RED}       cd /path/to/tcp_vda5050_server${NC}"
+    echo -e "${RED}       ./start_vda5050_system.sh${NC}"
+    exit 1
+fi
+
+# 显示当前目录
+if [ "$DEBUG_MODE" = true ]; then
+    echo -e "${CYAN}[调试] 当前工作目录: $(pwd)${NC}"
+    echo -e "${CYAN}[调试] 主要文件检查:${NC}"
+    echo -e "${CYAN}       mqtt_tcp_bridge_server.py: $([ -f mqtt_tcp_bridge_server.py ] && echo '✓' || echo '✗')${NC}"
+    echo -e "${CYAN}       mqtt_test_client.py: $([ -f mqtt_test_client.py ] && echo '✓' || echo '✗')${NC}"
+    echo -e "${CYAN}       server_config.json: $([ -f server_config.json ] && echo '✓' || echo '✗')${NC}"
+fi
+
+echo -e "${GREEN}[成功] 工作目录验证通过${NC}"
 
 # 检查是否以root权限运行（可选）
 if [[ $EUID -eq 0 ]]; then
@@ -45,7 +74,7 @@ echo ""
 
 # 检查必要的Python模块
 echo -e "${CYAN}[信息] 检查必要的Python模块...${NC}"
-required_modules=("paho-mqtt" "yaml" "json")
+required_modules=("paho.mqtt.client" "yaml" "json")
 missing_modules=()
 
 for module in "${required_modules[@]}"; do
@@ -61,17 +90,44 @@ if [ ${#missing_modules[@]} -ne 0 ]; then
 fi
 
 # 创建日志目录
+echo -e "${CYAN}[检查] 创建和验证日志目录...${NC}"
 if [ ! -d "logs" ]; then
     mkdir -p logs
-    echo -e "${GREEN}[信息] 创建日志目录: logs/${NC}"
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}[成功] 创建日志目录: logs/${NC}"
+    else
+        echo -e "${RED}[错误] 无法创建日志目录: logs/${NC}"
+        echo -e "${RED}[建议] 请检查当前目录的写入权限${NC}"
+        exit 1
+    fi
 else
     echo -e "${GREEN}[信息] 日志目录已存在: logs/${NC}"
+fi
+
+# 检查日志目录权限
+if [ ! -w "logs" ]; then
+    echo -e "${RED}[错误] 日志目录没有写入权限: logs/${NC}"
+    echo -e "${RED}[建议] 运行: chmod 755 logs/${NC}"
+    exit 1
 fi
 
 # 创建PID文件目录
 PID_DIR="./pids"
 if [ ! -d "$PID_DIR" ]; then
     mkdir -p "$PID_DIR"
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}[成功] 创建PID目录: $PID_DIR${NC}"
+    else
+        echo -e "${RED}[错误] 无法创建PID目录: $PID_DIR${NC}"
+        exit 1
+    fi
+fi
+
+# 调试模式显示目录权限
+if [ "$DEBUG_MODE" = true ]; then
+    echo -e "${CYAN}[调试] 目录权限检查:${NC}"
+    echo -e "${CYAN}       logs/: $(ls -ld logs/ | awk '{print $1}')${NC}"
+    echo -e "${CYAN}       pids/: $(ls -ld $PID_DIR/ | awk '{print $1}')${NC}"
 fi
 
 echo -e "${GREEN}[信息] 日志文件将保存到 logs/ 目录中${NC}"
@@ -99,8 +155,16 @@ start_service() {
     local service_name="$1"
     local script_name="$2"
     local pid_file="$3"
+    local log_file="logs/${service_name,,}.log"
     
     echo -e "${CYAN}[启动] ${service_name}...${NC}"
+    
+    # 检查Python脚本是否存在
+    if [ ! -f "$script_name" ]; then
+        echo -e "${RED}[错误] Python脚本不存在: $script_name${NC}"
+        echo -e "${RED}[建议] 请确保在项目根目录运行此脚本${NC}"
+        return 1
+    fi
     
     # 检查服务是否已经在运行
     if [ -f "$pid_file" ] && kill -0 $(cat "$pid_file") 2>/dev/null; then
@@ -108,19 +172,76 @@ start_service() {
         return 1
     fi
     
+    # 创建日志文件（如果不存在）
+    touch "$log_file" 2>/dev/null
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}[错误] 无法创建日志文件: $log_file${NC}"
+        echo -e "${RED}[建议] 请检查 logs/ 目录的写入权限${NC}"
+        return 1
+    fi
+    
+    # 测试Python脚本语法
+    echo -e "${CYAN}[测试] 检查Python脚本语法: $script_name${NC}"
+    ${PYTHON_CMD} -m py_compile "$script_name" 2>/dev/null
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}[错误] Python脚本语法错误: $script_name${NC}"
+        echo -e "${RED}[调试] 运行以下命令查看详细错误：${NC}"
+        echo -e "${RED}       ${PYTHON_CMD} $script_name${NC}"
+        
+        # 调试模式下直接显示语法错误
+        if [ "$DEBUG_MODE" = true ]; then
+            echo -e "${RED}[语法错误详情]${NC}"
+            ${PYTHON_CMD} -m py_compile "$script_name"
+        fi
+        return 1
+    fi
+    
+    # 调试模式显示更多信息
+    if [ "$DEBUG_MODE" = true ]; then
+        echo -e "${CYAN}[调试] 准备启动服务:${NC}"
+        echo -e "${CYAN}       服务名称: $service_name${NC}"
+        echo -e "${CYAN}       Python脚本: $script_name${NC}"
+        echo -e "${CYAN}       日志文件: $log_file${NC}"
+        echo -e "${CYAN}       PID文件: $pid_file${NC}"
+        echo -e "${CYAN}       Python命令: $PYTHON_CMD${NC}"
+    fi
+    
     # 启动服务
-    nohup ${PYTHON_CMD} "$script_name" > "logs/${service_name,,}.log" 2>&1 &
+    echo -e "${CYAN}[执行] ${PYTHON_CMD} $script_name > $log_file 2>&1 &${NC}"
+    nohup ${PYTHON_CMD} "$script_name" > "$log_file" 2>&1 &
     local pid=$!
     echo $pid > "$pid_file"
     
-    # 等待一秒检查进程是否成功启动
-    sleep 1
+    echo -e "${CYAN}[等待] 检查服务启动状态 (PID: $pid)...${NC}"
+    
+    # 等待3秒检查进程是否成功启动
+    sleep 3
     if kill -0 $pid 2>/dev/null; then
         echo -e "${GREEN}[成功] ${service_name} 已启动 (PID: $pid)${NC}"
+        echo -e "${CYAN}[日志] 日志文件: $log_file${NC}"
+        
+        # 显示最后几行日志
+        if [ -f "$log_file" ] && [ -s "$log_file" ]; then
+            echo -e "${CYAN}[日志] 最近的日志输出:${NC}"
+            tail -n 5 "$log_file" | sed 's/^/       /'
+        fi
         return 0
     else
-        echo -e "${RED}[失败] ${service_name} 启动失败${NC}"
+        echo -e "${RED}[失败] ${service_name} 启动失败 (PID: $pid 已退出)${NC}"
         rm -f "$pid_file"
+        
+        # 显示错误日志
+        if [ -f "$log_file" ] && [ -s "$log_file" ]; then
+            echo -e "${RED}[错误日志] 查看 $log_file 的内容:${NC}"
+            echo -e "${RED}----------------------------------------${NC}"
+            tail -n 10 "$log_file" | sed 's/^/       /'
+            echo -e "${RED}----------------------------------------${NC}"
+        else
+            echo -e "${RED}[错误] 日志文件为空或不存在，可能是权限问题${NC}"
+        fi
+        
+        echo -e "${RED}[调试] 手动运行以下命令进行调试:${NC}"
+        echo -e "${RED}       ${PYTHON_CMD} $script_name${NC}"
         return 1
     fi
 }
@@ -184,4 +305,19 @@ echo -e "${CYAN}  查看桥接服务器日志: tail -f logs/mqtt-tcp\\ bridge\\ 
 echo -e "${CYAN}  查看测试客户端日志: tail -f logs/mqtt\\ test\\ client.log${NC}"
 echo -e "${CYAN}  查看系统端口状态: netstat -tuln | grep -E '(19205|19206|19207|19210|19301)'${NC}"
 echo ""
-echo -e "${GREEN}🚀 系统已成功启动并在后台运行！${NC}" 
+echo -e "${GREEN}🚀 系统已成功启动并在后台运行！${NC}"
+echo ""
+echo -e "${YELLOW}🔧 故障排除指南：${NC}"
+echo -e "${YELLOW}  1. 如果启动失败，请使用调试模式：${NC}"
+echo -e "${YELLOW}     ./start_vda5050_system.sh --debug${NC}"
+echo -e "${YELLOW}  2. 检查Python环境和依赖：${NC}"
+echo -e "${YELLOW}     python3 test_python_env.py${NC}"
+echo -e "${YELLOW}  3. 手动测试Python脚本：${NC}"
+echo -e "${YELLOW}     python3 mqtt_tcp_bridge_server.py${NC}"
+echo -e "${YELLOW}     python3 mqtt_test_client.py${NC}"
+echo -e "${YELLOW}  4. 查看完整日志：${NC}"
+echo -e "${YELLOW}     cat logs/mqtt-tcp\\ bridge\\ server.log${NC}"
+echo -e "${YELLOW}  5. 检查防火墙设置：${NC}"
+echo -e "${YELLOW}     sudo ufw status${NC}"
+echo -e "${YELLOW}     sudo ufw allow 19205:19210/tcp${NC}"
+echo -e "${YELLOW}     sudo ufw allow 19301/tcp${NC}" 
