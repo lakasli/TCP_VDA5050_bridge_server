@@ -1,0 +1,71 @@
+# MQTT服务器配置文件
+# MQTT Server Configuration
+
+# MQTT服务器连接配置
+mqtt_server:
+  # MQTT服务器地址 - 使用公共的EMQX服务器
+  host: "broker.emqx.io"
+  # MQTT服务器端口
+  port: 1883
+  # 连接超时时间(秒)
+  keepalive: 60
+  # 客户端ID前缀
+  client_id_prefix: "vda5050_tcp_server"
+  
+# MQTT认证配置
+mqtt_auth:
+  # 用户名 (可选，设置为null表示不使用认证)
+  username: null
+  # 密码 (可选，设置为null表示不使用认证) 
+  password: null
+  
+# MQTT连接选项
+mqtt_options:
+  # 自动重连
+  auto_reconnect: true
+  # 最大重连间隔(秒)
+  max_reconnect_delay: 60
+  # 初始重连间隔(秒)
+  initial_reconnect_delay: 1
+  # 清除会话
+  clean_session: true
+  # QoS等级 (0, 1, 2)
+  qos_level: 1
+
+# VDA5050主题配置
+vda5050_topics:
+  # 订单主题模式 - {vehicle_id}将被替换为实际的机器人ID
+  order_topic_pattern: "vda5050/{vehicle_id}/order"
+  # 即时动作主题模式
+  instant_actions_topic_pattern: "vda5050/{vehicle_id}/instantActions"
+  # 状态主题模式  
+  state_topic_pattern: "vda5050/{vehicle_id}/state"
+  # 可视化主题模式
+  visualization_topic_pattern: "vda5050/{vehicle_id}/visualization"
+  
+# MQTT消息配置
+message_config:
+  # 消息保留
+  retain: false
+  # 最大消息大小(字节)
+  max_message_size: 1048576
+  # 消息编码
+  encoding: "utf-8"
+  
+# 日志配置
+logging:
+  # 是否启用MQTT日志
+  enable_mqtt_logging: true
+  # MQTT日志级别 (DEBUG, INFO, WARNING, ERROR)
+  mqtt_log_level: "INFO"
+  # 是否记录MQTT原始消息
+  log_raw_messages: false
+
+# 高级配置
+advanced:
+  # 消息队列最大长度
+  max_queue_length: 1000
+  # 处理线程数量
+  processing_threads: 4
+  # 消息处理超时时间(秒)
+  message_timeout: 30 

@@ -1,0 +1,298 @@
+# VDA5050协议适配器管理器配置
+# 统一管理多厂家协议适配器
+# ========================================
+
+# 管理器配置
+manager_config:
+  version: "1.0.0"
+  description: "VDA5050协议适配器统一管理器"
+  
+  # 适配器发现和加载
+  adapter_discovery:
+    scan_directories:
+      - "robot_config/protocol_adapters/"
+      - "extensions/adapters/"
+    supported_formats:
+      - "yaml"
+      - "json"
+    auto_load: true
+    hot_reload: false
+  
+  # 适配器选择策略
+  selection_strategy: "priority_based"  # priority_based, manufacturer_match, manual
+  fallback_adapter: "seer"
+  
+  # 性能配置
+  performance:
+    max_concurrent_adapters: 3
+    adapter_timeout: 30.0
+    message_queue_size: 1000
+    thread_pool_size: 4
+
+# 已注册的协议适配器
+registered_adapters:
+  # SEER协议适配器
+  seer:
+    name: "SEER AGV Protocol Adapter"
+    manufacturer: "SEER"
+    version: "1.0.0"
+    config_file: "robot_config/VWED-0010_v2.yaml"
+    active: true
+    priority: 1
+    
+    # 支持的AGV型号
+    supported_models:
+      - "AGV-Virtual-Test"
+      - "SEER-L1000"
+      - "SEER-L2000"
+    
+    # 协议特性
+    features:
+      message_format: "JSON"
+      connection_type: "TCP_JSON"
+      heartbeat_required: false
+      session_management: false
+      binary_support: false
+      encrypted_communication: false
+    
+    # 端口范围
+    port_ranges:
+      - {start: 19200, end: 19210}
+      - {start: 19301, end: 19301}
+  
+  # Kiva协议适配器
+  kiva:
+    name: "Kiva AGV Protocol Adapter"
+    manufacturer: "Amazon/Kiva"
+    version: "1.0.0"
+    config_file: "robot_config/protocol_adapters/kiva_protocol.yaml"
+    active: false
+    priority: 2
+    
+    # 支持的AGV型号
+    supported_models:
+      - "Kiva-Pod-Transporter"
+      - "Amazon-Drive-Unit"
+    
+    # 协议特性
+    features:
+      message_format: "BINARY"
+      connection_type: "TCP_BINARY"
+      heartbeat_required: true
+      session_management: true
+      binary_support: true
+      encrypted_communication: false
+    
+    # 端口范围
+    port_ranges:
+      - {start: 8001, end: 8004}
+  
+  # Omron协议适配器 (示例)
+  omron:
+    name: "Omron LD Mobile Robot Adapter"
+    manufacturer: "Omron"
+    version: "1.0.0"
+    config_file: "robot_config/protocol_adapters/omron_protocol.yaml"
+    active: false
+    priority: 3
+    
+    # 支持的AGV型号
+    supported_models:
+      - "LD-60"
+      - "LD-90"
+      - "LD-250"
+    
+    # 协议特性
+    features:
+      message_format: "REST_API"
+      connection_type: "HTTP/HTTPS"
+      heartbeat_required: true
+      session_management: true
+      binary_support: false
+      encrypted_communication: true
+    
+    # 端口范围
+    port_ranges:
+      - {start: 80, end: 80}
+      - {start: 443, end: 443}
+
+# 适配器自动检测规则
+auto_detection_rules:
+  # 基于网络扫描的检测
+  network_detection:
+    enabled: true
+    scan_timeout: 5.0
+    
+    # 端口扫描规则
+    port_scan_rules:
+      - manufacturer: "SEER"
+        ports: [19205, 19206, 19301]
+        detection_message: '{"type": "ping"}'
+        expected_response: '"pong"'
+      
+      - manufacturer: "Kiva"
+        ports: [8001, 8002]
+        detection_message: [0x03, 0x00, 0x01]  # Binary ping
+        expected_response: [0x03, 0x00, 0x02]   # Binary pong
+      
+      - manufacturer: "Omron"
+        ports: [80, 443]
+        detection_url: "/api/v1/status"
+        http_method: "GET"
+        expected_status: 200
+  
+  # 基于设备信息的检测
+  device_detection:
+    enabled: true
+    
+    # 设备特征匹配
+    device_signatures:
+      - manufacturer: "SEER"
+        identifiers:
+          - field: "manufacturer"
+            value: "SEER"
+          - field: "model"
+            pattern: "^AGV-.*"
+      
+      - manufacturer: "Kiva"
+        identifiers:
+          - field: "manufacturer"
+            value: "Amazon"
+          - field: "serial_number"
+            pattern: "^KIVA-.*"
+      
+      - manufacturer: "Omron"
+        identifiers:
+          - field: "manufacturer"
+            value: "Omron"
+          - field: "model"
+            pattern: "^LD-.*"
+
+# 协议转换配置
+protocol_conversion:
+  # 通用转换规则
+  common_rules:
+    # 坐标系转换
+    coordinate_transform:
+      enable_transform: true
+      world_coordinate_system: "right_handed"  # right_handed, left_handed
+      angle_representation: "radians"  # radians, degrees
+    
+    # 单位转换
+    unit_conversion:
+      distance_unit: "meters"  # meters, millimeters, feet
+      speed_unit: "m_per_s"    # m_per_s, km_per_h, mph
+      angle_unit: "radians"    # radians, degrees
+    
+    # 时间戳处理
+    timestamp_handling:
+      format: "iso8601"        # iso8601, unix_timestamp, custom
+      timezone: "UTC"
+      precision: "milliseconds"
+  
+  # 特定厂家转换规则
+  manufacturer_specific:
+    seer:
+      position_scale_factor: 1.0
+      angle_offset: 0.0
+      coordinate_flip_x: false
+      coordinate_flip_y: false
+    
+    kiva:
+      position_scale_factor: 0.001  # mm to m
+      angle_offset: 1.5708          # 90 degrees offset
+      coordinate_flip_x: false
+      coordinate_flip_y: true
+    
+    omron:
+      position_scale_factor: 1.0
+      angle_offset: 0.0
+      coordinate_flip_x: false
+      coordinate_flip_y: false
+
+# 错误处理和容错机制
+error_handling:
+  # 适配器故障处理
+  adapter_failure:
+    auto_switch_adapter: true
+    max_retry_attempts: 3
+    retry_delay: 2.0
+    fallback_strategy: "use_fallback_adapter"  # use_fallback_adapter, disable_functionality, manual_intervention
+  
+  # 协议转换错误
+  conversion_errors:
+    log_level: "WARNING"
+    continue_on_error: true
+    default_values:
+      position: {x: 0.0, y: 0.0, theta: 0.0}
+      battery: 50.0
+      operating_mode: "MANUAL"
+  
+  # 通信错误
+  communication_errors:
+    connection_timeout: 10.0
+    max_reconnection_attempts: 5
+    reconnection_delay: 5.0
+    circuit_breaker_threshold: 10
+
+# 监控和诊断
+monitoring:
+  # 性能监控
+  performance_monitoring:
+    enabled: true
+    metrics_collection_interval: 10.0
+    
+    # 监控指标
+    metrics:
+      - "message_processing_time"
+      - "conversion_success_rate"
+      - "connection_stability"
+      - "error_rate"
+      - "throughput"
+  
+  # 健康检查
+  health_checks:
+    enabled: true
+    check_interval: 30.0
+    
+    # 检查项目
+    checks:
+      - name: "adapter_availability"
+        critical: true
+      - name: "tcp_connection_status"
+        critical: true
+      - name: "message_queue_health"
+        critical: false
+      - name: "conversion_performance"
+        critical: false
+  
+  # 诊断工具
+  diagnostics:
+    packet_capture: false
+    message_tracing: true
+    performance_profiling: false
+
+# 日志配置
+logging:
+  # 适配器管理器日志
+  manager_logging:
+    level: "INFO"
+    file: "logs/adapter_manager.log"
+    max_size: "50MB"
+    backup_count: 10
+  
+  # 适配器实例日志
+  adapter_logging:
+    level: "INFO"
+    separate_files: true
+    file_pattern: "logs/adapter_{manufacturer}_{timestamp}.log"
+    max_size: "20MB"
+    backup_count: 5
+  
+  # 协议转换日志
+  conversion_logging:
+    level: "DEBUG"
+    file: "logs/protocol_conversion.log"
+    include_message_content: false  # 安全考虑
+    max_size: "100MB"
+    backup_count: 20 

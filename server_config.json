@@ -1,0 +1,40 @@
+{
+    "mqtt": {
+        "name": "vda5050",
+        "host": "mqtt://broker.emqx.io",
+        "port": 1883,
+        "client_id": "mqttx_f927dcb3",
+        "username": "",
+        "password": "",
+        "keepalive": 60,
+        "clean_session": true
+    },
+    "agv": {
+        "ip": "192.168.1.100",
+        "manufacturer": "Demo_Manufacturer",
+        "serial_number": "AGV_001",
+        "vehicle_name": "TestAGV"
+    },
+    "tcp_ports": {
+        "pick_drop": 19205,
+        "translate": 19206,
+        "turn": 19207,
+        "reloc": 19208,
+        "pause": 19209,
+        "other": 19210,
+        "state": 19301
+    },
+    "vda5050_topics": {
+        "order": "/uagv/v2/{manufacturer}/{serial_number}/order",
+        "instantActions": "/uagv/v2/{manufacturer}/{serial_number}/instantActions",
+        "state": "/uagv/v2/{manufacturer}/{serial_number}/state",
+        "visualization": "/uagv/v2/{manufacturer}/{serial_number}/visualization",
+        "connection": "/uagv/v2/{manufacturer}/{serial_number}/connection"
+    },
+    "server": {
+        "log_level": "INFO",
+        "log_file": "logs/vda5050_server.log",
+        "heartbeat_interval": 30,
+        "connection_timeout": 60
+    }
+} 
