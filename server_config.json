@@ -16,7 +16,7 @@
         "vehicle_name": "TestAGV"
     },
     "tcp_ports": {
-        "pick_drop": 19205,
+        "pick_drop": 19206,
         "translate": 19206,
         "turn": 19207,
         "reloc": 19208,

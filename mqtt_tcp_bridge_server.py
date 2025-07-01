@@ -264,7 +264,7 @@ class TCPServerManager:
         
         # TCP端口映射（根据实际AGV配置）
         self.tcp_ports = {
-            19205: 'pick_drop',      # pick/drop动作
+            19206: 'pick_drop',      # pick/drop动作
             19206: 'translate',       # translate动作  
             19207: 'turn',           # turn动作
             19208: 'reloc',          # reloc动作
