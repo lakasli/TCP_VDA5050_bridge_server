@@ -33,7 +33,7 @@ echo [信息] 等待3秒让AGV模拟器连接...
 timeout /t 3 /nobreak >nul
 
 echo [步骤3/3] 启动MQTT测试客户端...
-start "MQTT Test Client" cmd /k "cd /d %~dp0..\ && python mqtt_test_client.py"
+start "MQTT Test Client" cmd /k "cd /d %~dp0 && python mqtt_test_client.py"
 
 echo.
 echo =================================================
@@ -43,12 +43,11 @@ echo.
 echo 已启动的组件：
 echo   1. MQTT-TCP桥接服务器 (端口: 19205-19210, 19301)
 echo   2. 虚拟AGV模拟器 (模拟VWED-0010)
-echo   3. MQTT测试客户端 (连接到broker.emqx.io:1883)
+echo   3. MQTT测试客户端 (连接到172.31.232.152)
 echo.
 echo 📱 MQTTX客户端配置建议：
-echo   服务器: broker.emqx.io:1883
-echo   客户端ID: vda5050
-echo   协议: MQTT 3.1.1
+echo   服务器: 172.31.232.152:1883
+echo   客户端ID: mqttx_test_client
 echo.
 echo 📡 订阅以下Topic接收AGV状态：
 echo   /uagv/v2/SEER/VWED-0010/state

@@ -264,12 +264,12 @@ class TCPServerManager:
         
         # TCP端口映射（根据实际AGV配置）
         self.tcp_ports = {
-            19204: '状态 API',      
-            19205: '控制 API',     
-            19206: '导航 API',          
-            19207: '配置 API',         
-            19210: '其他 API',          
-            19301: '推送 API'          
+            19204: 'stateAPI',      
+            19205: 'controlAPI',     
+            19206: 'navigationAPI',          
+            19207: 'configAPI',         
+            19210: 'otherAPI',          
+            19301: 'pushAPI'        
         }
         
         # 控制权抢夺配置
@@ -795,8 +795,8 @@ class VDA5050Server:
         try:
             logger.info(f"处理AGV TCP数据: {port_type}")
             
-            if port_type == 'state':
-                # 处理State数据
+            if port_type == 'pushAPI':
+                # 处理State数据（支持两种端口类型以兼容现有配置）
                 self._handle_state_data(tcp_data)
             else:
                 # 其他类型的数据暂时记录
@@ -808,6 +808,14 @@ class VDA5050Server:
     def _handle_state_data(self, tcp_data: Dict[str, Any]):
         """处理AGV状态数据"""
         try:
+            # 从TCP数据中提取AGV信息（如果可用）
+            vehicle_id = tcp_data.get('vehicle_id', self.agv_info['serial_number'])
+            manufacturer = tcp_data.get('manufacturer', self.agv_info['manufacturer'])
+            
+            # 更新AGV信息
+            self.agv_info['serial_number'] = vehicle_id
+            self.agv_info['manufacturer'] = manufacturer
+            
             # 转换为VDA5050 State消息
             state_data = self.converter.tcp_state_to_vda5050(tcp_data)
             if state_data:

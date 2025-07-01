@@ -2,7 +2,7 @@
 
 # VDA5050 真实AGV连接系统启动脚本 (Linux版本)
 # 作者: VDA5050 TCP Bridge Server
-# 版本: 1.0.0
+# 版本: 1.0.1
 
 # 设置颜色输出
 RED='\033[0;31m'
@@ -31,6 +31,7 @@ if [ "$DEBUG_MODE" = true ]; then
     echo -e "${CYAN}[调试] 主要文件检查:${NC}"
     echo -e "${CYAN}       mqtt_tcp_bridge_server.py: $([ -f mqtt_tcp_bridge_server.py ] && echo '✓' || echo '✗')${NC}"
     echo -e "${CYAN}       server_config.json: $([ -f server_config.json ] && echo '✓' || echo '✗')${NC}"
+    echo -e "${CYAN}       test/mqtt_test_client.py: $([ -f test/mqtt_test_client.py ] && echo '✓' || echo '✗')${NC}"
 fi
 
 echo -e "${GREEN}[成功] 工作目录验证通过${NC}"
@@ -251,6 +252,8 @@ sleep 8
 
 echo -e "${BLUE}[步骤2/2] 启动MQTT测试客户端...${NC}"
 
+# 启动MQTT测试客户端（从test目录）
+start_service "MQTT Test Client" "test/mqtt_test_client.py" "$PID_DIR/mqtt_client.pid"
 
 echo ""
 echo -e "${GREEN}=================================================${NC}"
@@ -290,6 +293,7 @@ echo -e "${CYAN}📊 实时监控命令：${NC}"
 echo -e "${CYAN}  查看桥接服务器日志: tail -f logs/mqtt-tcp\\ bridge\\ server.log${NC}"
 echo -e "${CYAN}  查看测试客户端日志: tail -f logs/mqtt\\ test\\ client.log${NC}"
 echo -e "${CYAN}  查看系统端口状态: netstat -tuln | grep -E '(19205|19206|19207|19210|19301)'${NC}"
+echo -e "${CYAN}  查看运行的进程: ps aux | grep python${NC}"
 echo ""
 echo -e "${GREEN}🚀 系统已成功启动并在后台运行！${NC}"
 echo ""
@@ -297,12 +301,15 @@ echo -e "${YELLOW}🔧 故障排除指南：${NC}"
 echo -e "${YELLOW}  1. 如果启动失败，请使用调试模式：${NC}"
 echo -e "${YELLOW}     ./start_vda5050_system.sh --debug${NC}"
 echo -e "${YELLOW}  2. 检查Python环境和依赖：${NC}"
-echo -e "${YELLOW}     python3 test_python_env.py${NC}"
+echo -e "${YELLOW}     ${PYTHON_CMD} -c 'import paho.mqtt.client, yaml, json'${NC}"
 echo -e "${YELLOW}  3. 手动测试Python脚本：${NC}"
-echo -e "${YELLOW}     python3 mqtt_tcp_bridge_server.py${NC}"
+echo -e "${YELLOW}     ${PYTHON_CMD} mqtt_tcp_bridge_server.py${NC}"
 echo -e "${YELLOW}  4. 查看完整日志：${NC}"
 echo -e "${YELLOW}     cat logs/mqtt-tcp\\ bridge\\ server.log${NC}"
 echo -e "${YELLOW}  5. 检查防火墙设置：${NC}"
 echo -e "${YELLOW}     sudo ufw status${NC}"
 echo -e "${YELLOW}     sudo ufw allow 19205:19210/tcp${NC}"
-echo -e "${YELLOW}     sudo ufw allow 19301/tcp${NC}" 
+echo -e "${YELLOW}     sudo ufw allow 19301/tcp${NC}"
+echo -e "${YELLOW}  6. 停止系统：${NC}"
+echo -e "${YELLOW}     pkill -f mqtt_tcp_bridge_server.py${NC}"
+echo -e "${YELLOW}     pkill -f mqtt_test_client.py${NC}" 

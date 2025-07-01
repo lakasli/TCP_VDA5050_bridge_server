@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 class MQTTStateMonitor:
     """MQTT状态监控器"""
     
-    def __init__(self, broker_host: str = 'broker.emqx.io', broker_port: int = 1883):
+    def __init__(self, broker_host: str = '172.31.232.152', broker_port: int = 1883):
         self.broker_host = broker_host
         self.broker_port = broker_port
         self.client_id = f"state_monitor_{int(time.time())}"
@@ -236,7 +236,7 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(description='MQTT状态监控器')
-    parser.add_argument('--broker', default='broker.emqx.io', help='MQTT代理地址')
+    parser.add_argument('--broker', default='172.31.232.152', help='MQTT代理地址')
     parser.add_argument('--port', type=int, default=1883, help='MQTT代理端口')
     
     args = parser.parse_args()

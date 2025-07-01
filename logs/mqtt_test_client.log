@@ -47449,3 +47449,80 @@
   "serialNumber": "VWED-0010",
   "connectionState": "ONLINE"
 }
+2025-07-01 21:48:50,900 - __main__ - INFO - 正在连接MQTT代理: 172.31.232.152:1883
+2025-07-01 21:48:50,901 - __main__ - INFO - 使用客户端ID: mqtt_test_client_0783f643
+2025-07-01 21:48:50,941 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 21:48:51,006 - __main__ - INFO - MQTT连接成功
+2025-07-01 21:48:51,006 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/state
+2025-07-01 21:48:51,007 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/visualization
+2025-07-01 21:48:51,007 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/connection
+2025-07-01 21:48:51,007 - __main__ - INFO - 可用命令:
+2025-07-01 21:48:51,008 - __main__ - INFO -   1 - 发送Order消息
+2025-07-01 21:48:51,008 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-01 21:48:51,008 - __main__ - INFO -   q - 退出
+2025-07-01 21:53:36,766 - __main__ - INFO - 正在连接MQTT代理: 172.31.232.152:1883
+2025-07-01 21:53:36,767 - __main__ - INFO - 使用客户端ID: mqtt_test_client_5a6439db
+2025-07-01 21:53:36,865 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 21:53:36,894 - __main__ - INFO - MQTT连接成功
+2025-07-01 21:53:36,894 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/state
+2025-07-01 21:53:36,895 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/visualization
+2025-07-01 21:53:36,895 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/connection
+2025-07-01 21:53:36,895 - __main__ - INFO - 可用命令:
+2025-07-01 21:53:36,895 - __main__ - INFO -   1 - 发送Order消息
+2025-07-01 21:53:36,895 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-01 21:53:36,895 - __main__ - INFO -   q - 退出
+2025-07-01 21:59:44,658 - __main__ - INFO - 正在连接MQTT代理: broker.emqx.io:1883
+2025-07-01 21:59:44,658 - __main__ - INFO - 使用客户端ID: mqtt_test_client_1751378384
+2025-07-01 21:59:45,390 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 21:59:45,458 - __main__ - INFO - MQTT连接成功
+2025-07-01 21:59:45,459 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-01 21:59:45,459 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-01 21:59:45,459 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-01 21:59:45,459 - __main__ - INFO - 可用命令:
+2025-07-01 21:59:45,459 - __main__ - INFO -   1 - 发送Order消息
+2025-07-01 21:59:45,459 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-01 21:59:45,460 - __main__ - INFO -   q - 退出
+2025-07-01 22:48:26,291 - __main__ - INFO - 正在连接MQTT代理: broker.emqx.io:1883
+2025-07-01 22:48:26,291 - __main__ - INFO - 使用客户端ID: mqtt_test_client
+2025-07-01 22:48:27,342 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 22:48:27,411 - __main__ - INFO - MQTT连接成功
+2025-07-01 22:48:27,412 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/state
+2025-07-01 22:48:27,412 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/visualization
+2025-07-01 22:48:27,413 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/connection
+2025-07-01 22:48:27,413 - __main__ - INFO - 可用命令:
+2025-07-01 22:48:27,413 - __main__ - INFO -   1 - 发送Order消息
+2025-07-01 22:48:27,413 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-01 22:48:27,414 - __main__ - INFO -   q - 退出
+2025-07-01 22:55:52,282 - __main__ - INFO - 正在连接MQTT代理: broker.emqx.io:1883
+2025-07-01 22:55:52,283 - __main__ - INFO - 使用客户端ID: mqtt_test_client_1751381752
+2025-07-01 22:55:53,884 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 22:55:53,956 - __main__ - INFO - MQTT连接成功
+2025-07-01 22:55:53,958 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-01 22:55:53,959 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-01 22:55:53,960 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-01 22:55:53,960 - __main__ - INFO - 可用命令:
+2025-07-01 22:55:53,961 - __main__ - INFO -   1 - 发送Order消息
+2025-07-01 22:55:53,961 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-01 22:55:53,961 - __main__ - INFO -   q - 退出
+2025-07-01 22:58:02,468 - __main__ - INFO - 正在连接MQTT代理: broker.emqx.io:1883
+2025-07-01 22:58:02,469 - __main__ - INFO - 使用客户端ID: mqtt_test_client_1751381882
+2025-07-01 22:58:03,209 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 22:58:03,275 - __main__ - INFO - MQTT连接成功
+2025-07-01 22:58:03,276 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-01 22:58:03,277 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-01 22:58:03,278 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-01 22:58:03,279 - __main__ - INFO - 可用命令:
+2025-07-01 22:58:03,279 - __main__ - INFO -   1 - 发送Order消息
+2025-07-01 22:58:03,279 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-01 22:58:03,280 - __main__ - INFO -   q - 退出
+2025-07-01 23:04:53,789 - __main__ - INFO - 正在连接MQTT代理: broker.emqx.io:1883
+2025-07-01 23:04:53,791 - __main__ - INFO - 使用客户端ID: mqtt_test_client_1751382293
+2025-07-01 23:04:54,640 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 23:04:54,690 - __main__ - INFO - MQTT连接成功
+2025-07-01 23:04:54,693 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-01 23:04:54,694 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-01 23:04:54,695 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-01 23:04:54,696 - __main__ - INFO - 可用命令:
+2025-07-01 23:04:54,696 - __main__ - INFO -   1 - 发送Order消息
+2025-07-01 23:04:54,697 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-01 23:04:54,697 - __main__ - INFO -   q - 退出
