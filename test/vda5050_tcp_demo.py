@@ -171,7 +171,8 @@ class VDA5050TCPDemo:
         
         # 动作类型下拉栏
         self.action_type_var = tk.StringVar()
-        action_types = ["pick", "drop", "translate", "turn", "reloc", "startPause", "stopPause"]
+        action_types = ["pick", "drop", "translate", "turn", "reloc", "startPause", "stopPause", 
+                       "cancelOrder", "cancelReloc", "clearErrors", "rotateLoad", "softEmc"]
         self.action_type_combo = ttk.Combobox(action_frame, textvariable=self.action_type_var, 
                                              values=action_types, state="readonly", width=15)
         self.action_type_combo.pack(side=tk.LEFT, padx=(0, 10))
@@ -680,8 +681,64 @@ class VDA5050TCPDemo:
                     y=round(random.uniform(0, 15), 2),
                     angle=round(random.uniform(0, 6.28), 2)
                 )
+            elif selected_action_type == "rotateLoad":
+                # 托盘旋转动作
+                action_params = []
+                action_params.append(ActionParameter(
+                    key="increase_spin_angle",
+                    value=str(round(random.uniform(0, 360), 2))
+                ))
+                action_params.append(ActionParameter(
+                    key="robot_spin_angle", 
+                    value=str(round(random.uniform(0, 360), 2))
+                ))
+                action_params.append(ActionParameter(
+                    key="global_spin_angle",
+                    value=str(round(random.uniform(0, 360), 2))
+                ))
+                action_params.append(ActionParameter(
+                    key="spin_direction",
+                    value=str(random.choice([1, -1]))
+                ))
+                action = Action(
+                    action_id="action_1",
+                    action_type=selected_action_type,
+                    action_parameters=action_params,
+                    blocking_type="HARD",
+                    action_description="托盘旋转动作"
+                )
+            elif selected_action_type == "softEmc":
+                # 软急停动作
+                action_params = []
+                action_params.append(ActionParameter(
+                    key="status",
+                    value=str(random.choice([True, False]).lower())
+                ))
+                action = Action(
+                    action_id="action_1",
+                    action_type=selected_action_type,
+                    action_parameters=action_params,
+                    blocking_type="HARD",
+                    action_description="软急停动作"
+                )
+            elif selected_action_type == "clearErrors":
+                # 清除错误动作
+                action_params = []
+                # 生成随机错误码列表
+                error_codes = [random.randint(1000, 9999) for _ in range(random.randint(1, 3))]
+                action_params.append(ActionParameter(
+                    key="error_codes",
+                    value=str(error_codes)
+                ))
+                action = Action(
+                    action_id="action_1",
+                    action_type=selected_action_type,
+                    action_parameters=action_params,
+                    blocking_type="HARD",
+                    action_description="清除错误动作"
+                )
             else:
-                # 使用简单动作 (pick, drop, startPause, stopPause)
+                # 使用简单动作 (pick, drop, startPause, stopPause, cancelOrder, cancelReloc)
                 action_params = []
                 
                 # 为某些动作类型添加随机参数
@@ -731,7 +788,8 @@ class VDA5050TCPDemo:
         try:
             # 创建随机即时动作
             actions = []
-            action_types = ["pick", "drop", "translate", "turn", "reloc", "startPause", "stopPause"]
+            action_types = ["pick", "drop", "translate", "turn", "reloc", "startPause", "stopPause",
+                           "cancelOrder", "cancelReloc", "clearErrors", "rotateLoad", "softEmc"]
             
             # 生成1-3个动作
             num_actions = random.randint(1, 3)
@@ -757,8 +815,64 @@ class VDA5050TCPDemo:
                         y=random.uniform(0, 15),
                         angle=random.uniform(0, 6.28)
                     )
+                elif action_type == "rotateLoad":
+                    # 托盘旋转动作
+                    action_params = []
+                    action_params.append(ActionParameter(
+                        key="increase_spin_angle",
+                        value=str(round(random.uniform(0, 360), 2))
+                    ))
+                    action_params.append(ActionParameter(
+                        key="robot_spin_angle", 
+                        value=str(round(random.uniform(0, 360), 2))
+                    ))
+                    action_params.append(ActionParameter(
+                        key="global_spin_angle",
+                        value=str(round(random.uniform(0, 360), 2))
+                    ))
+                    action_params.append(ActionParameter(
+                        key="spin_direction",
+                        value=str(random.choice([1, -1]))
+                    ))
+                    action = Action(
+                        action_id=f"action_{i+1}",
+                        action_type=action_type,
+                        action_parameters=action_params,
+                        blocking_type="HARD",
+                        action_description="托盘旋转动作"
+                    )
+                elif action_type == "softEmc":
+                    # 软急停动作
+                    action_params = []
+                    action_params.append(ActionParameter(
+                        key="status",
+                        value=str(random.choice([True, False]).lower())
+                    ))
+                    action = Action(
+                        action_id=f"action_{i+1}",
+                        action_type=action_type,
+                        action_parameters=action_params,
+                        blocking_type="HARD",
+                        action_description="软急停动作"
+                    )
+                elif action_type == "clearErrors":
+                    # 清除错误动作
+                    action_params = []
+                    # 生成随机错误码列表
+                    error_codes = [random.randint(1000, 9999) for _ in range(random.randint(1, 3))]
+                    action_params.append(ActionParameter(
+                        key="error_codes",
+                        value=str(error_codes)
+                    ))
+                    action = Action(
+                        action_id=f"action_{i+1}",
+                        action_type=action_type,
+                        action_parameters=action_params,
+                        blocking_type="HARD",
+                        action_description="清除错误动作"
+                    )
                 else:
-                    # 使用简单动作
+                    # 使用简单动作 (pick, drop, startPause, stopPause, cancelOrder, cancelReloc)
                     action = Action(
                         action_id=f"action_{i+1}",
                         action_type=action_type,
