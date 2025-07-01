@@ -3,6 +3,11 @@
 """
 TCP状态数据转VDA5050可视化消息转换器
 从小车上报的TCP状态数据中提取可视化相关参数，封装为VDA5050 visualization topic
+
+端口配置说明：
+- 端口19301：AGV状态上报端口（机器人→服务器）
+- 报文类型9300：状态数据的标准报文类型
+- 转换方向：TCP→VDA5050
 """
 
 import json
@@ -17,6 +22,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from vda5050.visualization_message import VisualizationMessage, AGVPosition, Velocity
 
+# 配置常量
+TCP_STATE_PORT = 19301      # AGV状态上报端口
+STATE_MESSAGE_TYPE = 9300   # 状态数据报文类型
 
 class TCPStateToVisualizationConverter:
     """TCP状态数据转VDA5050可视化消息转换器"""
@@ -28,12 +36,28 @@ class TCPStateToVisualizationConverter:
     def convert_tcp_state_to_visualization(self, tcp_state: Dict[str, Any]) -> VisualizationMessage:
         """将TCP状态数据转换为VDA5050可视化消息
         
+        处理流程：
+        1. 验证TCP状态数据（端口19301，报文类型9300）
+        2. 提取位置信息（x, y, angle）转换为AGVPosition
+        3. 提取速度信息（vx, vy, w）转换为Velocity
+        4. 生成VDA5050标准的可视化消息
+        
         Args:
-            tcp_state: TCP状态数据字典
+            tcp_state: TCP状态数据字典，应包含：
+                      - vehicle_id: 车辆ID
+                      - x, y, angle: 位置信息
+                      - vx, vy, w: 速度信息（可选）
+                      - current_map: 地图ID
+                      - confidence: 定位置信度（可选）
             
         Returns:
             VDA5050可视化消息对象
         """
+        # 验证数据来源（可选验证）
+        message_type = tcp_state.get('messageType')
+        if message_type and message_type != STATE_MESSAGE_TYPE:
+            print(f"⚠️ 警告：数据报文类型 {message_type} 与期望的状态报文类型 {STATE_MESSAGE_TYPE} 不匹配")
+        
         # 提取基础消息字段
         header_id = self._generate_header_id_from_timestamp(tcp_state.get('create_on'))
         timestamp = self._convert_tcp_timestamp_to_iso8601(tcp_state.get('create_on'))
@@ -62,6 +86,14 @@ class TCPStateToVisualizationConverter:
     def _extract_agv_position(self, tcp_state: Dict[str, Any]) -> Optional[AGVPosition]:
         """从TCP状态数据中提取AGV位置信息
         
+        参照VDA5050 AGVPosition结构：
+        - x, y: 位置坐标（必需）
+        - theta: 朝向角度，弧度制（必需）
+        - map_id: 地图ID（必需）
+        - position_initialized: 位置是否已初始化（必需）  
+        - localization_score: 定位置信度 0.0-1.0（可选）
+        - deviation_range: 偏差范围（可选）
+        
         Args:
             tcp_state: TCP状态数据字典
             
@@ -75,29 +107,41 @@ class TCPStateToVisualizationConverter:
         current_map = tcp_state.get('current_map')
         
         if x is None or y is None or angle is None:
+            print(f"⚠️ 位置信息不完整：x={x}, y={y}, angle={angle}")
             return None
         
         # 转换角度（从小车的角度格式转换为VDA5050的theta格式）
-        # 假设小车的angle是角度值，需要转换为弧度
+        # VDA5050要求theta为弧度制，范围通常在-π到π之间
         if isinstance(angle, (int, float)):
-            theta = math.radians(angle) if abs(angle) > math.pi * 2 else angle
+            # 如果角度值大于2π，假设是角度制，转换为弧度
+            if abs(angle) > math.pi * 2:
+                theta = math.radians(angle)
+            else:
+                # 假设已经是弧度制
+                theta = angle
+            # 规范化到[-π, π]范围
+            theta = ((theta + math.pi) % (2 * math.pi)) - math.pi
         else:
+            print(f"⚠️ 无效的角度值：{angle}")
             theta = 0.0
         
         # 确定位置是否已初始化
         position_initialized = True  # 如果有位置数据，认为已初始化
         
-        # 获取定位置信度
+        # 获取定位置信度（VDA5050要求范围0.0-1.0）
         localization_score = tcp_state.get('confidence')
         if localization_score is not None:
-            # 确保置信度在0.0-1.0范围内
             if isinstance(localization_score, (int, float)):
+                # 确保置信度在0.0-1.0范围内
                 localization_score = max(0.0, min(1.0, float(localization_score)))
             else:
+                print(f"⚠️ 无效的置信度值：{localization_score}")
                 localization_score = None
         
         # 获取偏差范围（如果有的话）
         deviation_range = tcp_state.get('deviation_range')
+        if deviation_range is not None and not isinstance(deviation_range, (int, float)):
+            deviation_range = None
         
         return AGVPosition(
             x=float(x),
@@ -111,6 +155,11 @@ class TCPStateToVisualizationConverter:
     
     def _extract_velocity(self, tcp_state: Dict[str, Any]) -> Optional[Velocity]:
         """从TCP状态数据中提取速度信息
+        
+        参照VDA5050 Velocity结构：
+        - vx: 车辆坐标系中x方向速度，单位m/s（可选）
+        - vy: 车辆坐标系中y方向速度，单位m/s（可选）  
+        - omega: 角速度，单位rad/s（可选）
         
         Args:
             tcp_state: TCP状态数据字典
@@ -126,10 +175,31 @@ class TCPStateToVisualizationConverter:
         if vx is None and vy is None and w is None:
             return None
         
-        # 转换数据类型
-        vx_float = float(vx) if vx is not None else None
-        vy_float = float(vy) if vy is not None else None
-        omega_float = float(w) if w is not None else None
+        # 转换数据类型并验证
+        vx_float = None
+        if vx is not None:
+            if isinstance(vx, (int, float)):
+                vx_float = float(vx)
+            else:
+                print(f"⚠️ 无效的vx值：{vx}")
+        
+        vy_float = None  
+        if vy is not None:
+            if isinstance(vy, (int, float)):
+                vy_float = float(vy)
+            else:
+                print(f"⚠️ 无效的vy值：{vy}")
+        
+        omega_float = None
+        if w is not None:
+            if isinstance(w, (int, float)):
+                omega_float = float(w)
+            else:
+                print(f"⚠️ 无效的角速度值：{w}")
+        
+        # 如果转换后所有值都是None，返回None
+        if vx_float is None and vy_float is None and omega_float is None:
+            return None
         
         return Velocity(
             vx=vx_float,
@@ -351,12 +421,21 @@ if __name__ == "__main__":
     """测试转换功能"""
     print("=== TCP状态数据转VDA5050可视化消息转换器测试 ===\n")
     
+    # 验证配置
+    print("📋 配置验证:")
+    print(f"   状态上报端口: {TCP_STATE_PORT}")
+    print(f"   状态报文类型: {STATE_MESSAGE_TYPE}")
+    print(f"   转换方向: TCP → VDA5050 Visualization")
+    print()
+    
     # 创建转换器
     converter = TCPStateToVisualizationConverter()
     
     # 测试完整数据转换
     print("1. 完整TCP状态数据转换测试:")
     sample_state = create_sample_tcp_state()
+    # 添加报文类型以验证
+    sample_state['messageType'] = STATE_MESSAGE_TYPE
     print("原始TCP状态数据:")
     print(json.dumps(sample_state, indent=2, ensure_ascii=False))
     print("\n转换后的VDA5050可视化消息:")
@@ -367,6 +446,7 @@ if __name__ == "__main__":
     # 测试最小数据转换
     print("2. 最小TCP状态数据转换测试:")
     minimal_state = create_sample_tcp_state_minimal()
+    minimal_state['messageType'] = STATE_MESSAGE_TYPE
     print("最小TCP状态数据:")
     print(json.dumps(minimal_state, indent=2, ensure_ascii=False))
     print("\n转换后的VDA5050可视化消息:")
@@ -388,8 +468,16 @@ if __name__ == "__main__":
     print(f"最小数据位置有效性: {converter.is_position_valid(minimal_state)}")
     print(f"最小数据速度可用性: {converter.is_velocity_available(minimal_state)}")
     
+    # 测试报文类型不匹配的情况
+    print("\n5. 报文类型验证测试:")
+    wrong_type_state = sample_state.copy()
+    wrong_type_state['messageType'] = 9999  # 错误的报文类型
+    print("使用错误报文类型(9999)的转换:")
+    result_wrong = convert_tcp_state_to_visualization_json(wrong_type_state)
+    print("转换结果仍然生成，但会有警告信息")
+    
     # 测试无效数据处理
-    print("\n5. 无效数据处理测试:")
+    print("\n6. 无效数据处理测试:")
     invalid_state = {"vehicle_id": "AGV003"}  # 缺少位置信息
     print("无效TCP状态数据:")
     print(json.dumps(invalid_state, indent=2, ensure_ascii=False))

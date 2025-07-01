@@ -10,6 +10,7 @@ import time
 import math
 from typing import Dict, Any, List, Optional, Union
 from datetime import datetime
+from .manufacturer_a import ManufacturerATCPProtocol
 
 
 class VDA5050ToTCPConverter:
@@ -48,17 +49,22 @@ class VDA5050ToTCPConverter:
     }
     
     def __init__(self):
-        pass
+        # 创建TCP协议处理器实例，用于统一生成task_id
+        self.tcp_protocol = ManufacturerATCPProtocol()
     
     def generate_tcp_task_id(self, base_id: str, counter: int) -> str:
-        """生成TCP协议task_id"""
+        """生成TCP协议task_id，使用统一的ID生成逻辑"""
         if base_id and base_id.strip():
-            return f"{base_id}_{counter}"
+            # 重置计数器到指定值，然后生成ID
+            original_counter = self.tcp_protocol.task_id_counter
+            self.tcp_protocol.task_id_counter = counter
+            task_id = self.tcp_protocol.generate_task_id(base_id)
+            # 恢复计数器状态
+            self.tcp_protocol.task_id_counter = original_counter
+            return task_id
         
-        # 如果没有baseId，生成默认格式
-        timestamp = hex(int(time.time()))[2:]
-        random_suffix = hex(int(time.time() * 1000000) % 1000000)[2:]
-        return f"TASK_{timestamp}_{random_suffix}_{counter}"
+        # 如果没有baseId，使用默认生成逻辑
+        return self.tcp_protocol.generate_task_id()
     
     def extract_operation_from_actions(self, actions: List[Dict[str, Any]]) -> Optional[str]:
         """从VDA5050动作数组中提取对应的TCP操作"""
@@ -224,7 +230,7 @@ class VDA5050ToTCPConverter:
         """
         try:
             # 使用headerId作为task_id的基础部分
-            base_task_id = f"INSTANT_{vda_json.get('headerId', '')}" if vda_json.get('headerId') else ''
+            base_task_id = str(vda_json.get('headerId', '')) if vda_json.get('headerId') else ''
             task_id_counter = 1
             action_results = []
             

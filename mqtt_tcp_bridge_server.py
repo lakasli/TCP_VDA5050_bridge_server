@@ -584,8 +584,8 @@ class ProtocolConverter:
         """将VDA5050 Order转换为TCP数据"""
         try:
             tcp_result = self.order_converter.convert_vda5050_order_to_tcp_move_task_list(order_data)
-            # Order统一发送到19205端口，使用消息类型2001
-            return [{'port': 19205, 'message_type': 2001, 'data': tcp_result}]
+            # Order统一发送到19206端口，使用消息类型3066
+            return [{'port': 19206, 'message_type': 3066, 'data': tcp_result}]
         except Exception as e:
             logger.error(f"Order转换失败: {e}")
             return []

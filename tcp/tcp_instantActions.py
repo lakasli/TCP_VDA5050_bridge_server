@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from enum import Enum
 import time
 import random
+from .manufacturer_a import ManufacturerATCPProtocol
 
 
 class DataFormatType(Enum):
@@ -79,10 +80,11 @@ class VDA5050InstantActionsToTCPConverter:
     
     def __init__(self):
         """初始化转换器"""
-        pass
+        # 创建TCP协议处理器实例，用于统一生成task_id
+        self.tcp_protocol = ManufacturerATCPProtocol()
     
     def generate_tcp_task_id(self, base_id: Optional[str] = None, counter: int = 1) -> str:
-        """生成TCP协议task_id
+        """生成TCP协议task_id，使用统一的ID生成逻辑
         
         Args:
             base_id: 基础ID，通常使用headerId
@@ -92,12 +94,16 @@ class VDA5050InstantActionsToTCPConverter:
             生成的task_id
         """
         if base_id:
-            return f"{base_id}_{counter}"
+            # 重置计数器到指定值，然后生成ID
+            original_counter = self.tcp_protocol.task_id_counter
+            self.tcp_protocol.task_id_counter = counter
+            task_id = self.tcp_protocol.generate_task_id(base_id)
+            # 恢复计数器状态
+            self.tcp_protocol.task_id_counter = original_counter
+            return task_id
         
-        # 如果没有baseId，生成默认格式
-        timestamp = str(int(time.time() * 1000))[-8:]  # 取时间戳后8位
-        random_suffix = ''.join(random.choices('0123456789abcdef', k=8))
-        return f"TASK_{timestamp}_{random_suffix}_{counter}"
+        # 如果没有baseId，使用默认生成逻辑
+        return self.tcp_protocol.generate_task_id()
     
     def convert_single_action(self, action: Dict[str, Any], base_task_id: str = "", 
                             counter: int = 1) -> Optional[TCPActionResult]:
@@ -311,7 +317,7 @@ class VDA5050InstantActionsToTCPConverter:
         """
         try:
             # 使用headerId作为task_id的基础部分
-            base_task_id = f"INSTANT_{vda_json.get('headerId', '')}" if vda_json.get('headerId') else ''
+            base_task_id = str(vda_json.get('headerId', '')) if vda_json.get('headerId') else ''
             task_id_counter = 1
             action_results = []
             
