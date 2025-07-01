@@ -9,6 +9,8 @@ import json
 import time
 import random
 import logging
+import uuid
+import threading
 from datetime import datetime, timezone
 from typing import Dict, Any, List
 import sys
@@ -47,11 +49,12 @@ logger = logging.getLogger(__name__)
 class MQTTTestClient:
     """MQTT测试客户端"""
     
-    def __init__(self, broker_host: str = 'broker.emqx.io', broker_port: int = 1883, 
-                 client_id: str = 'mqtt_test_client'):
+    def __init__(self, broker_host: str = '172.31.232.152', broker_port: int = 1883, 
+                 client_id: str = None):
         self.broker_host = broker_host
         self.broker_port = broker_port
-        self.client_id = client_id
+        # 生成唯一的客户端ID，避免冲突
+        self.client_id = client_id or f"mqtt_test_client_{uuid.uuid4().hex[:8]}"
         self.client = None
         self.is_connected = False
         
@@ -68,37 +71,91 @@ class MQTTTestClient:
             'connection': f'/uagv/v2/{self.manufacturer}/{self.serial_number}/connection'
         }
         
-    def connect(self):
-        """连接MQTT代理"""
-        try:
-            self.client = mqtt.Client(client_id=self.client_id)
-            self.client.on_connect = self._on_connect
-            self.client.on_disconnect = self._on_disconnect
-            self.client.on_message = self._on_message
-            
-            logger.info(f"正在连接MQTT代理: {self.broker_host}:{self.broker_port}")
-            self.client.connect(self.broker_host, self.broker_port, 60)
-            self.client.loop_start()
-            
-            # 等待连接建立
-            timeout = 10
-            while not self.is_connected and timeout > 0:
-                time.sleep(0.1)
-                timeout -= 0.1
+    def connect(self, max_retries: int = 3):
+        """连接MQTT代理，带重试机制"""
+        for attempt in range(max_retries):
+            try:
+                # 如果是重试，生成新的客户端ID
+                if attempt > 0:
+                    self.client_id = f"mqtt_test_client_{uuid.uuid4().hex[:8]}"
+                    logger.info(f"第{attempt + 1}次连接尝试，使用新客户端ID: {self.client_id}")
                 
-            if not self.is_connected:
-                raise Exception("MQTT连接超时")
+                self.client = mqtt.Client(client_id=self.client_id, clean_session=True)
+                self.client.on_connect = self._on_connect
+                self.client.on_disconnect = self._on_disconnect
+                self.client.on_message = self._on_message
                 
-            logger.info("MQTT连接成功")
-            
-            # 订阅上行topic（从AGV返回的消息）
-            self._subscribe_uplink_topics()
-            
-            return True
-            
-        except Exception as e:
-            logger.error(f"MQTT连接失败: {e}")
-            return False
+                logger.info(f"正在连接MQTT代理: {self.broker_host}:{self.broker_port}")
+                logger.info(f"使用客户端ID: {self.client_id}")
+                
+                self.client.connect(self.broker_host, self.broker_port, 60)
+                self.client.loop_start()
+                
+                # 等待连接建立
+                timeout = 10
+                while not self.is_connected and timeout > 0:
+                    time.sleep(0.1)
+                    timeout -= 0.1
+                    
+                if not self.is_connected:
+                    raise Exception("MQTT连接超时")
+                    
+                logger.info("MQTT连接成功")
+                
+                # 订阅上行topic（从AGV返回的消息）
+                self._subscribe_uplink_topics()
+                
+                return True
+                
+            except Exception as e:
+                logger.error(f"第{attempt + 1}次连接失败: {e}")
+                if attempt < max_retries - 1:
+                    wait_time = (attempt + 1) * 2  # 递增等待时间
+                    logger.info(f"等待{wait_time}秒后重试...")
+                    time.sleep(wait_time)
+                else:
+                    logger.error("所有连接尝试都失败了")
+                    
+        return False
+    
+    def _reconnect(self):
+        """重连逻辑"""
+        max_retries = 3
+        retry_count = 0
+        
+        while retry_count < max_retries and not self.is_connected:
+            try:
+                retry_count += 1
+                wait_time = retry_count * 2  # 递增等待时间
+                logger.info(f"第{retry_count}次重连尝试，等待{wait_time}秒...")
+                time.sleep(wait_time)
+                
+                # 创建新的客户端实例
+                self.client = mqtt.Client(client_id=self.client_id, clean_session=True)
+                self.client.on_connect = self._on_connect
+                self.client.on_disconnect = self._on_disconnect
+                self.client.on_message = self._on_message
+                
+                logger.info(f"使用新客户端ID重连: {self.client_id}")
+                self.client.connect(self.broker_host, self.broker_port, 60)
+                self.client.loop_start()
+                
+                # 等待连接建立
+                timeout = 5
+                while not self.is_connected and timeout > 0:
+                    time.sleep(0.1)
+                    timeout -= 0.1
+                
+                if self.is_connected:
+                    logger.info("重连成功！")
+                    self._subscribe_uplink_topics()
+                    break
+                    
+            except Exception as e:
+                logger.error(f"重连失败: {e}")
+                
+        if not self.is_connected:
+            logger.error("重连失败，请检查网络连接和MQTT服务器状态")
     
     def disconnect(self):
         """断开MQTT连接"""
@@ -120,6 +177,26 @@ class MQTTTestClient:
         """MQTT断开连接回调"""
         self.is_connected = False
         logger.warning(f"MQTT连接断开，返回码: {rc}")
+        
+        # 详细的错误码说明
+        if rc != 0:
+            error_messages = {
+                1: "协议版本错误",
+                2: "客户端标识符无效", 
+                3: "服务器不可用",
+                4: "用户名或密码错误",
+                5: "未授权",
+                7: "客户端ID冲突或协议问题"
+            }
+            if rc in error_messages:
+                logger.error(f"断开原因: {error_messages[rc]}")
+                
+            # 如果是客户端ID冲突，生成新的ID并尝试重连
+            if rc == 7:
+                logger.info("检测到客户端ID冲突，生成新ID并重连...")
+                self.client_id = f"mqtt_test_client_{uuid.uuid4().hex[:8]}"
+                time.sleep(2)  # 等待2秒后重连
+                threading.Thread(target=self._reconnect, daemon=True).start()
     
     def _on_message(self, client, userdata, msg):
         """MQTT消息接收回调"""
@@ -340,13 +417,13 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(description='MQTT测试客户端')
-    parser.add_argument('--broker', default='broker.emqx.io', help='MQTT代理地址')
+    parser.add_argument('--broker', default='172.31.232.152', help='MQTT代理地址')
     parser.add_argument('--port', type=int, default=1883, help='MQTT代理端口')
-    parser.add_argument('--client-id', default='mqtt_test_client', help='MQTT客户端ID')
+    parser.add_argument('--client-id', default=None, help='MQTT客户端ID (默认自动生成唯一ID)')
     
     args = parser.parse_args()
     
-    # 创建MQTT测试客户端
+    # 创建MQTT测试客户端  
     client = MQTTTestClient(args.broker, args.port, args.client_id)
     
     try:

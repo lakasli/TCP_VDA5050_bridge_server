@@ -46854,3 +46854,598 @@
 2025-07-01 14:47:18,925 - __main__ - INFO - MQTT连接建立成功
 2025-07-01 14:47:20,498 - __main__ - WARNING - MQTT连接断开，返回码: 7
 2025-07-01 14:47:21,996 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:35:41,017 - __main__ - INFO - 正在连接MQTT代理: broker.emqx.io:1883
+2025-07-01 20:35:41,570 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:35:41,642 - __main__ - INFO - MQTT连接成功
+2025-07-01 20:35:41,642 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/state
+2025-07-01 20:35:41,642 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/visualization
+2025-07-01 20:35:41,643 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/connection
+2025-07-01 20:35:41,643 - __main__ - INFO - 可用命令:
+2025-07-01 20:35:41,643 - __main__ - INFO -   1 - 发送Order消息
+2025-07-01 20:35:41,643 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-01 20:35:41,643 - __main__ - INFO -   q - 退出
+2025-07-01 20:35:42,771 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:35:44,265 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:35:44,625 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:35:46,119 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:35:46,143 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:35:47,620 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:35:47,704 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:35:49,221 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:35:49,226 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:35:50,712 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:35:50,822 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:35:52,312 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:38:08,798 - __main__ - INFO - 正在连接MQTT代理: broker.emqx.io:1883
+2025-07-01 20:38:09,662 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:38:09,735 - __main__ - INFO - MQTT连接成功
+2025-07-01 20:38:09,735 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/state
+2025-07-01 20:38:09,736 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/visualization
+2025-07-01 20:38:09,736 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/connection
+2025-07-01 20:38:09,736 - __main__ - INFO - 可用命令:
+2025-07-01 20:38:09,736 - __main__ - INFO -   1 - 发送Order消息
+2025-07-01 20:38:09,736 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-01 20:38:09,736 - __main__ - INFO -   q - 退出
+2025-07-01 20:38:11,249 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:38:12,726 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:38:14,307 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:38:15,827 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:38:17,424 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:38:18,927 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:38:20,551 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:38:22,102 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:38:23,673 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:38:25,160 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:38:26,654 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:38:28,152 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:38:29,742 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:38:31,221 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:38:32,767 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:38:34,269 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:38:35,759 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:38:37,269 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:38:38,834 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:38:40,362 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:38:41,931 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:38:43,402 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:38:44,974 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:38:46,466 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:38:48,023 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:38:49,560 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:38:51,125 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:38:52,642 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:38:54,225 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:38:55,770 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:38:57,362 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:38:58,877 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:39:00,426 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:39:01,950 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:39:03,446 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:39:04,943 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:39:06,472 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:39:07,942 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:39:09,478 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:39:10,981 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:39:12,581 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:39:14,079 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:39:15,661 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:39:17,146 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:39:18,710 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:39:20,260 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:39:21,866 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:39:23,375 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:39:24,978 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:39:26,504 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:39:28,141 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:39:29,623 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:39:31,223 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:39:32,730 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:39:34,337 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:39:35,822 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:39:37,350 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:39:38,891 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:39:40,541 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:39:42,027 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:39:43,599 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:39:45,087 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:39:46,657 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:39:48,161 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:39:49,729 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:39:51,230 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:39:52,788 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:39:54,288 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:39:55,902 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:39:57,421 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:39:58,970 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:40:00,449 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:40:01,938 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:40:03,429 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:40:05,034 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:40:06,541 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:40:08,108 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:40:09,700 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:40:11,213 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:40:12,701 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:40:14,306 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:40:15,779 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:40:17,393 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:40:18,940 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:40:20,466 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:40:21,948 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:40:23,555 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:40:25,105 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:40:26,707 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:40:28,183 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:40:29,779 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:40:31,278 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:40:32,860 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:40:34,329 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:40:35,820 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:40:37,325 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:40:38,913 - __main__ - WARNING - MQTT连接断开，返回码: 7
+2025-07-01 20:40:40,494 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:46:19,820 - __main__ - INFO - 正在连接MQTT代理: 172.31.232.152:1883
+2025-07-01 20:46:19,820 - __main__ - INFO - 使用客户端ID: mqttx_test_client_0bce51df
+2025-07-01 20:46:19,898 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:46:19,945 - __main__ - INFO - MQTT连接成功建立
+2025-07-01 20:46:19,945 - __main__ - INFO - 订阅成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-01 20:46:19,946 - __main__ - INFO - 订阅成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-01 20:46:19,946 - __main__ - INFO - 订阅成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-01 20:46:19,946 - __main__ - INFO - 可用命令:
+2025-07-01 20:46:19,946 - __main__ - INFO -   1 - 发送Order消息
+2025-07-01 20:46:19,946 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-01 20:46:19,946 - __main__ - INFO -   q - 退出
+2025-07-01 20:48:02,218 - __main__ - INFO - Order消息发送成功 - Topic: /uagv/v2/SEER/VWED-0010/order
+2025-07-01 20:48:02,218 - __main__ - INFO - Order ID: order_1751374082
+2025-07-01 20:48:02,219 - __main__ - INFO - 节点数量: 3
+2025-07-01 20:49:53,278 - __main__ - INFO - Order消息发送成功 - Topic: /uagv/v2/SEER/VWED-0010/order
+2025-07-01 20:49:53,279 - __main__ - INFO - Order ID: order_1751374193
+2025-07-01 20:49:53,280 - __main__ - INFO - 节点数量: 5
+2025-07-01 20:56:22,643 - __main__ - INFO - 正在连接MQTT代理: 172.31.232.152:1883
+2025-07-01 20:56:22,644 - __main__ - INFO - 使用客户端ID: mqttx_test_client_126c4174
+2025-07-01 20:56:22,713 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 20:56:22,767 - __main__ - INFO - MQTT连接成功建立
+2025-07-01 20:56:22,768 - __main__ - INFO - 订阅成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-01 20:56:22,768 - __main__ - INFO - 订阅成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-01 20:56:22,768 - __main__ - INFO - 订阅成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-01 20:56:22,768 - __main__ - INFO - 可用命令:
+2025-07-01 20:56:22,768 - __main__ - INFO -   1 - 发送Order消息
+2025-07-01 20:56:22,769 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-01 20:56:22,769 - __main__ - INFO -   q - 退出
+2025-07-01 21:06:50,732 - __main__ - INFO - 正在连接MQTT代理: broker.emqx.io:1883
+2025-07-01 21:06:50,733 - __main__ - INFO - 使用客户端ID: mqtt_test_client_1751375210
+2025-07-01 21:06:51,438 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 21:06:51,490 - __main__ - INFO - MQTT连接成功
+2025-07-01 21:06:51,490 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-01 21:06:51,490 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-01 21:06:51,491 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-01 21:06:51,491 - __main__ - INFO - 可用命令:
+2025-07-01 21:06:51,491 - __main__ - INFO -   1 - 发送Order消息
+2025-07-01 21:06:51,491 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-01 21:06:51,491 - __main__ - INFO -   q - 退出
+2025-07-01 21:10:38,018 - __main__ - INFO - 正在连接MQTT代理: broker.emqx.io:1883
+2025-07-01 21:10:38,018 - __main__ - INFO - 使用客户端ID: mqtt_test_client_1751375438
+2025-07-01 21:10:38,567 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 21:10:38,629 - __main__ - INFO - MQTT连接成功
+2025-07-01 21:10:38,630 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-01 21:10:38,630 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-01 21:10:38,630 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-01 21:10:38,631 - __main__ - INFO - 可用命令:
+2025-07-01 21:10:38,631 - __main__ - INFO -   1 - 发送Order消息
+2025-07-01 21:10:38,631 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-01 21:10:38,631 - __main__ - INFO -   q - 退出
+2025-07-01 21:34:07,961 - __main__ - INFO - 正在连接MQTT代理: broker.emqx.io:1883
+2025-07-01 21:34:07,962 - __main__ - INFO - 使用客户端ID: mqtt_test_client
+2025-07-01 21:34:09,643 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 21:34:09,688 - __main__ - INFO - MQTT连接成功
+2025-07-01 21:34:09,689 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-01 21:34:09,689 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-01 21:34:09,690 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-01 21:34:09,690 - __main__ - INFO - 可用命令:
+2025-07-01 21:34:09,690 - __main__ - INFO -   1 - 发送Order消息
+2025-07-01 21:34:09,690 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-01 21:34:09,690 - __main__ - INFO -   q - 退出
+2025-07-01 21:36:30,977 - __main__ - INFO - 正在连接MQTT代理: 172.31.232.152:1883
+2025-07-01 21:36:30,978 - __main__ - INFO - 使用客户端ID: mqtt_test_client_3ba956c3
+2025-07-01 21:36:31,055 - __main__ - INFO - MQTT连接建立成功
+2025-07-01 21:36:31,101 - __main__ - INFO - MQTT连接成功
+2025-07-01 21:36:31,102 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/state
+2025-07-01 21:36:31,102 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/visualization
+2025-07-01 21:36:31,103 - __main__ - INFO - 订阅上行topic: /uagv/v2/Demo_Manufacturer/AGV_001/connection
+2025-07-01 21:36:31,103 - __main__ - INFO - 可用命令:
+2025-07-01 21:36:31,103 - __main__ - INFO -   1 - 发送Order消息
+2025-07-01 21:36:31,103 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-01 21:36:31,103 - __main__ - INFO -   q - 退出
+2025-07-01 21:36:31,828 - __main__ - INFO - 收到AGV消息 - Topic: /uagv/v2/Demo_Manufacturer/AGV_001/state
+2025-07-01 21:36:31,829 - __main__ - INFO - 消息内容: {
+  "headerId": 1751376991,
+  "timestamp": "2025-07-01T13:36:31.765958+00:00",
+  "version": "2.0.0",
+  "manufacturer": "AGV_Manufacturer",
+  "serialNumber": "VWED-0010",
+  "orderId": "order_VWED-0010_1751376991",
+  "orderUpdateId": 0,
+  "lastNodeId": "",
+  "lastNodeSequenceId": 0,
+  "nodeStates": [],
+  "edgeStates": [],
+  "driving": false,
+  "actionStates": [],
+  "batteryState": {
+    "batteryCharge": 81.0,
+    "charging": false
+  },
+  "operatingMode": "AUTOMATIC",
+  "errors": [],
+  "safetyState": {
+    "eStop": "AUTOACK",
+    "fieldViolation": false,
+    "protectiveField": "FREE"
+  },
+  "maps": [
+    {
+      "mapId": "default_map",
+      "mapVersion": "1.0.0",
+      "mapStatus": "ENABLED",
+      "mapDescription": "AGV当前运行地图"
+    }
+  ],
+  "paused": false
+}
+2025-07-01 21:36:31,829 - __main__ - INFO - 收到AGV消息 - Topic: /uagv/v2/Demo_Manufacturer/AGV_001/visualization
+2025-07-01 21:36:31,829 - __main__ - INFO - 消息内容: {
+  "headerId": 1177819461,
+  "timestamp": "2025-07-01T13:36:31.766372+00:00",
+  "version": "2.0.0",
+  "manufacturer": "TCP_AGV",
+  "serialNumber": "VWED-0010"
+}
+2025-07-01 21:36:31,829 - __main__ - INFO - 收到AGV消息 - Topic: /uagv/v2/Demo_Manufacturer/AGV_001/connection
+2025-07-01 21:36:31,830 - __main__ - INFO - 消息内容: {
+  "headerId": 1751376991,
+  "timestamp": "2025-07-01T13:36:31.766635+00:00",
+  "version": "2.0.0",
+  "manufacturer": "SEER",
+  "serialNumber": "VWED-0010",
+  "connectionState": "ONLINE"
+}
+2025-07-01 21:36:32,043 - __main__ - INFO - 收到AGV消息 - Topic: /uagv/v2/Demo_Manufacturer/AGV_001/state
+2025-07-01 21:36:32,043 - __main__ - INFO - 消息内容: {
+  "headerId": 1751376992,
+  "timestamp": "2025-07-01T13:36:32.013312+00:00",
+  "version": "2.0.0",
+  "manufacturer": "AGV_Manufacturer",
+  "serialNumber": "VWED-0010",
+  "orderId": "order_VWED-0010_1751376992",
+  "orderUpdateId": 0,
+  "lastNodeId": "",
+  "lastNodeSequenceId": 0,
+  "nodeStates": [],
+  "edgeStates": [],
+  "driving": false,
+  "actionStates": [],
+  "batteryState": {
+    "batteryCharge": 82.0,
+    "charging": false
+  },
+  "operatingMode": "AUTOMATIC",
+  "errors": [
+    {
+      "errorType": "DEVICE_WARNING",
+      "errorLevel": "WARNING",
+      "errorDescription": "传感器校准提醒"
+    },
+    {
+      "errorType": "DEVICE_WARNING",
+      "errorLevel": "WARNING",
+      "errorDescription": "通信延迟检测"
+    }
+  ],
+  "safetyState": {
+    "eStop": "AUTOACK",
+    "fieldViolation": false,
+    "protectiveField": "FREE"
+  },
+  "maps": [
+    {
+      "mapId": "default_map",
+      "mapVersion": "1.0.0",
+      "mapStatus": "ENABLED",
+      "mapDescription": "AGV当前运行地图"
+    }
+  ],
+  "paused": false
+}
+2025-07-01 21:36:32,044 - __main__ - INFO - 收到AGV消息 - Topic: /uagv/v2/Demo_Manufacturer/AGV_001/visualization
+2025-07-01 21:36:32,044 - __main__ - INFO - 消息内容: {
+  "headerId": 1177819708,
+  "timestamp": "2025-07-01T13:36:32.013673+00:00",
+  "version": "2.0.0",
+  "manufacturer": "TCP_AGV",
+  "serialNumber": "VWED-0010"
+}
+2025-07-01 21:36:32,044 - __main__ - INFO - 收到AGV消息 - Topic: /uagv/v2/Demo_Manufacturer/AGV_001/connection
+2025-07-01 21:36:32,044 - __main__ - INFO - 消息内容: {
+  "headerId": 1751376992,
+  "timestamp": "2025-07-01T13:36:32.013990+00:00",
+  "version": "2.0.0",
+  "manufacturer": "SEER",
+  "serialNumber": "VWED-0010",
+  "connectionState": "ONLINE"
+}
+2025-07-01 21:36:33,834 - __main__ - INFO - 收到AGV消息 - Topic: /uagv/v2/Demo_Manufacturer/AGV_001/state
+2025-07-01 21:36:33,837 - __main__ - INFO - 消息内容: {
+  "headerId": 1751376993,
+  "timestamp": "2025-07-01T13:36:33.771605+00:00",
+  "version": "2.0.0",
+  "manufacturer": "AGV_Manufacturer",
+  "serialNumber": "VWED-0010",
+  "orderId": "order_VWED-0010_1751376993",
+  "orderUpdateId": 0,
+  "lastNodeId": "",
+  "lastNodeSequenceId": 0,
+  "nodeStates": [],
+  "edgeStates": [],
+  "driving": false,
+  "actionStates": [],
+  "batteryState": {
+    "batteryCharge": 81.0,
+    "charging": false
+  },
+  "operatingMode": "AUTOMATIC",
+  "errors": [],
+  "safetyState": {
+    "eStop": "AUTOACK",
+    "fieldViolation": false,
+    "protectiveField": "FREE"
+  },
+  "maps": [
+    {
+      "mapId": "default_map",
+      "mapVersion": "1.0.0",
+      "mapStatus": "ENABLED",
+      "mapDescription": "AGV当前运行地图"
+    }
+  ],
+  "paused": false
+}
+2025-07-01 21:36:33,840 - __main__ - INFO - 收到AGV消息 - Topic: /uagv/v2/Demo_Manufacturer/AGV_001/visualization
+2025-07-01 21:36:33,844 - __main__ - INFO - 消息内容: {
+  "headerId": 1177821470,
+  "timestamp": "2025-07-01T13:36:33.775672+00:00",
+  "version": "2.0.0",
+  "manufacturer": "TCP_AGV",
+  "serialNumber": "VWED-0010"
+}
+2025-07-01 21:36:33,844 - __main__ - INFO - 收到AGV消息 - Topic: /uagv/v2/Demo_Manufacturer/AGV_001/connection
+2025-07-01 21:36:33,844 - __main__ - INFO - 消息内容: {
+  "headerId": 1751376993,
+  "timestamp": "2025-07-01T13:36:33.780178+00:00",
+  "version": "2.0.0",
+  "manufacturer": "SEER",
+  "serialNumber": "VWED-0010",
+  "connectionState": "ONLINE"
+}
+2025-07-01 21:36:33,869 - __main__ - INFO - 收到AGV消息 - Topic: /uagv/v2/Demo_Manufacturer/AGV_001/state
+2025-07-01 21:36:33,871 - __main__ - INFO - 消息内容: {
+  "headerId": 1751376993,
+  "timestamp": "2025-07-01T13:36:33.811725+00:00",
+  "version": "2.0.0",
+  "manufacturer": "AGV_Manufacturer",
+  "serialNumber": "VWED-0010",
+  "orderId": "order_VWED-0010_1751376993",
+  "orderUpdateId": 0,
+  "lastNodeId": "",
+  "lastNodeSequenceId": 0,
+  "nodeStates": [],
+  "edgeStates": [],
+  "driving": false,
+  "actionStates": [],
+  "batteryState": {
+    "batteryCharge": 90.0,
+    "charging": false
+  },
+  "operatingMode": "AUTOMATIC",
+  "errors": [],
+  "safetyState": {
+    "eStop": "AUTOACK",
+    "fieldViolation": false,
+    "protectiveField": "FREE"
+  },
+  "maps": [
+    {
+      "mapId": "default_map",
+      "mapVersion": "1.0.0",
+      "mapStatus": "ENABLED",
+      "mapDescription": "AGV当前运行地图"
+    }
+  ],
+  "paused": false
+}
+2025-07-01 21:36:33,873 - __main__ - INFO - 收到AGV消息 - Topic: /uagv/v2/Demo_Manufacturer/AGV_001/visualization
+2025-07-01 21:36:33,877 - __main__ - INFO - 消息内容: {
+  "headerId": 1177821510,
+  "timestamp": "2025-07-01T13:36:33.815666+00:00",
+  "version": "2.0.0",
+  "manufacturer": "TCP_AGV",
+  "serialNumber": "VWED-0010"
+}
+2025-07-01 21:36:33,880 - __main__ - INFO - 收到AGV消息 - Topic: /uagv/v2/Demo_Manufacturer/AGV_001/connection
+2025-07-01 21:36:33,881 - __main__ - INFO - 消息内容: {
+  "headerId": 1751376993,
+  "timestamp": "2025-07-01T13:36:33.819664+00:00",
+  "version": "2.0.0",
+  "manufacturer": "SEER",
+  "serialNumber": "VWED-0010",
+  "connectionState": "ONLINE"
+}
+2025-07-01 21:36:35,071 - __main__ - INFO - 收到AGV消息 - Topic: /uagv/v2/Demo_Manufacturer/AGV_001/state
+2025-07-01 21:36:35,072 - __main__ - INFO - 消息内容: {
+  "headerId": 1751376995,
+  "timestamp": "2025-07-01T13:36:35.016603+00:00",
+  "version": "2.0.0",
+  "manufacturer": "AGV_Manufacturer",
+  "serialNumber": "VWED-0010",
+  "orderId": "order_VWED-0010_1751376995",
+  "orderUpdateId": 0,
+  "lastNodeId": "",
+  "lastNodeSequenceId": 0,
+  "nodeStates": [],
+  "edgeStates": [],
+  "driving": false,
+  "actionStates": [],
+  "batteryState": {
+    "batteryCharge": 82.0,
+    "charging": false
+  },
+  "operatingMode": "AUTOMATIC",
+  "errors": [
+    {
+      "errorType": "DEVICE_WARNING",
+      "errorLevel": "WARNING",
+      "errorDescription": "传感器校准提醒"
+    },
+    {
+      "errorType": "DEVICE_WARNING",
+      "errorLevel": "WARNING",
+      "errorDescription": "通信延迟检测"
+    }
+  ],
+  "safetyState": {
+    "eStop": "AUTOACK",
+    "fieldViolation": false,
+    "protectiveField": "FREE"
+  },
+  "maps": [
+    {
+      "mapId": "default_map",
+      "mapVersion": "1.0.0",
+      "mapStatus": "ENABLED",
+      "mapDescription": "AGV当前运行地图"
+    }
+  ],
+  "paused": false
+}
+2025-07-01 21:36:35,075 - __main__ - INFO - 收到AGV消息 - Topic: /uagv/v2/Demo_Manufacturer/AGV_001/visualization
+2025-07-01 21:36:35,075 - __main__ - INFO - 消息内容: {
+  "headerId": 1177822712,
+  "timestamp": "2025-07-01T13:36:35.017105+00:00",
+  "version": "2.0.0",
+  "manufacturer": "TCP_AGV",
+  "serialNumber": "VWED-0010"
+}
+2025-07-01 21:36:35,075 - __main__ - INFO - 收到AGV消息 - Topic: /uagv/v2/Demo_Manufacturer/AGV_001/connection
+2025-07-01 21:36:35,076 - __main__ - INFO - 消息内容: {
+  "headerId": 1751376995,
+  "timestamp": "2025-07-01T13:36:35.019270+00:00",
+  "version": "2.0.0",
+  "manufacturer": "SEER",
+  "serialNumber": "VWED-0010",
+  "connectionState": "ONLINE"
+}
+2025-07-01 21:36:35,833 - __main__ - INFO - 收到AGV消息 - Topic: /uagv/v2/Demo_Manufacturer/AGV_001/state
+2025-07-01 21:36:35,834 - __main__ - INFO - 消息内容: {
+  "headerId": 1751376995,
+  "timestamp": "2025-07-01T13:36:35.776939+00:00",
+  "version": "2.0.0",
+  "manufacturer": "AGV_Manufacturer",
+  "serialNumber": "VWED-0010",
+  "orderId": "order_VWED-0010_1751376995",
+  "orderUpdateId": 0,
+  "lastNodeId": "",
+  "lastNodeSequenceId": 0,
+  "nodeStates": [],
+  "edgeStates": [],
+  "driving": false,
+  "actionStates": [],
+  "batteryState": {
+    "batteryCharge": 81.0,
+    "charging": false
+  },
+  "operatingMode": "AUTOMATIC",
+  "errors": [],
+  "safetyState": {
+    "eStop": "AUTOACK",
+    "fieldViolation": false,
+    "protectiveField": "FREE"
+  },
+  "maps": [
+    {
+      "mapId": "default_map",
+      "mapVersion": "1.0.0",
+      "mapStatus": "ENABLED",
+      "mapDescription": "AGV当前运行地图"
+    }
+  ],
+  "paused": false
+}
+2025-07-01 21:36:35,834 - __main__ - INFO - 收到AGV消息 - Topic: /uagv/v2/Demo_Manufacturer/AGV_001/visualization
+2025-07-01 21:36:35,834 - __main__ - INFO - 消息内容: {
+  "headerId": 1177823472,
+  "timestamp": "2025-07-01T13:36:35.777339+00:00",
+  "version": "2.0.0",
+  "manufacturer": "TCP_AGV",
+  "serialNumber": "VWED-0010"
+}
+2025-07-01 21:36:35,835 - __main__ - INFO - 收到AGV消息 - Topic: /uagv/v2/Demo_Manufacturer/AGV_001/connection
+2025-07-01 21:36:35,835 - __main__ - INFO - 消息内容: {
+  "headerId": 1751376995,
+  "timestamp": "2025-07-01T13:36:35.777573+00:00",
+  "version": "2.0.0",
+  "manufacturer": "SEER",
+  "serialNumber": "VWED-0010",
+  "connectionState": "ONLINE"
+}
+2025-07-01 21:36:36,867 - __main__ - INFO - 收到AGV消息 - Topic: /uagv/v2/Demo_Manufacturer/AGV_001/state
+2025-07-01 21:36:36,867 - __main__ - INFO - 消息内容: {
+  "headerId": 1751376996,
+  "timestamp": "2025-07-01T13:36:36.816819+00:00",
+  "version": "2.0.0",
+  "manufacturer": "AGV_Manufacturer",
+  "serialNumber": "VWED-0010",
+  "orderId": "order_VWED-0010_1751376996",
+  "orderUpdateId": 0,
+  "lastNodeId": "",
+  "lastNodeSequenceId": 0,
+  "nodeStates": [],
+  "edgeStates": [],
+  "driving": false,
+  "actionStates": [],
+  "batteryState": {
+    "batteryCharge": 90.0,
+    "charging": false
+  },
+  "operatingMode": "AUTOMATIC",
+  "errors": [],
+  "safetyState": {
+    "eStop": "AUTOACK",
+    "fieldViolation": false,
+    "protectiveField": "FREE"
+  },
+  "maps": [
+    {
+      "mapId": "default_map",
+      "mapVersion": "1.0.0",
+      "mapStatus": "ENABLED",
+      "mapDescription": "AGV当前运行地图"
+    }
+  ],
+  "paused": false
+}
+2025-07-01 21:36:36,868 - __main__ - INFO - 收到AGV消息 - Topic: /uagv/v2/Demo_Manufacturer/AGV_001/visualization
+2025-07-01 21:36:36,868 - __main__ - INFO - 消息内容: {
+  "headerId": 1177824512,
+  "timestamp": "2025-07-01T13:36:36.817310+00:00",
+  "version": "2.0.0",
+  "manufacturer": "TCP_AGV",
+  "serialNumber": "VWED-0010"
+}
+2025-07-01 21:36:36,868 - __main__ - INFO - 收到AGV消息 - Topic: /uagv/v2/Demo_Manufacturer/AGV_001/connection
+2025-07-01 21:36:36,869 - __main__ - INFO - 消息内容: {
+  "headerId": 1751376996,
+  "timestamp": "2025-07-01T13:36:36.817625+00:00",
+  "version": "2.0.0",
+  "manufacturer": "SEER",
+  "serialNumber": "VWED-0010",
+  "connectionState": "ONLINE"
+}

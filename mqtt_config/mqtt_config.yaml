@@ -4,7 +4,7 @@
 # MQTT服务器连接配置
 mqtt_server:
   # MQTT服务器地址 - 使用公共的EMQX服务器
-  host: "broker.emqx.io"
+  host: "172.31.232.152"
   # MQTT服务器端口
   port: 1883
   # 连接超时时间(秒)
@@ -32,16 +32,22 @@ mqtt_options:
   # QoS等级 (0, 1, 2)
   qos_level: 1
 
-# VDA5050主题配置
+# VDA5050主题配置 (符合VDA5050标准格式)
 vda5050_topics:
-  # 订单主题模式 - {vehicle_id}将被替换为实际的机器人ID
-  order_topic_pattern: "vda5050/{vehicle_id}/order"
+  # 主题前缀
+  topic_prefix: "uagv/v2"
+  # 订单主题模式 - {manufacturer}/{serial_number}将被替换为实际值
+  order_topic_pattern: "uagv/v2/{manufacturer}/{serial_number}/order"
   # 即时动作主题模式
-  instant_actions_topic_pattern: "vda5050/{vehicle_id}/instantActions"
+  instant_actions_topic_pattern: "uagv/v2/{manufacturer}/{serial_number}/instantActions"
   # 状态主题模式  
-  state_topic_pattern: "vda5050/{vehicle_id}/state"
+  state_topic_pattern: "uagv/v2/{manufacturer}/{serial_number}/state"
   # 可视化主题模式
-  visualization_topic_pattern: "vda5050/{vehicle_id}/visualization"
+  visualization_topic_pattern: "uagv/v2/{manufacturer}/{serial_number}/visualization"
+  # 连接主题模式
+  connection_topic_pattern: "uagv/v2/{manufacturer}/{serial_number}/connection"
+  # 产品说明书主题模式
+  factsheet_topic_pattern: "uagv/v2/{manufacturer}/{serial_number}/factsheet"
   
 # MQTT消息配置
 message_config:

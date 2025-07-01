@@ -264,13 +264,12 @@ class TCPServerManager:
         
         # TCP端口映射（根据实际AGV配置）
         self.tcp_ports = {
-            19206: 'pick_drop',      # pick/drop动作
-            19206: 'translate',       # translate动作  
-            19207: 'turn',           # turn动作
-            19208: 'reloc',          # reloc动作
-            19209: 'pause',          # pause动作
-            19210: 'other',          # 其他动作
-            19301: 'state'           # 状态上报
+            19204: '状态 API',      
+            19205: '控制 API',     
+            19206: '导航 API',          
+            19207: '配置 API',         
+            19210: '其他 API',          
+            19301: '推送 API'          
         }
         
         # 控制权抢夺配置

@@ -43,11 +43,12 @@ echo.
 echo 已启动的组件：
 echo   1. MQTT-TCP桥接服务器 (端口: 19205-19210, 19301)
 echo   2. 虚拟AGV模拟器 (模拟VWED-0010)
-echo   3. MQTT测试客户端 (连接到broker.emqx.io)
+echo   3. MQTT测试客户端 (连接到broker.emqx.io:1883)
 echo.
 echo 📱 MQTTX客户端配置建议：
 echo   服务器: broker.emqx.io:1883
-echo   客户端ID: mqttx_test_client
+echo   客户端ID: vda5050
+echo   协议: MQTT 3.1.1
 echo.
 echo 📡 订阅以下Topic接收AGV状态：
 echo   /uagv/v2/SEER/VWED-0010/state

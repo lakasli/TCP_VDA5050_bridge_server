@@ -160,38 +160,27 @@ protocol_adapters:
       # 数据推送端口
       data_push: 19301
     
-    # 消息类型映射
+    # 消息类型映射 (完整的ACTION_CONFIG映射)
     message_type_mapping:
+      # VDA5050即时动作到TCP协议的完整映射
+      instant_actions:
+        pick: {type: 3066, port: 19206, format: "move_task_list"}
+        drop: {type: 3066, port: 19206, format: "move_task_list"}
+        startPause: {type: 3001, port: 19206, format: "empty_data"}
+        stopPause: {type: 3002, port: 19206, format: "empty_data"}
+        cancelOrder: {type: 3003, port: 19206, format: "empty_data"}
+        reloc: {type: 2002, port: 19205, format: "single_field"}
+        cancelReloc: {type: 2004, port: 19205, format: "empty_data"}
+        clearErrors: {type: 4009, port: 19207, format: "single_field"}
+        rotateLoad: {type: 3057, port: 19206, format: "single_field"}
+        softEmc: {type: 6004, port: 19210, format: "single_field"}
+        turn: {type: 3056, port: 19206, format: "single_field"}
+        translate: {type: 3055, port: 19206, format: "single_field"}
+      
       # 控制权管理
       authority_control:
         grab_authority: {type: 4005, port: 19207, format: "single_field"}
         release_authority: {type: 4006, port: 19207, format: "empty_data"}
-      
-      # 导航控制
-      navigation_control:
-        relocation: {type: 2002, port: 19205, format: "position_data"}
-        cancel_relocation: {type: 2004, port: 19205, format: "empty_data"}
-      
-      # 运动控制
-      motion_control:
-        translate: {type: 3055, port: 19206, format: "single_field"}
-        turn: {type: 3056, port: 19206, format: "single_field"}
-        rotate_load: {type: 3057, port: 19206, format: "single_field"}
-        jack_operation: {type: 3066, port: 19206, format: "move_task_list"}
-      
-      # 任务控制
-      task_control:
-        start_pause: {type: 3001, port: 19206, format: "empty_data"}
-        stop_pause: {type: 3002, port: 19206, format: "empty_data"}
-        cancel_order: {type: 3003, port: 19206, format: "empty_data"}
-      
-      # 错误管理
-      error_management:
-        clear_errors: {type: 4009, port: 19207, format: "single_field"}
-      
-      # 安全控制
-      safety_control:
-        soft_emergency: {type: 6004, port: 19210, format: "boolean_field"}
       
       # 状态推送
       status_push:
@@ -203,7 +192,9 @@ vda5050_actions:
   order_control:
     cancelOrder:
       supported: true
-      tcp_mapping: "task_control.cancel_order"
+      tcp_port: 19206
+      tcp_message_type: 3003
+      tcp_format: "empty_data"
       blocking_type: "HARD"
       description: "取消当前订单"
       
@@ -211,12 +202,16 @@ vda5050_actions:
   pause_control:
     startPause:
       supported: true
-      tcp_mapping: "task_control.start_pause"
+      tcp_port: 19206
+      tcp_message_type: 3001
+      tcp_format: "empty_data"
       blocking_type: "HARD"
       description: "暂停任务执行"
     stopPause:
-      supported: true  
-      tcp_mapping: "task_control.stop_pause"
+      supported: true
+      tcp_port: 19206
+      tcp_message_type: 3002  
+      tcp_format: "empty_data"
       blocking_type: "HARD"
       description: "恢复任务执行"
   
@@ -224,7 +219,9 @@ vda5050_actions:
   safety_control:
     softEmc:
       supported: true
-      tcp_mapping: "safety_control.soft_emergency"
+      tcp_port: 19210
+      tcp_message_type: 6004
+      tcp_format: "single_field"
       blocking_type: "HARD"
       description: "软件紧急停止"
       parameters:
@@ -233,10 +230,17 @@ vda5050_actions:
           required: true
           description: "急停状态"
     clearErrors:
-      supported: true
-      tcp_mapping: "error_management.clear_errors"
+      supported: true  
+      tcp_port: 19207
+      tcp_message_type: 4009
+      tcp_format: "single_field"
       blocking_type: "SOFT"
       description: "清除错误状态"
+      parameters:
+        - name: "error_codes"
+          type: "array"
+          required: false
+          description: "要清除的错误代码列表"
   
   # 信息请求
   information_request:
@@ -253,12 +257,18 @@ vda5050_actions:
   
   # 运动控制
   motion_control:
-    motion:
+    translate:
       supported: true
-      tcp_mapping: "motion_control.translate"
+      tcp_port: 19206
+      tcp_message_type: 3055
+      tcp_format: "single_field"
       blocking_type: "HARD"
-      description: "开环运动控制"
+      description: "平移运动"
       parameters:
+        - name: "dist"
+          type: "number"
+          required: true
+          description: "移动距离"
         - name: "vx"
           type: "number"
           required: false
@@ -267,23 +277,15 @@ vda5050_actions:
           type: "number"
           required: false
           description: "Y轴速度"
-        - name: "w"
-          type: "number"
+        - name: "mode"
+          type: "integer"
           required: false
-          description: "角速度"
-    translate:
-      supported: true
-      tcp_mapping: "motion_control.translate"
-      blocking_type: "HARD"
-      description: "平移运动"
-      parameters:
-        - name: "dist"
-          type: "number"
-          required: true
-          description: "移动距离"
+          description: "运动模式"
     turn:
       supported: true
-      tcp_mapping: "motion_control.turn"
+      tcp_port: 19206
+      tcp_message_type: 3056
+      tcp_format: "single_field"
       blocking_type: "HARD"
       description: "转向运动"
       parameters:
@@ -291,25 +293,33 @@ vda5050_actions:
           type: "number"
           required: true
           description: "转向角度"
-    rotateAgv:
-      supported: true
-      tcp_mapping: "motion_control.turn"
-      blocking_type: "HARD"
-      description: "AGV原地旋转"
-    stopAgv:
-      supported: true
-      tcp_mapping: "task_control.start_pause"
-      blocking_type: "HARD"
-      description: "停止AGV运动"
+        - name: "vw"
+          type: "number"
+          required: false
+          description: "角速度"
+        - name: "mode"
+          type: "integer"
+          required: false
+          description: "转向模式"
   
   # 定位控制
   localization_control:
     reloc:
       supported: true
-      tcp_mapping: "navigation_control.relocation"
+      tcp_port: 19205
+      tcp_message_type: 2002
+      tcp_format: "single_field"
       blocking_type: "HARD"
       description: "重定位操作"
       parameters:
+        - name: "isAuto"
+          type: "boolean"
+          required: false
+          description: "是否自动重定位"
+        - name: "home"
+          type: "boolean"
+          required: false
+          description: "是否回到原点"
         - name: "x"
           type: "number"
           required: false
@@ -322,27 +332,25 @@ vda5050_actions:
           type: "number"
           required: false
           description: "目标角度"
+        - name: "length"
+          type: "number"
+          required: false
+          description: "长度参数"
     cancelReloc:
       supported: true
-      tcp_mapping: "navigation_control.cancel_relocation"
+      tcp_port: 19205
+      tcp_message_type: 2004
+      tcp_format: "empty_data"
       blocking_type: "HARD"
       description: "取消重定位"
-    confirmLoc:
-      supported: false
-      tcp_mapping: null
-      blocking_type: "SOFT"
-      description: "确认位置"
-    initPosition:
-      supported: false
-      tcp_mapping: null
-      blocking_type: "HARD"
-      description: "初始化位置"
   
   # 货物操作
   load_handling:
     pick:
       supported: true
-      tcp_mapping: "motion_control.jack_operation"
+      tcp_port: 19206
+      tcp_message_type: 3066
+      tcp_format: "move_task_list"
       blocking_type: "HARD"
       description: "抬升货物"
       parameters:
@@ -354,9 +362,19 @@ vda5050_actions:
           type: "number"
           required: false
           description: "结束高度"
+        - name: "loadId"
+          type: "string"
+          required: false
+          description: "载荷ID"
+        - name: "loadType"
+          type: "string"
+          required: false
+          description: "载荷类型"
     drop:
       supported: true
-      tcp_mapping: "motion_control.jack_operation"
+      tcp_port: 19206
+      tcp_message_type: 3066
+      tcp_format: "move_task_list"
       blocking_type: "HARD"
       description: "放下货物"
       parameters:
@@ -368,16 +386,38 @@ vda5050_actions:
           type: "number"
           required: false
           description: "结束高度"
+        - name: "loadId"
+          type: "string"
+          required: false
+          description: "载荷ID"
+        - name: "loadType"
+          type: "string"
+          required: false
+          description: "载荷类型"
     rotateLoad:
       supported: true
-      tcp_mapping: "motion_control.rotate_load"
+      tcp_port: 19206
+      tcp_message_type: 3057
+      tcp_format: "single_field"
       blocking_type: "HARD"
       description: "旋转货物"
       parameters:
-        - name: "angle"
+        - name: "increase_spin_angle"
           type: "number"
-          required: true
-          description: "旋转角度"
+          required: false
+          description: "增量旋转角度"
+        - name: "robot_spin_angle"
+          type: "number"
+          required: false
+          description: "机器人旋转角度"
+        - name: "global_spin_angle"
+          type: "number"
+          required: false
+          description: "全局旋转角度"
+        - name: "spin_direction"
+          type: "integer"
+          required: false
+          description: "旋转方向 (1/-1)"
   
   # 系统控制
   system_control:

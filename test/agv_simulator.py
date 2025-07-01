@@ -51,6 +51,8 @@ class AGVSimulator:
             'hardware_version': 'v1.0.0'
         }
         
+        logger.info(f"AGV模拟器配置 - 制造商: {self.robot_info['manufacturer']}, 序列号: {self.robot_info['serial_number']}")
+        
         # 物理参数（对应配置文件physical_parameters）
         self.physical_params = {
             'speed_min': 0.0,
@@ -602,12 +604,26 @@ class AGVSimulator:
                     
                     try:
                         self.connections[state_port].send(message.encode('utf-8'))
-                        logger.info("状态数据已发送")
+                        logger.info(f"状态数据已发送到TCP端口{state_port} - 位置: ({self.agv_state['position']['x']:.2f}, {self.agv_state['position']['y']:.2f}), 电量: {self.agv_state['battery_level']:.1f}%")
                     except Exception as e:
                         logger.error(f"发送状态数据失败: {e}")
+                        # 尝试重新连接状态端口
+                        if state_port in self.connections:
+                            try:
+                                self.connections[state_port].close()
+                            except:
+                                pass
+                            del self.connections[state_port]
+                        
+                        # 重新连接
+                        threading.Thread(
+                            target=self._connect_to_port,
+                            args=(state_port, 'state'),
+                            daemon=True
+                        ).start()
                 
-                # 每2秒上报一次状态
-                time.sleep(2)
+                # 每3秒上报一次状态
+                time.sleep(3)
                 
             except Exception as e:
                 logger.error(f"状态上报异常: {e}")

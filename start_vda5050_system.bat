@@ -20,7 +20,7 @@ REM 创建日志目录
 if not exist "logs" mkdir logs
 echo [信息] 日志文件将保存到 logs/ 目录中
 
-echo [步骤1/2] 启动MQTT-TCP桥接服务器...
+echo 启动MQTT-TCP桥接服务器...
 echo [信息] 服务器将监听以下端口等待真实AGV连接：
 echo         - 19205: 重定位控制
 echo         - 19206: 运动控制  
@@ -32,9 +32,6 @@ start "VDA5050 MQTT-TCP Bridge Server" cmd /k "python mqtt_tcp_bridge_server.py"
 
 echo [信息] 等待8秒让TCP服务器完全启动...
 timeout /t 8 /nobreak >nul
-
-echo [步骤2/2] 启动MQTT测试客户端...
-start "MQTT Test Client" cmd /k "python mqtt_test_client.py"
 
 echo.
 echo =================================================

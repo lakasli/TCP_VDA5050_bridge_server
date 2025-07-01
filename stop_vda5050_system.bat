@@ -27,7 +27,7 @@ for /f "tokens=2 delims=," %%i in ('tasklist /fi "windowtitle eq MQTT Test Clien
 REM 停止所有相关的Python进程（谨慎操作）
 echo [信息] 正在检查Python进程...
 for /f "tokens=1,2" %%a in ('tasklist /fi "imagename eq python.exe" /fo table /nh') do (
-    for /f "tokens=*" %%c in ('wmic process where "ProcessId=%%b" get CommandLine /value ^| findstr "mqtt_tcp_bridge_server\|mqtt_test_client"') do (
+    for /f "tokens=*" %%c in ('wmic process where "ProcessId=%%b" get CommandLine /value ^| findstr "mqtt_tcp_bridge_server"') do (
         echo [信息] 正在停止相关Python进程 %%b
         taskkill /f /pid %%b >nul 2>&1
     )

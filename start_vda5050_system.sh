@@ -25,23 +25,11 @@ echo -e "${BLUE}       VDA5050 真实AGV连接系统启动脚本${NC}"
 echo -e "${BLUE}=================================================${NC}"
 echo ""
 
-# 检查工作目录
-echo -e "${CYAN}[检查] 验证工作目录...${NC}"
-if [ ! -f "mqtt_tcp_bridge_server.py" ] || [ ! -f "mqtt_test_client.py" ]; then
-    echo -e "${RED}[错误] 未在项目根目录运行此脚本${NC}"
-    echo -e "${RED}[当前目录] $(pwd)${NC}"
-    echo -e "${RED}[建议] 请先切换到项目根目录，然后运行:${NC}"
-    echo -e "${RED}       cd /path/to/tcp_vda5050_server${NC}"
-    echo -e "${RED}       ./start_vda5050_system.sh${NC}"
-    exit 1
-fi
-
 # 显示当前目录
 if [ "$DEBUG_MODE" = true ]; then
     echo -e "${CYAN}[调试] 当前工作目录: $(pwd)${NC}"
     echo -e "${CYAN}[调试] 主要文件检查:${NC}"
     echo -e "${CYAN}       mqtt_tcp_bridge_server.py: $([ -f mqtt_tcp_bridge_server.py ] && echo '✓' || echo '✗')${NC}"
-    echo -e "${CYAN}       mqtt_test_client.py: $([ -f mqtt_test_client.py ] && echo '✓' || echo '✗')${NC}"
     echo -e "${CYAN}       server_config.json: $([ -f server_config.json ] && echo '✓' || echo '✗')${NC}"
 fi
 
@@ -263,8 +251,6 @@ sleep 8
 
 echo -e "${BLUE}[步骤2/2] 启动MQTT测试客户端...${NC}"
 
-# 启动MQTT测试客户端
-start_service "MQTT Test Client" "mqtt_test_client.py" "$PID_DIR/test_client.pid"
 
 echo ""
 echo -e "${GREEN}=================================================${NC}"
@@ -314,7 +300,6 @@ echo -e "${YELLOW}  2. 检查Python环境和依赖：${NC}"
 echo -e "${YELLOW}     python3 test_python_env.py${NC}"
 echo -e "${YELLOW}  3. 手动测试Python脚本：${NC}"
 echo -e "${YELLOW}     python3 mqtt_tcp_bridge_server.py${NC}"
-echo -e "${YELLOW}     python3 mqtt_test_client.py${NC}"
 echo -e "${YELLOW}  4. 查看完整日志：${NC}"
 echo -e "${YELLOW}     cat logs/mqtt-tcp\\ bridge\\ server.log${NC}"
 echo -e "${YELLOW}  5. 检查防火墙设置：${NC}"

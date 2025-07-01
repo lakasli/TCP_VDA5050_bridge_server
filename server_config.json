@@ -1,7 +1,7 @@
 {
     "mqtt": {
-        "name": "vda5050",
-        "host": "mqtt://broker.emqx.io",
+        "name": "test_server",
+        "host": "mqtt://172.31.232.152",
         "port": 1883,
         "client_id": "mqttx_f927dcb3",
         "username": "",
@@ -16,20 +16,35 @@
         "vehicle_name": "TestAGV"
     },
     "tcp_ports": {
-        "pick_drop": 19206,
-        "translate": 19206,
-        "turn": 19207,
-        "reloc": 19208,
-        "pause": 19209,
-        "other": 19210,
-        "state": 19301
+        "state_reporting": 19301,
+        "command_control": {
+            "relocation": 19205,
+            "movement": 19206,
+            "authority": 19207,
+            "safety": 19210
+        },
+        "action_types": {
+            "pick": {"port": 19206, "message_type": 3066},
+            "drop": {"port": 19206, "message_type": 3066},
+            "startPause": {"port": 19206, "message_type": 3001},
+            "stopPause": {"port": 19206, "message_type": 3002},
+            "cancelOrder": {"port": 19206, "message_type": 3003},
+            "reloc": {"port": 19205, "message_type": 2002},
+            "cancelReloc": {"port": 19205, "message_type": 2004},
+            "clearErrors": {"port": 19207, "message_type": 4009},
+            "rotateLoad": {"port": 19206, "message_type": 3057},
+            "softEmc": {"port": 19210, "message_type": 6004},
+            "turn": {"port": 19206, "message_type": 3056},
+            "translate": {"port": 19206, "message_type": 3055}
+        }
     },
     "vda5050_topics": {
-        "order": "/uagv/v2/{manufacturer}/{serial_number}/order",
-        "instantActions": "/uagv/v2/{manufacturer}/{serial_number}/instantActions",
-        "state": "/uagv/v2/{manufacturer}/{serial_number}/state",
-        "visualization": "/uagv/v2/{manufacturer}/{serial_number}/visualization",
-        "connection": "/uagv/v2/{manufacturer}/{serial_number}/connection"
+        "order": "uagv/v2/{manufacturer}/{serial_number}/order",
+        "instantActions": "uagv/v2/{manufacturer}/{serial_number}/instantActions",
+        "state": "uagv/v2/{manufacturer}/{serial_number}/state",
+        "visualization": "uagv/v2/{manufacturer}/{serial_number}/visualization",
+        "connection": "uagv/v2/{manufacturer}/{serial_number}/connection",
+        "factsheet": "uagv/v2/{manufacturer}/{serial_number}/factsheet"
     },
     "server": {
         "log_level": "INFO",
