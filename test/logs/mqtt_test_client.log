@@ -53,3 +53,399 @@
 2025-07-02 00:11:19,926 - __main__ - INFO -   1 - 发送Order消息
 2025-07-02 00:11:19,926 - __main__ - INFO -   2 - 发送InstantActions消息
 2025-07-02 00:11:19,926 - __main__ - INFO -   q - 退出
+2025-07-02 09:19:32,358 - __main__ - INFO - 正在连接MQTT代理: broker.emqx.io:1883
+2025-07-02 09:19:32,359 - __main__ - INFO - 使用客户端ID: mqtt_test_client_1751419172
+2025-07-02 09:19:33,107 - __main__ - INFO - MQTT连接建立成功
+2025-07-02 09:19:33,168 - __main__ - INFO - MQTT连接成功
+2025-07-02 09:19:33,170 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 09:19:33,171 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 09:19:33,171 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 09:19:33,172 - __main__ - INFO - 可用命令:
+2025-07-02 09:19:33,172 - __main__ - INFO -   1 - 发送Order消息
+2025-07-02 09:19:33,173 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-02 09:19:33,173 - __main__ - INFO -   q - 退出
+2025-07-02 09:19:57,346 - __main__ - INFO - 正在连接MQTT代理: broker.emqx.io:1883
+2025-07-02 09:19:57,346 - __main__ - INFO - 使用客户端ID: mqtt_test_client_1751419197
+2025-07-02 09:19:57,870 - __main__ - INFO - MQTT连接建立成功
+2025-07-02 09:19:57,928 - __main__ - INFO - MQTT连接成功
+2025-07-02 09:19:57,929 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 09:19:57,930 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 09:19:57,930 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 09:19:57,931 - __main__ - INFO - 可用命令:
+2025-07-02 09:19:57,931 - __main__ - INFO -   1 - 发送Order消息
+2025-07-02 09:19:57,931 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-02 09:19:57,932 - __main__ - INFO -   q - 退出
+2025-07-02 09:20:43,422 - __main__ - INFO - 正在连接MQTT代理: broker.emqx.io:1883
+2025-07-02 09:20:43,422 - __main__ - INFO - 使用客户端ID: mqtt_test_client_1751419243
+2025-07-02 09:20:44,506 - __main__ - INFO - MQTT连接建立成功
+2025-07-02 09:20:44,574 - __main__ - INFO - MQTT连接成功
+2025-07-02 09:20:44,575 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 09:20:44,577 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 09:20:44,578 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 09:20:44,578 - __main__ - INFO - 可用命令:
+2025-07-02 09:20:44,579 - __main__ - INFO -   1 - 发送Order消息
+2025-07-02 09:20:44,579 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-02 09:20:44,579 - __main__ - INFO -   q - 退出
+2025-07-02 09:23:41,208 - __main__ - INFO - Order消息发送成功 - Topic: /uagv/v2/SEER/VWED-0010/order
+2025-07-02 09:23:41,209 - __main__ - INFO - Order内容: {
+  "headerId": 9532,
+  "timestamp": "2025-07-02T01:23:41.208037+00:00",
+  "version": "2.0.0",
+  "manufacturer": "SEER",
+  "serialNumber": "VWED-0010",
+  "orderId": "order_1751419421",
+  "orderUpdateId": 0,
+  "zoneSetId": "zone_set_1",
+  "nodes": [
+    {
+      "nodeId": "node_1",
+      "sequenceId": 0,
+      "released": true,
+      "nodePosition": {
+        "x": 72.40584390873121,
+        "y": 16.90111125260345,
+        "theta": 285.21984162662795,
+        "allowed_deviation_xy": 0.5,
+        "allowed_deviation_theta": 5.0
+      },
+      "actions": []
+    },
+    {
+      "nodeId": "node_2",
+      "sequenceId": 1,
+      "released": true,
+      "nodePosition": {
+        "x": 62.614184519429095,
+        "y": 70.42554054370737,
+        "theta": 136.53357892067265,
+        "allowed_deviation_xy": 0.5,
+        "allowed_deviation_theta": 5.0
+      },
+      "actions": [
+        {
+          "actionType": "drop",
+          "actionId": "action_1_drop",
+          "actionDescription": "Execute drop operation",
+          "blocking_type": "HARD",
+          "actionParameters": [
+            {
+              "key": "stationType",
+              "value": "conveyor"
+            },
+            {
+              "key": "loadId",
+              "value": "load_5354"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "nodeId": "node_3",
+      "sequenceId": 2,
+      "released": true,
+      "nodePosition": {
+        "x": 77.05009109861679,
+        "y": 98.19689881121252,
+        "theta": 43.15626652532484,
+        "allowed_deviation_xy": 0.5,
+        "allowed_deviation_theta": 5.0
+      },
+      "actions": []
+    },
+    {
+      "nodeId": "node_4",
+      "sequenceId": 3,
+      "released": true,
+      "nodePosition": {
+        "x": 34.8335589073825,
+        "y": 70.84834949215302,
+        "theta": 151.05311017314006,
+        "allowed_deviation_xy": 0.5,
+        "allowed_deviation_theta": 5.0
+      },
+      "actions": []
+    },
+    {
+      "nodeId": "node_5",
+      "sequenceId": 4,
+      "released": true,
+      "nodePosition": {
+        "x": 13.740053257940454,
+        "y": 2.990017777415188,
+        "theta": 25.84266015530857,
+        "allowed_deviation_xy": 0.5,
+        "allowed_deviation_theta": 5.0
+      },
+      "actions": []
+    }
+  ],
+  "edges": [
+    {
+      "edgeId": "edge_1_2",
+      "sequenceId": 0,
+      "released": true,
+      "startNodeId": "node_1",
+      "endNodeId": "node_2",
+      "maxSpeed": 2.687991981813094,
+      "actions": []
+    },
+    {
+      "edgeId": "edge_2_3",
+      "sequenceId": 1,
+      "released": true,
+      "startNodeId": "node_2",
+      "endNodeId": "node_3",
+      "maxSpeed": 1.0147873570594566,
+      "actions": []
+    },
+    {
+      "edgeId": "edge_3_4",
+      "sequenceId": 2,
+      "released": true,
+      "startNodeId": "node_3",
+      "endNodeId": "node_4",
+      "maxSpeed": 1.9139076843896459,
+      "actions": []
+    },
+    {
+      "edgeId": "edge_4_5",
+      "sequenceId": 3,
+      "released": true,
+      "startNodeId": "node_4",
+      "endNodeId": "node_5",
+      "maxSpeed": 2.0507348341586598,
+      "actions": []
+    }
+  ]
+}
+2025-07-02 09:23:54,711 - __main__ - INFO - InstantActions消息发送成功 - Topic: /uagv/v2/SEER/VWED-0010/instantActions
+2025-07-02 09:23:54,712 - __main__ - INFO - Actions内容: {
+  "headerId": 1453,
+  "timestamp": "2025-07-02T01:23:54.710569+00:00",
+  "version": "2.0.0",
+  "manufacturer": "SEER",
+  "serialNumber": "VWED-0010",
+  "actions": [
+    {
+      "actionType": "translate",
+      "actionId": "instant_translate_1751419434_0",
+      "actionDescription": "Instant translate action",
+      "blocking_type": "HARD",
+      "actionParameters": [
+        {
+          "key": "x",
+          "value": "91.75422462847332"
+        },
+        {
+          "key": "y",
+          "value": "3.0708303930799263"
+        },
+        {
+          "key": "theta",
+          "value": "67.2094350902406"
+        }
+      ]
+    },
+    {
+      "actionType": "clearErrors",
+      "actionId": "instant_clearErrors_1751419434_1",
+      "actionDescription": "Instant clearErrors action",
+      "blocking_type": "HARD"
+    }
+  ]
+}
+2025-07-02 09:36:16,441 - __main__ - INFO - 正在连接MQTT代理: broker.emqx.io:1883
+2025-07-02 09:36:16,441 - __main__ - INFO - 使用客户端ID: mqtt_test_client_1751420176
+2025-07-02 09:36:17,161 - __main__ - INFO - MQTT连接建立成功
+2025-07-02 09:36:17,238 - __main__ - INFO - MQTT连接成功
+2025-07-02 09:36:17,238 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 09:36:17,239 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 09:36:17,239 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 09:36:17,239 - __main__ - INFO - 可用命令:
+2025-07-02 09:36:17,240 - __main__ - INFO -   1 - 发送Order消息
+2025-07-02 09:36:17,240 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-02 09:36:17,240 - __main__ - INFO -   q - 退出
+2025-07-02 09:36:30,792 - __main__ - INFO - Order消息发送成功 - Topic: /uagv/v2/SEER/VWED-0010/order
+2025-07-02 09:36:30,793 - __main__ - INFO - Order内容: {
+  "headerId": 7136,
+  "timestamp": "2025-07-02T01:36:30.791893+00:00",
+  "version": "2.0.0",
+  "manufacturer": "SEER",
+  "serialNumber": "VWED-0010",
+  "orderId": "order_1751420190",
+  "orderUpdateId": 0,
+  "zoneSetId": "zone_set_1",
+  "nodes": [
+    {
+      "nodeId": "node_1",
+      "sequenceId": 0,
+      "released": true,
+      "nodePosition": {
+        "x": 6.1267348948745965,
+        "y": 95.61679704962944,
+        "theta": 260.00822783774487,
+        "allowed_deviation_xy": 0.5,
+        "allowed_deviation_theta": 5.0
+      },
+      "actions": []
+    },
+    {
+      "nodeId": "node_2",
+      "sequenceId": 1,
+      "released": true,
+      "nodePosition": {
+        "x": 26.63755267117963,
+        "y": 72.84185727764572,
+        "theta": 239.36398692119857,
+        "allowed_deviation_xy": 0.5,
+        "allowed_deviation_theta": 5.0
+      },
+      "actions": [
+        {
+          "actionType": "pick",
+          "actionId": "action_1_pick",
+          "actionDescription": "Execute pick operation",
+          "blocking_type": "HARD",
+          "actionParameters": [
+            {
+              "key": "stationType",
+              "value": "conveyor"
+            },
+            {
+              "key": "loadId",
+              "value": "load_3587"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "nodeId": "node_3",
+      "sequenceId": 2,
+      "released": true,
+      "nodePosition": {
+        "x": 37.94146736606895,
+        "y": 19.454707457198683,
+        "theta": 103.97791830248353,
+        "allowed_deviation_xy": 0.5,
+        "allowed_deviation_theta": 5.0
+      },
+      "actions": []
+    }
+  ],
+  "edges": [
+    {
+      "edgeId": "edge_1_2",
+      "sequenceId": 0,
+      "released": true,
+      "startNodeId": "node_1",
+      "endNodeId": "node_2",
+      "maxSpeed": 2.7017207670618895,
+      "actions": []
+    },
+    {
+      "edgeId": "edge_2_3",
+      "sequenceId": 1,
+      "released": true,
+      "startNodeId": "node_2",
+      "endNodeId": "node_3",
+      "maxSpeed": 1.1473229072704265,
+      "actions": []
+    }
+  ]
+}
+2025-07-02 09:49:49,394 - __main__ - INFO - 正在连接MQTT代理: broker.emqx.io:1883
+2025-07-02 09:49:49,394 - __main__ - INFO - 使用客户端ID: mqtt_test_client_1751420989
+2025-07-02 09:49:50,101 - __main__ - INFO - MQTT连接建立成功
+2025-07-02 09:49:50,177 - __main__ - INFO - MQTT连接成功
+2025-07-02 09:49:50,178 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 09:49:50,178 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 09:49:50,178 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 09:49:50,178 - __main__ - INFO - 可用命令:
+2025-07-02 09:49:50,179 - __main__ - INFO -   1 - 发送Order消息
+2025-07-02 09:49:50,179 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-02 09:49:50,179 - __main__ - INFO -   q - 退出
+2025-07-02 10:05:41,263 - __main__ - INFO - 正在连接MQTT代理: broker.emqx.io:1883
+2025-07-02 10:05:41,263 - __main__ - INFO - 使用客户端ID: mqtt_test_client_1751421941
+2025-07-02 10:05:41,953 - __main__ - INFO - MQTT连接建立成功
+2025-07-02 10:05:42,022 - __main__ - INFO - MQTT连接成功
+2025-07-02 10:05:42,025 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 10:05:42,026 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 10:05:42,027 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 10:05:42,027 - __main__ - INFO - 可用命令:
+2025-07-02 10:05:42,027 - __main__ - INFO -   1 - 发送Order消息
+2025-07-02 10:05:42,028 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-02 10:05:42,028 - __main__ - INFO -   q - 退出
+2025-07-02 10:06:35,977 - __main__ - INFO - Order消息发送成功 - Topic: /uagv/v2/SEER/VWED-0010/order
+2025-07-02 10:06:35,977 - __main__ - INFO - Order内容: {
+  "headerId": 6976,
+  "timestamp": "2025-07-02T02:06:35.976353+00:00",
+  "version": "2.0.0",
+  "manufacturer": "SEER",
+  "serialNumber": "VWED-0010",
+  "orderId": "order_1751421995",
+  "orderUpdateId": 0,
+  "zoneSetId": "zone_set_1",
+  "nodes": [
+    {
+      "nodeId": "node_1",
+      "sequenceId": 0,
+      "released": true,
+      "nodePosition": {
+        "x": 93.39964946529341,
+        "y": 14.69863721131336,
+        "theta": 227.54270246601803,
+        "allowed_deviation_xy": 0.5,
+        "allowed_deviation_theta": 5.0
+      },
+      "actions": []
+    },
+    {
+      "nodeId": "node_2",
+      "sequenceId": 1,
+      "released": true,
+      "nodePosition": {
+        "x": 41.09090128670929,
+        "y": 94.65883621914554,
+        "theta": 67.20983668621056,
+        "allowed_deviation_xy": 0.5,
+        "allowed_deviation_theta": 5.0
+      },
+      "actions": []
+    },
+    {
+      "nodeId": "node_3",
+      "sequenceId": 2,
+      "released": true,
+      "nodePosition": {
+        "x": 58.04427374686888,
+        "y": 68.44377351211469,
+        "theta": 190.61897760859824,
+        "allowed_deviation_xy": 0.5,
+        "allowed_deviation_theta": 5.0
+      },
+      "actions": []
+    }
+  ],
+  "edges": [
+    {
+      "edgeId": "edge_1_2",
+      "sequenceId": 0,
+      "released": true,
+      "startNodeId": "node_1",
+      "endNodeId": "node_2",
+      "maxSpeed": 2.1495652713878335,
+      "actions": []
+    },
+    {
+      "edgeId": "edge_2_3",
+      "sequenceId": 1,
+      "released": true,
+      "startNodeId": "node_2",
+      "endNodeId": "node_3",
+      "maxSpeed": 1.3200212938036908,
+      "actions": []
+    }
+  ]
+}

@@ -42,29 +42,30 @@ echo 已启动的组件：
 echo   1. MQTT-TCP桥接服务器 (端口: 19205-19210, 19301)
 echo   2. MQTT测试客户端 (连接到broker.emqx.io)
 echo.
-echo 📱 MQTTX客户端配置建议：
+echo [MQTTX] 客户端配置建议：
 echo   服务器: broker.emqx.io:1883
 echo   客户端ID: mqttx_real_agv_client
 echo.
-echo 🤖 真实AGV配置要求：
-echo   AGV需要配置连接到: 127.0.0.1 (本机)
+echo [AGV] 真实AGV配置要求：
+echo   AGV需要配置连接到本机IP
 echo   使用的TCP端口如上所示
 echo   AGV ID应配置为: VWED-0010
 echo   制造商: SEER
 echo.
-echo 📡 MQTT话题结构：
+echo [MQTT] 话题结构：
 echo   订阅AGV状态: /uagv/v2/SEER/VWED-0010/state
-echo   订阅可视化: /uagv/v2/SEER/VWED-0010/visualization  
+echo   订阅可视化: /uagv/v2/SEER/VWED-0010/visualization
 echo   订阅连接状态: /uagv/v2/SEER/VWED-0010/connection
 echo   发送订单到: /uagv/v2/SEER/VWED-0010/order
 echo   发送即时动作: /uagv/v2/SEER/VWED-0010/instantActions
 echo.
-echo ⚠️  注意事项：
+echo [注意] 注意事项：
 echo   - 确保真实AGV的IP能访问到运行此脚本的计算机
 echo   - 防火墙需要开放上述TCP端口
-echo   - AGV配置文件应使用 robot_config/VWED-0010.yaml 的参数
+echo   - AGV配置文件应使用 robot_config\VWED-0010.yaml 的参数
+echo   - 使用 stop_vda5050_system.bat 停止系统
 echo.
-echo 🧪 如需测试虚拟AGV，请运行: test\test_start_vda5050_system.bat
+echo [测试] 如需测试虚拟AGV，请运行: test\test_start_vda5050_system.bat
 echo.
 echo 按任意键关闭此窗口...
 pause >nul 

@@ -213,18 +213,18 @@ class MQTTStateMonitor:
     
     def _display_visualization_message(self, data: Dict[str, Any], topic: str):
         """显示可视化消息"""
-        logger.info(f"🎨 收到可视化消息 #{self.message_count}")
+        logger.info(f"[可视化] 收到可视化消息 #{self.message_count}")
         logger.info(f"Topic: {topic}")
         if 'agv_position' in data:
             pos = data['agv_position']
-            logger.info(f"📍 可视化位置: X={pos.get('x', 0):.2f}, Y={pos.get('y', 0):.2f}")
+            logger.info(f"[位置] 可视化位置: X={pos.get('x', 0):.2f}, Y={pos.get('y', 0):.2f}")
     
     def _display_connection_message(self, data: Dict[str, Any], topic: str):
         """显示连接消息"""
-        logger.info(f"🔗 收到连接消息 #{self.message_count}")
+        logger.info(f"[连接] 收到连接消息 #{self.message_count}")
         logger.info(f"Topic: {topic}")
         if 'connectionState' in data:
-            state_icon = "🟢" if data['connectionState'] == 'ONLINE' else "🔴"
+            state_icon = "[在线]" if data['connectionState'] == 'ONLINE' else "[离线]"
             logger.info(f"{state_icon} 连接状态: {data['connectionState']}")
     
     def _subscribe_topics(self):
@@ -232,9 +232,9 @@ class MQTTStateMonitor:
         for topic_name, topic in self.topics.items():
             result = self.client.subscribe(topic, qos=0)
             if result[0] == mqtt.MQTT_ERR_SUCCESS:
-                logger.info(f"✅ 已订阅{topic_name}消息: {topic}")
+                logger.info(f"[成功] 已订阅{topic_name}消息: {topic}")
             else:
-                logger.error(f"❌ 订阅{topic_name}消息失败: {topic}")
+                logger.error(f"[失败] 订阅{topic_name}消息失败: {topic}")
 
 
 def main():

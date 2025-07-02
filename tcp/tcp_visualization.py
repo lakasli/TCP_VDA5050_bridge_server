@@ -103,10 +103,18 @@ class TCPStateToVisualizationConverter:
         Returns:
             AGV位置对象，如果数据不完整则返回None
         """
-        # 检查必要的位置字段
-        x = tcp_state.get('x')
-        y = tcp_state.get('y')
-        angle = tcp_state.get('angle')
+        # 尝试从嵌套的position字段中提取位置信息（AGV模拟器格式）
+        position_data = tcp_state.get('position')
+        if position_data and isinstance(position_data, dict):
+            x = position_data.get('x')
+            y = position_data.get('y')
+            angle = position_data.get('theta')  # AGV模拟器使用'theta'字段
+        else:
+            # 回退到扁平结构（原有格式兼容）
+            x = tcp_state.get('x')
+            y = tcp_state.get('y')
+            angle = tcp_state.get('angle') or tcp_state.get('theta')
+        
         current_map = tcp_state.get('current_map')
         
         # 检查位置信息的完整性
@@ -164,20 +172,28 @@ class TCPStateToVisualizationConverter:
         Returns:
             速度对象，如果没有速度数据则返回None
         """
-        vx = tcp_state.get('vx')
-        vy = tcp_state.get('vy')
-        w = tcp_state.get('w')  # 角速度
+        # 尝试从嵌套的velocity字段中提取速度信息（AGV模拟器格式）
+        velocity_data = tcp_state.get('velocity')
+        if velocity_data and isinstance(velocity_data, dict):
+            vx = velocity_data.get('vx')
+            vy = velocity_data.get('vy')
+            w = velocity_data.get('omega')  # AGV模拟器使用'omega'字段
+        else:
+            # 回退到扁平结构（原有格式兼容）
+            vx = tcp_state.get('vx')
+            vy = tcp_state.get('vy')
+            w = tcp_state.get('w') or tcp_state.get('omega')
         
         # 速度验证
-        if not isinstance(vx, (int, float)):
+        if vx is not None and not isinstance(vx, (int, float)):
             logger.warning(f"[WARNING] 无效的vx值：{vx}")
             vx = 0.0
         
-        if not isinstance(vy, (int, float)):
+        if vy is not None and not isinstance(vy, (int, float)):
             logger.warning(f"[WARNING] 无效的vy值：{vy}")
             vy = 0.0
         
-        if not isinstance(w, (int, float)):
+        if w is not None and not isinstance(w, (int, float)):
             logger.warning(f"[WARNING] 无效的角速度值：{w}")
             w = 0.0
         
@@ -185,10 +201,11 @@ class TCPStateToVisualizationConverter:
         if vx is None and vy is None and w is None:
             return None
         
+        # 使用默认值0.0而不是None，以避免后续处理错误
         return Velocity(
-            vx=vx,
-            vy=vy,
-            omega=w
+            vx=vx or 0.0,
+            vy=vy or 0.0,
+            omega=w or 0.0
         )
     
     def _generate_header_id_from_timestamp(self, timestamp_str: Optional[str]) -> int:
@@ -406,7 +423,7 @@ if __name__ == "__main__":
     print("=== TCP状态数据转VDA5050可视化消息转换器测试 ===\n")
     
     # 验证配置
-    print("📋 配置验证:")
+    print("[配置] 验证:")
     print(f"   状态上报端口: {TCP_STATE_PORT}")
     print(f"   状态报文类型: {STATE_MESSAGE_TYPE}")
     print(f"   转换方向: TCP → VDA5050 Visualization")

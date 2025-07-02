@@ -560,11 +560,11 @@ def main():
             time.sleep(1)
             
     except KeyboardInterrupt:
-        print("\n👋 正在停止服务...")
+        print("\n[停止] 正在停止服务...")
         listener.stop()
-        print("✅ 服务已停止")
+        print("[成功] 服务已停止")
     except Exception as e:
-        print(f"❌ 服务错误: {e}")
+        print(f"[错误] 服务错误: {e}")
         listener.stop()
 
 

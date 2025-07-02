@@ -197,6 +197,9 @@ class AGVSimulator:
     def _parse_tcp_message(self, data: bytes) -> Dict[str, Any]:
         """解析TCP消息（支持JSON和二进制格式）"""
         try:
+            # 打印完整的二进制TCP数据包信息
+            self._print_binary_tcp_packet(data)
+            
             # 首先尝试直接解析JSON格式
             try:
                 json_str = data.decode('utf-8')
@@ -258,6 +261,112 @@ class AGVSimulator:
         except Exception as e:
             logger.error(f"解析TCP消息失败: {e}")
             return None
+    
+    def _print_binary_tcp_packet(self, data: bytes):
+        """打印完整的二进制TCP数据包详细信息"""
+        try:
+            logger.info("=" * 80)
+            logger.info("【收到二进制TCP数据包】")
+            logger.info("=" * 80)
+            
+            # 基本信息
+            packet_length = len(data)
+            logger.info(f"[数据包] 总长度: {packet_length} 字节")
+            
+            # 完整十六进制数据
+            hex_data = data.hex().upper()
+            logger.info(f"[十六进制] 完整数据:")
+            
+            # 按16字节一行格式化输出
+            for i in range(0, len(hex_data), 32):  # 32个字符 = 16字节
+                line_hex = hex_data[i:i+32]
+                # 每两个字符（1字节）之间加空格
+                formatted_hex = ' '.join([line_hex[j:j+2] for j in range(0, len(line_hex), 2)])
+                offset = i // 2  # 字节偏移
+                logger.info(f"   {offset:04X}: {formatted_hex}")
+            
+            # 解析包头（如果足够长）
+            if packet_length >= 16:
+                logger.info("-" * 80)
+                logger.info("[解析] TCP数据包结构解析:")
+                
+                # 包头解析
+                sync_header = data[0]
+                version = data[1]
+                sequence = int.from_bytes(data[2:4], 'big')
+                data_length = int.from_bytes(data[4:8], 'big')
+                message_type = int.from_bytes(data[8:10], 'big')
+                reserved = data[10:16]
+                
+                logger.info("[包头] 信息 (16字节):")
+                logger.info(f"   - 字节 0      : 0x{sync_header:02X} (同步头)")
+                logger.info(f"   - 字节 1      : 0x{version:02X} (版本)")
+                logger.info(f"   - 字节 2-3    : 0x{sequence:04X} ({sequence}) (序列号)")
+                logger.info(f"   - 字节 4-7    : 0x{data_length:08X} ({data_length}) (数据长度)")
+                logger.info(f"   - 字节 8-9    : 0x{message_type:04X} ({message_type}) (消息类型)")
+                logger.info(f"   - 字节 10-15  : {reserved.hex().upper()} (保留字段)")
+                
+                # 消息类型说明
+                message_type_names = {
+                    2002: "重定位 (reloc)",
+                    2004: "取消重定位 (cancelReloc)",
+                    3001: "暂停任务 (startPause)",
+                    3002: "继续任务 (stopPause)",
+                    3003: "取消订单 (cancelOrder)",
+                    3055: "平动 (translate)",
+                    3056: "转动 (turn)",
+                    3057: "托盘旋转 (rotateLoad)",
+                    3066: "托盘抬升/下降 (pick/drop)",
+                    4005: "抢夺控制权 (grabControl)",
+                    4009: "清除错误 (clearErrors)",
+                    6004: "软急停 (softEmc)"
+                }
+                
+                type_name = message_type_names.get(message_type, "未知类型")
+                logger.info(f"   - 消息类型说明: {type_name}")
+                
+                # 数据区解析
+                if data_length > 0 and packet_length >= 16 + data_length:
+                    payload_data = data[16:16+data_length]
+                    logger.info(f"[数据区] 信息 ({data_length}字节):")
+                    logger.info(f"   - 十六进制: {payload_data.hex().upper()}")
+                    
+                    # 尝试解码为UTF-8文本
+                    try:
+                        decoded_text = payload_data.decode('utf-8')
+                        logger.info(f"   - 解码文本: {decoded_text}")
+                        
+                        # 尝试解析JSON
+                        try:
+                            json_data = json.loads(decoded_text)
+                            logger.info(f"   - JSON格式: {json.dumps(json_data, ensure_ascii=False, indent=6)}")
+                        except json.JSONDecodeError:
+                            logger.info(f"   - 非JSON格式文本")
+                    except UnicodeDecodeError:
+                        logger.info(f"   - 无法解码为UTF-8文本（可能是二进制数据）")
+                        
+                elif data_length == 0:
+                    logger.info(f"[数据区] 信息: 空数据区（长度为0）")
+                    logger.info(f"   - 这是一个无数据内容的指令，符合空数据区协议要求")
+                else:
+                    logger.info(f"[数据区] 信息: 数据包不完整")
+                    remaining_data = data[16:]
+                    logger.info(f"   - 期望长度: {data_length}字节")
+                    logger.info(f"   - 实际长度: {len(remaining_data)}字节")
+                    if remaining_data:
+                        logger.info(f"   - 实际数据: {remaining_data.hex().upper()}")
+            else:
+                logger.info("-" * 80)
+                logger.info("[警告] 数据包太短，无法解析包头结构")
+            
+            logger.info("=" * 80)
+            logger.info("【二进制TCP数据包解析完成】")
+            logger.info("=" * 80)
+                
+        except Exception as e:
+            logger.error(f"打印二进制TCP数据包失败: {e}")
+            # 至少输出原始十六进制数据
+            logger.info(f"原始数据 ({len(data)}字节): {data.hex().upper()}")
 
     def _handle_server_message(self, message: Dict[str, Any], port_type: str):
         """处理服务器消息"""

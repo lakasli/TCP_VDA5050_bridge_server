@@ -789,32 +789,188 @@ class VDA5050Server:
             logger.info(f"处理MQTT消息: {topic}")
             
             if '/order' in topic:
-                # 处理Order消息
-                tcp_data_list = self.converter.vda5050_order_to_tcp(payload)
-                for item in tcp_data_list:
-                    # 使用二进制TCP数据包格式
-                    self.tcp_manager.send_to_agv_with_type(
-                        item['port'], 
-                        item['message_type'], 
-                        item['data']
-                    )
+                # 处理Order消息 - 增加详细打印功能
+                self._handle_order_message(topic, payload)
                     
             elif '/instantActions' in topic:
-                # 处理InstantActions消息
-                tcp_data_list = self.converter.vda5050_instant_actions_to_tcp(payload)
-                for item in tcp_data_list:
-                    # 使用二进制TCP数据包格式
-                    self.tcp_manager.send_to_agv_with_type(
-                        item['port'], 
-                        item['message_type'], 
-                        item['data']
-                    )
+                # 处理InstantActions消息 - 增加详细打印功能
+                self._handle_instant_actions_message(topic, payload)
             
             else:
                 logger.warning(f"未知的MQTT topic: {topic}")
                 
         except Exception as e:
             logger.error(f"处理MQTT消息失败: {e}")
+    
+    def _handle_order_message(self, topic: str, payload: Dict[str, Any]):
+        """处理VDA5050 Order消息并打印详细信息"""
+        try:
+            logger.info("=" * 80)
+            logger.info("【VDA5050 ORDER 消息处理】")
+            logger.info("=" * 80)
+            
+            # 1. 打印原始VDA5050 Order消息
+            logger.info("[MQTT] 收到VDA5050 Order消息:")
+            logger.info(f"   Topic: {topic}")
+            logger.info(f"   Payload: {json.dumps(payload, indent=2, ensure_ascii=False)}")
+            
+            # 提取关键信息
+            order_id = payload.get('orderId', 'N/A')
+            order_update_id = payload.get('orderUpdateId', 'N/A')
+            zone_set_id = payload.get('zoneSetId', 'N/A')
+            nodes_count = len(payload.get('nodes', []))
+            edges_count = len(payload.get('edges', []))
+            
+            logger.info("[Order] 关键信息:")
+            logger.info(f"   - Order ID: {order_id}")
+            logger.info(f"   - Order Update ID: {order_update_id}")
+            logger.info(f"   - Zone Set ID: {zone_set_id}")
+            logger.info(f"   - 节点数量: {nodes_count}")
+            logger.info(f"   - 边数量: {edges_count}")
+            
+            # 打印节点和动作信息
+            if 'nodes' in payload:
+                logger.info("[节点] 信息:")
+                for i, node in enumerate(payload['nodes']):
+                    node_id = node.get('nodeId', 'N/A')
+                    sequence_id = node.get('sequenceId', 'N/A')
+                    actions = node.get('actions', [])
+                    action_types = [action.get('actionType', 'N/A') for action in actions]
+                    logger.info(f"   [{i+1}] Node ID: {node_id}, Sequence: {sequence_id}, Actions: {action_types}")
+            
+            if 'edges' in payload:
+                logger.info("[边] 信息:")
+                for i, edge in enumerate(payload['edges']):
+                    edge_id = edge.get('edgeId', 'N/A')
+                    sequence_id = edge.get('sequenceId', 'N/A')
+                    start_node = edge.get('startNodeId', 'N/A')
+                    end_node = edge.get('endNodeId', 'N/A')
+                    actions = edge.get('actions', [])
+                    action_types = [action.get('actionType', 'N/A') for action in actions]
+                    logger.info(f"   [{i+1}] Edge ID: {edge_id}, Sequence: {sequence_id}, {start_node} -> {end_node}, Actions: {action_types}")
+            
+            logger.info("-" * 80)
+            
+            # 2. 转换为TCP协议格式
+            logger.info("[转换] 开始VDA5050 -> TCP协议转换...")
+            tcp_data_list = self.converter.vda5050_order_to_tcp(payload)
+            
+            # 3. 打印转换后的TCP协议格式
+            logger.info("[TCP] 转换后的协议格式:")
+            for i, item in enumerate(tcp_data_list):
+                logger.info(f"   TCP数据包 [{i+1}]:")
+                logger.info(f"   - 目标端口: {item['port']}")
+                logger.info(f"   - 报文类型: {item['message_type']}")
+                logger.info(f"   - 数据内容: {json.dumps(item['data'], indent=4, ensure_ascii=False)}")
+                
+                # 如果是move_task_list格式，打印任务详情
+                if isinstance(item['data'], dict) and 'move_task_list' in item['data']:
+                    task_list = item['data']['move_task_list']
+                    logger.info(f"   - 任务列表 ({len(task_list)} 个任务):")
+                    for j, task in enumerate(task_list):
+                        task_id = task.get('task_id', 'N/A')
+                        source_id = task.get('source_id', 'N/A')
+                        target_id = task.get('id', 'N/A')
+                        operation = task.get('operation', '移动')
+                        logger.info(f"     [{j+1}] {task_id}: {source_id} -> {target_id} ({operation})")
+            
+            logger.info("-" * 80)
+            
+            # 4. 发送TCP数据包并记录
+            logger.info("[发送] TCP数据包到AGV:")
+            for i, item in enumerate(tcp_data_list):
+                logger.info(f"   发送数据包 [{i+1}] 到端口 {item['port']}, 报文类型 {item['message_type']}")
+                
+                # 使用二进制TCP数据包格式发送
+                success = self.tcp_manager.send_to_agv_with_type(
+                    item['port'], 
+                    item['message_type'], 
+                    item['data']
+                )
+                
+                status = "[成功]" if success else "[失败]"
+                logger.info(f"   结果: {status}")
+            
+            logger.info("=" * 80)
+            logger.info("【VDA5050 ORDER 处理完成】")
+            logger.info("=" * 80)
+                    
+        except Exception as e:
+            logger.error(f"处理Order消息失败: {e}")
+    
+    def _handle_instant_actions_message(self, topic: str, payload: Dict[str, Any]):
+        """处理VDA5050 InstantActions消息并打印详细信息"""
+        try:
+            logger.info("=" * 80)
+            logger.info("【VDA5050 INSTANT ACTIONS 消息处理】")
+            logger.info("=" * 80)
+            
+            # 1. 打印原始VDA5050 InstantActions消息
+            logger.info("[MQTT] 收到VDA5050 InstantActions消息:")
+            logger.info(f"   Topic: {topic}")
+            logger.info(f"   Payload: {json.dumps(payload, indent=2, ensure_ascii=False)}")
+            
+            # 提取关键信息
+            header_id = payload.get('headerId', 'N/A')
+            actions = payload.get('actions', [])
+            actions_count = len(actions)
+            
+            logger.info("[InstantActions] 关键信息:")
+            logger.info(f"   - Header ID: {header_id}")
+            logger.info(f"   - 动作数量: {actions_count}")
+            
+            # 打印动作详情
+            if actions:
+                logger.info("[动作] 即时动作详情:")
+                for i, action in enumerate(actions):
+                    action_id = action.get('actionId', 'N/A')
+                    action_type = action.get('actionType', 'N/A')
+                    action_desc = action.get('actionDescription', 'N/A')
+                    blocking_type = action.get('blockingType', 'N/A')
+                    logger.info(f"   [{i+1}] ID: {action_id}, Type: {action_type}, Desc: {action_desc}, Blocking: {blocking_type}")
+            
+            logger.info("-" * 80)
+            
+            # 2. 转换为TCP协议格式
+            logger.info("[转换] 开始VDA5050 -> TCP协议转换...")
+            tcp_data_list = self.converter.vda5050_instant_actions_to_tcp(payload)
+            
+            # 3. 打印转换后的TCP协议格式
+            logger.info("[TCP] 转换后的协议格式:")
+            for i, item in enumerate(tcp_data_list):
+                logger.info(f"   TCP数据包 [{i+1}]:")
+                logger.info(f"   - 目标端口: {item['port']}")
+                logger.info(f"   - 报文类型: {item['message_type']}")
+                
+                # 检查是否为空数据
+                if isinstance(item['data'], dict) and item['data'].get("__empty_data__"):
+                    logger.info(f"   - 数据内容: 空数据区（无内容）")
+                else:
+                    logger.info(f"   - 数据内容: {json.dumps(item['data'], indent=4, ensure_ascii=False)}")
+            
+            logger.info("-" * 80)
+            
+            # 4. 发送TCP数据包并记录
+            logger.info("[发送] TCP数据包到AGV:")
+            for i, item in enumerate(tcp_data_list):
+                logger.info(f"   发送数据包 [{i+1}] 到端口 {item['port']}, 报文类型 {item['message_type']}")
+                
+                # 使用二进制TCP数据包格式发送
+                success = self.tcp_manager.send_to_agv_with_type(
+                    item['port'], 
+                    item['message_type'], 
+                    item['data']
+                )
+                
+                status = "[成功]" if success else "[失败]"
+                logger.info(f"   结果: {status}")
+            
+            logger.info("=" * 80)
+            logger.info("【VDA5050 INSTANT ACTIONS 处理完成】")
+            logger.info("=" * 80)
+                    
+        except Exception as e:
+            logger.error(f"处理InstantActions消息失败: {e}")
     
     def _process_agv_tcp_data(self, tcp_data: Dict[str, Any], port_type: str):
         """处理AGV TCP数据（上行：AGV -> MQTTX）"""
