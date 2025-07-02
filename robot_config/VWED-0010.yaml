@@ -80,15 +80,36 @@ network:
   dns_servers:
     - "8.8.8.8"
     - "114.114.114.114"
+
+# MQTT消息上报频率配置（单位：毫秒）
+mqtt_reporting:
+  # 启用定时上报功能
+  enable_scheduled_reporting: true
   
-  # MQTT配置
-  mqtt:
-    broker_host: "broker.emqx.io"
-    broker_port: 1883
-    keep_alive: 60
-    qos_level: 1
-    client_id_prefix: "agv"
-    topic_prefix: "/uagv/v2"
+  # 各类消息的上报频率
+  reporting_intervals:
+    # 状态消息上报频率（默认1000ms = 1秒）
+    state: 1000
+    
+    # 可视化消息上报频率（默认2000ms = 1秒）
+    visualization: 1000
+    
+    # 连接消息上报频率（默认1000ms = 1秒）
+    connection: 1000
+    
+    # Factsheet消息上报频率（默认30000ms = 30秒）
+    factsheet: 30000
+  
+  # 上报配置选项
+  reporting_options:
+    # 是否只在有数据时上报
+    report_only_when_data_available: true
+    
+    # 是否在AGV断开连接时停止上报
+    stop_on_disconnect: true
+    
+    # 消息缓存选项
+    cache_latest_data: true
 
 # VDA5050协议配置
 vda5050:

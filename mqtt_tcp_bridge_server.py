@@ -115,7 +115,8 @@ class MQTTClientManager:
             'instantActions': '/uagv/v2/{manufacturer}/{serial_number}/instantActions',
             'state': '/uagv/v2/{manufacturer}/{serial_number}/state',
             'visualization': '/uagv/v2/{manufacturer}/{serial_number}/visualization',
-            'connection': '/uagv/v2/{manufacturer}/{serial_number}/connection'
+            'connection': '/uagv/v2/{manufacturer}/{serial_number}/connection',
+            'factsheet': '/uagv/v2/{manufacturer}/{serial_number}/factsheet'
         }
         
     def connect(self):
@@ -287,8 +288,27 @@ class TCPServerManager:
         # 初始化TCP协议处理器
         self.tcp_protocol = ManufacturerATCPProtocol()
         
-        # TCP端口映射（根据实际AGV配置）
-        self.tcp_ports = {
+        # 动态加载TCP端口配置
+        self.tcp_ports = self._load_tcp_port_mapping()
+        
+        # 控制权抢夺配置（从配置文件获取或使用默认值）
+        config = load_config()
+        authority_port = 19207  # 默认值
+        if config and 'tcp_ports' in config and 'command_control' in config['tcp_ports']:
+            authority_port = config['tcp_ports']['command_control'].get('authority', 19207)
+        
+        self.control_grab_config = {
+            'port': authority_port,
+            'message_type': 4005,
+            'nick_name': 'srd-seer-mizhan'
+        }
+    
+    def _load_tcp_port_mapping(self):
+        """从配置文件加载TCP端口映射"""
+        config = load_config()
+        
+        # 默认端口映射
+        default_ports = {
             19204: 'stateAPI',      
             19205: 'controlAPI',     
             19206: 'navigationAPI',          
@@ -297,12 +317,27 @@ class TCPServerManager:
             19301: 'pushAPI'        
         }
         
-        # 控制权抢夺配置
-        self.control_grab_config = {
-            'port': 19207,
-            'message_type': 4005,
-            'nick_name': 'srd-seer-mizhan'
-        }
+        if config and 'tcp_ports' in config:
+            tcp_config = config['tcp_ports']
+            ports = {}
+            
+            # 状态报告端口
+            if 'state_reporting' in tcp_config:
+                ports[tcp_config['state_reporting']] = 'pushAPI'
+            
+            # 命令控制端口
+            if 'command_control' in tcp_config:
+                control_ports = tcp_config['command_control']
+                ports[control_ports.get('relocation', 19205)] = 'controlAPI'
+                ports[control_ports.get('movement', 19206)] = 'navigationAPI'
+                ports[control_ports.get('authority', 19207)] = 'configAPI'
+                ports[control_ports.get('safety', 19210)] = 'otherAPI'
+            
+            logger.info(f"从配置文件加载TCP端口映射: {ports}")
+            return ports
+        else:
+            logger.info("使用默认TCP端口映射")
+            return default_ports
 
     def start_servers(self):
         """启动所有TCP服务器"""
@@ -615,8 +650,14 @@ class ProtocolConverter:
         """将VDA5050 Order转换为TCP数据"""
         try:
             tcp_result = self.order_converter.convert_vda5050_order_to_tcp_move_task_list(order_data)
-            # Order统一发送到19206端口，使用消息类型3066
-            return [{'port': 19206, 'message_type': 3066, 'data': tcp_result}]
+            
+            # Order统一发送到movement端口，使用消息类型3066
+            config = load_config()
+            movement_port = 19206  # 默认值
+            if config and 'tcp_ports' in config and 'command_control' in config['tcp_ports']:
+                movement_port = config['tcp_ports']['command_control'].get('movement', 19206)
+            
+            return [{'port': movement_port, 'message_type': 3066, 'data': tcp_result}]
         except Exception as e:
             logger.error(f"Order转换失败: {e}")
             return []
@@ -727,13 +768,34 @@ class VDA5050Server:
         # 多机器人管理 - 每个AGV连接对应一个信息记录
         self.agv_connections = {}  # {connection_id: agv_info}
         self.agv_info_by_vehicle_id = {}  # {vehicle_id: agv_info}
-        self.default_agv_info = {
-            'manufacturer': 'Demo_Manufacturer',
-            'serial_number': 'AGV_001'
-        }
+        
+        # 默认AGV信息（支持多机器人时的fallback）
+        # 从配置文件获取默认值
+        config = load_config()
+        if config and 'agv' in config:
+            self.default_agv_info = {
+                'manufacturer': config['agv']['manufacturer'],
+                'serial_number': config['agv']['serial_number']
+            }
+            logger.info(f"使用配置文件中的默认AGV信息: {self.default_agv_info}")
+        else:
+            self.default_agv_info = {
+                'manufacturer': 'Demo_Manufacturer',
+                'serial_number': 'AGV_001'
+            }
+            logger.info("使用硬编码的默认AGV信息")
         
         # 重写TCP管理器的数据处理方法
         self.tcp_manager._process_agv_data = self._process_agv_tcp_data
+        
+        # 定时上报相关
+        self.reporting_timers = {}  # 存储各类消息的定时器
+        self.latest_data_cache = {}  # 缓存最新的数据
+        self.robot_config = self._load_robot_config()
+        self.reporting_config = self._load_reporting_config()
+        
+        # 初始化数据缓存
+        self._init_data_cache()
     
     def start(self):
         """启动服务器"""
@@ -750,6 +812,9 @@ class VDA5050Server:
             # 启动主消息处理循环
             self.is_running = True
             self._start_message_loop()
+            
+            # 启动定时上报定时器
+            self._start_reporting_timers()
             
             logger.info("VDA5050协议转换服务器启动成功")
             
@@ -770,6 +835,9 @@ class VDA5050Server:
         logger.info("正在停止VDA5050协议转换服务器...")
         
         self.is_running = False
+        
+        # 停止定时上报定时器
+        self._stop_reporting_timers()
         
         # 停止MQTT
         self.mqtt_manager.disconnect()
@@ -999,7 +1067,13 @@ class VDA5050Server:
             
             logger.info("-" * 80)
             
-            # 4. 发送TCP数据包并记录
+            # 4. 检查是否有factsheetRequest动作
+            factsheet_requests = [action for action in actions if action.get('actionType') == 'factsheetRequest']
+            if factsheet_requests:
+                logger.info("[特殊处理] 检测到factsheetRequest动作，开始生成Factsheet响应...")
+                self._handle_factsheet_request(target_agv, factsheet_requests)
+            
+            # 5. 发送TCP数据包并记录
             logger.info(f"[发送] TCP数据包到目标AGV: {target_agv['manufacturer']}/{target_agv['serial_number']}")
             for i, item in enumerate(tcp_data_list):
                 logger.info(f"   发送数据包 [{i+1}] 到端口 {item['port']}, 报文类型 {item['message_type']}")
@@ -1022,6 +1096,57 @@ class VDA5050Server:
         except Exception as e:
             logger.error(f"处理InstantActions消息失败: {e}")
     
+    def _handle_factsheet_request(self, target_agv: Dict[str, str], factsheet_requests: List[Dict[str, Any]]):
+        """处理factsheetRequest动作，生成并发布Factsheet消息"""
+        try:
+            from tcp.tcp_factsheet import TCPFactsheetConverter, create_factsheet_from_config_file
+            
+            logger.info(f"开始处理factsheetRequest - 目标AGV: {target_agv['manufacturer']}/{target_agv['serial_number']}")
+            
+            # 创建转换器
+            factsheet_converter = TCPFactsheetConverter()
+            
+            # 尝试从配置文件创建Factsheet
+            factsheet_msg = None
+            config_path = "robot_config/VWED-0010.yaml"
+            if os.path.exists(config_path):
+                factsheet_msg = create_factsheet_from_config_file(config_path)
+                logger.info("从配置文件创建Factsheet消息")
+            
+            # 如果从配置文件创建失败，生成示例Factsheet
+            if not factsheet_msg:
+                logger.info("配置文件不存在或创建失败，生成示例TCP Factsheet数据")
+                sample_tcp_data = factsheet_converter.generate_sample_tcp_factsheet(
+                    target_agv['serial_number']
+                )
+                # 使用目标AGV的信息
+                sample_tcp_data['manufacturer'] = target_agv['manufacturer']
+                sample_tcp_data['serial_number'] = target_agv['serial_number']
+                sample_tcp_data['vehicle_id'] = target_agv['serial_number']
+                
+                factsheet_msg = factsheet_converter.convert_tcp_to_vda5050(sample_tcp_data)
+            
+            if factsheet_msg:
+                # 发布Factsheet消息到MQTT
+                success = self.mqtt_manager.publish_uplink_message(
+                    'factsheet',
+                    target_agv['manufacturer'],
+                    target_agv['serial_number'],
+                    factsheet_msg.get_message_dict()
+                )
+                
+                if success:
+                    logger.info(f"成功发布Factsheet消息 - AGV: {target_agv['serial_number']}")
+                    logger.info(f"Factsheet信息: 制造商={factsheet_msg.manufacturer}, 序列号={factsheet_msg.serial_number}")
+                    logger.info(f"AGV类型: {factsheet_msg.type_specification.agv_class}, 运动学: {factsheet_msg.type_specification.agv_kinematic}")
+                else:
+                    logger.error("发布Factsheet消息失败")
+            else:
+                logger.error("无法创建Factsheet消息")
+                
+        except Exception as e:
+            logger.error(f"处理factsheetRequest失败: {e}")
+    
     def _process_agv_tcp_data(self, tcp_data: Dict[str, Any], port_type: str):
         """处理AGV TCP数据（上行：AGV -> MQTTX）"""
         try:
@@ -1041,7 +1166,7 @@ class VDA5050Server:
             logger.error(f"处理AGV TCP数据失败: {e}")
     
     def _handle_state_data(self, tcp_data: Dict[str, Any]):
-        """处理AGV状态数据（支持多机器人）"""
+        """处理AGV状态数据（支持多机器人）- 现在改为缓存数据，由定时器上报"""
         try:
             # 从TCP数据中提取AGV信息
             vehicle_id = tcp_data.get('vehicle_id', 'UNKNOWN_AGV')
@@ -1051,43 +1176,42 @@ class VDA5050Server:
             # 获取或创建AGV信息
             agv_info = self._get_or_create_agv_info(vehicle_id, manufacturer, connection_id)
             
-            logger.info(f"处理AGV状态数据 - 车辆ID: {vehicle_id}, 制造商: {manufacturer}, 连接ID: {connection_id}")
+            logger.debug(f"缓存AGV状态数据 - 车辆ID: {vehicle_id}, 制造商: {manufacturer}, 连接ID: {connection_id}")
             
-            # 转换为VDA5050 State消息
-            state_data = self.converter.tcp_state_to_vda5050(tcp_data)
-            if state_data:
-                success = self.mqtt_manager.publish_uplink_message(
-                    'state',
-                    agv_info['manufacturer'],
-                    agv_info['serial_number'],
-                    state_data
-                )
-                if success:
-                    logger.debug(f"发布State消息成功 - 车辆: {vehicle_id}")
+            # 确保AGV有对应的缓存
+            if vehicle_id not in self.latest_data_cache:
+                self.latest_data_cache[vehicle_id] = {
+                    'state': None,
+                    'visualization': None,
+                    'connection': None,
+                    'factsheet': None,
+                    'last_tcp_data': None,
+                    'last_update': None
+                }
             
-            # 转换为VDA5050 Visualization消息
-            viz_data = self.converter.tcp_state_to_visualization(tcp_data)
-            if viz_data:
-                success = self.mqtt_manager.publish_uplink_message(
-                    'visualization',
-                    agv_info['manufacturer'],
-                    agv_info['serial_number'],
-                    viz_data
-                )
-                if success:
-                    logger.debug(f"发布Visualization消息成功 - 车辆: {vehicle_id}")
+            # 更新缓存中的TCP原始数据
+            cache = self.latest_data_cache[vehicle_id]
+            cache['last_tcp_data'] = tcp_data
+            cache['last_update'] = datetime.now(timezone.utc).isoformat()
             
-            # 创建Connection消息
-            conn_data = self.converter.create_connection_message(tcp_data)
-            if conn_data:
-                success = self.mqtt_manager.publish_uplink_message(
-                    'connection',
-                    agv_info['manufacturer'],
-                    agv_info['serial_number'],
-                    conn_data
-                )
-                if success:
-                    logger.debug(f"发布Connection消息成功 - 车辆: {vehicle_id}")
+            # 预生成并缓存转换后的数据（可选，提高定时上报性能）
+            if self.reporting_config.get('reporting_options', {}).get('cache_latest_data', True):
+                # 转换并缓存State数据
+                state_data = self.converter.tcp_state_to_vda5050(tcp_data)
+                if state_data:
+                    cache['state'] = state_data
+                
+                # 转换并缓存Visualization数据
+                viz_data = self.converter.tcp_state_to_visualization(tcp_data)
+                if viz_data:
+                    cache['visualization'] = viz_data
+                
+                # 转换并缓存Connection数据
+                conn_data = self.converter.create_connection_message(tcp_data)
+                if conn_data:
+                    cache['connection'] = conn_data
+            
+            logger.debug(f"状态数据已缓存 - 车辆: {vehicle_id}")
                 
         except Exception as e:
             logger.error(f"处理状态数据失败: {e}")
@@ -1114,6 +1238,17 @@ class VDA5050Server:
             # 存储信息
             self.agv_info_by_vehicle_id[vehicle_id] = agv_info
             self.agv_connections[connection_id] = agv_info
+            
+            # 为新AGV创建数据缓存
+            if vehicle_id not in self.latest_data_cache:
+                self.latest_data_cache[vehicle_id] = {
+                    'state': None,
+                    'visualization': None,
+                    'connection': None,
+                    'factsheet': None,
+                    'last_tcp_data': None,
+                    'last_update': None
+                }
             
             logger.info(f"注册新AGV - 车辆ID: {vehicle_id}, 制造商: {manufacturer}, 连接ID: {connection_id}")
             
@@ -1185,6 +1320,217 @@ class VDA5050Server:
         
         logger.info("=" * 60)
 
+    def _load_robot_config(self) -> Optional[Dict[str, Any]]:
+        """加载机器人配置文件"""
+        try:
+            config_path = "robot_config/VWED-0010.yaml"
+            if os.path.exists(config_path):
+                with open(config_path, 'r', encoding='utf-8') as f:
+                    config = yaml.safe_load(f)
+                    logger.info(f"成功加载机器人配置文件: {config_path}")
+                    return config
+            else:
+                logger.warning(f"机器人配置文件不存在: {config_path}")
+                return None
+        except Exception as e:
+            logger.error(f"加载机器人配置文件失败: {e}")
+            return None
+
+    def _load_reporting_config(self) -> Dict[str, Any]:
+        """加载上报频率配置"""
+        default_config = {
+            'enable_scheduled_reporting': False,
+            'reporting_intervals': {
+                'state': 1000,
+                'visualization': 2000,
+                'connection': 5000,
+                'factsheet': 30000
+            },
+            'reporting_options': {
+                'report_only_when_data_available': True,
+                'stop_on_disconnect': True,
+                'cache_latest_data': True
+            }
+        }
+        
+        if self.robot_config and 'mqtt_reporting' in self.robot_config:
+            config = self.robot_config['mqtt_reporting']
+            logger.info("使用机器人配置文件中的上报频率配置")
+            logger.info(f"上报频率配置: {config.get('reporting_intervals', {})}")
+            return config
+        else:
+            logger.info("使用默认上报频率配置")
+            return default_config
+
+    def _init_data_cache(self):
+        """初始化数据缓存"""
+        for agv_id in self.agv_info_by_vehicle_id.keys():
+            if agv_id not in self.latest_data_cache:
+                self.latest_data_cache[agv_id] = {
+                    'state': None,
+                    'visualization': None,
+                    'connection': None,
+                    'factsheet': None,
+                    'last_tcp_data': None,
+                    'last_update': None
+                }
+
+    def _start_reporting_timers(self):
+        """启动定时上报定时器"""
+        if not self.reporting_config.get('enable_scheduled_reporting', False):
+            logger.info("定时上报功能未启用")
+            return
+        
+        intervals = self.reporting_config.get('reporting_intervals', {})
+        
+        for message_type, interval_ms in intervals.items():
+            if interval_ms > 0:
+                interval_seconds = interval_ms / 1000.0
+                
+                # 创建定时器
+                timer = threading.Timer(interval_seconds, self._periodic_report, args=[message_type])
+                timer.daemon = True
+                timer.start()
+                
+                self.reporting_timers[message_type] = {
+                    'timer': timer,
+                    'interval': interval_seconds,
+                    'last_report': time.time()
+                }
+                
+                logger.info(f"启动{message_type}消息定时上报，间隔: {interval_ms}ms")
+
+    def _stop_reporting_timers(self):
+        """停止所有定时上报定时器"""
+        for message_type, timer_info in self.reporting_timers.items():
+            if timer_info['timer']:
+                timer_info['timer'].cancel()
+                logger.info(f"停止{message_type}消息定时上报")
+        
+        self.reporting_timers.clear()
+
+    def _periodic_report(self, message_type: str):
+        """定时上报处理"""
+        try:
+            if not self.is_running:
+                return
+            
+            # 为所有已连接的AGV进行上报
+            for agv_id, agv_info in self.agv_info_by_vehicle_id.items():
+                self._report_message_for_agv(agv_id, agv_info, message_type)
+            
+            # 重新启动定时器
+            if message_type in self.reporting_timers and self.is_running:
+                interval = self.reporting_timers[message_type]['interval']
+                timer = threading.Timer(interval, self._periodic_report, args=[message_type])
+                timer.daemon = True
+                timer.start()
+                self.reporting_timers[message_type]['timer'] = timer
+                self.reporting_timers[message_type]['last_report'] = time.time()
+                
+        except Exception as e:
+            logger.error(f"定时上报{message_type}消息失败: {e}")
+
+    def _report_message_for_agv(self, agv_id: str, agv_info: Dict[str, str], message_type: str):
+        """为指定AGV上报特定类型的消息"""
+        try:
+            # 检查是否有缓存的数据
+            if agv_id not in self.latest_data_cache:
+                return
+            
+            cache = self.latest_data_cache[agv_id]
+            options = self.reporting_config.get('reporting_options', {})
+            
+            # 检查是否只在有数据时上报
+            if options.get('report_only_when_data_available', True):
+                if cache.get('last_tcp_data') is None:
+                    return  # 没有TCP数据，跳过上报
+            
+            # 根据消息类型生成并上报数据
+            if message_type == 'state':
+                data = self._generate_state_message(cache)
+            elif message_type == 'visualization':
+                data = self._generate_visualization_message(cache)
+            elif message_type == 'connection':
+                data = self._generate_connection_message(cache, agv_info)
+            elif message_type == 'factsheet':
+                data = self._generate_factsheet_message(agv_info)
+            else:
+                logger.warning(f"未知的消息类型: {message_type}")
+                return
+            
+            if data:
+                success = self.mqtt_manager.publish_uplink_message(
+                    message_type,
+                    agv_info['manufacturer'],
+                    agv_info['serial_number'],
+                    data
+                )
+                
+                if success:
+                    logger.debug(f"定时上报{message_type}消息成功 - AGV: {agv_id}")
+                    cache[message_type] = data  # 更新缓存
+                else:
+                    logger.warning(f"定时上报{message_type}消息失败 - AGV: {agv_id}")
+                    
+        except Exception as e:
+            logger.error(f"为AGV {agv_id} 上报{message_type}消息失败: {e}")
+
+    def _generate_state_message(self, cache: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """生成状态消息"""
+        tcp_data = cache.get('last_tcp_data')
+        if tcp_data:
+            return self.converter.tcp_state_to_vda5050(tcp_data)
+        return cache.get('state')  # 返回缓存的状态
+
+    def _generate_visualization_message(self, cache: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """生成可视化消息"""
+        tcp_data = cache.get('last_tcp_data')
+        if tcp_data:
+            return self.converter.tcp_state_to_visualization(tcp_data)
+        return cache.get('visualization')  # 返回缓存的可视化数据
+
+    def _generate_connection_message(self, cache: Dict[str, Any], agv_info: Dict[str, str]) -> Dict[str, Any]:
+        """生成连接消息"""
+        # 创建基于当前连接状态的连接消息
+        tcp_data = cache.get('last_tcp_data')
+        if tcp_data:
+            return self.converter.create_connection_message(tcp_data)
+        else:
+            # 创建基本的连接消息
+            return {
+                "headerId": int(time.time() * 1000) % 1000000,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "version": "2.0.0",
+                "manufacturer": agv_info['manufacturer'],
+                "serialNumber": agv_info['serial_number'],
+                "connectionState": "ONLINE"
+            }
+
+    def _generate_factsheet_message(self, agv_info: Dict[str, str]) -> Optional[Dict[str, Any]]:
+        """生成Factsheet消息"""
+        try:
+            from tcp.tcp_factsheet import create_factsheet_from_config_file, TCPFactsheetConverter
+            
+            # 尝试从配置文件创建
+            factsheet_msg = create_factsheet_from_config_file("robot_config/VWED-0010.yaml")
+            
+            if not factsheet_msg:
+                # 生成示例数据
+                converter = TCPFactsheetConverter()
+                sample_data = converter.generate_sample_tcp_factsheet(agv_info['serial_number'])
+                sample_data['manufacturer'] = agv_info['manufacturer']
+                sample_data['serial_number'] = agv_info['serial_number']
+                factsheet_msg = converter.convert_tcp_to_vda5050(sample_data)
+            
+            if factsheet_msg:
+                return factsheet_msg.get_message_dict()
+            
+        except Exception as e:
+            logger.error(f"生成Factsheet消息失败: {e}")
+        
+        return None
+
 
 def load_config():
     """加载配置文件"""
@@ -1228,8 +1574,13 @@ def main():
         }
         logger.info("使用默认MQTT配置")
     
-    # AGV IP配置（可以修改为实际AGV的IP）
-    agv_ip = '192.168.1.100'  # 修改为实际AGV IP
+    # AGV IP配置（从配置文件读取）
+    if config and 'agv' in config:
+        agv_ip = config['agv']['ip']
+        logger.info(f"使用配置文件中的AGV IP: {agv_ip}")
+    else:
+        agv_ip = '192.168.1.100'  # 默认IP
+        logger.info("使用默认AGV IP")
     
     # 创建服务器
     server = VDA5050Server(mqtt_config, agv_ip)

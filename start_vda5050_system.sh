@@ -30,7 +30,7 @@ if [ "$DEBUG_MODE" = true ]; then
     echo -e "${CYAN}[调试] 当前工作目录: $(pwd)${NC}"
     echo -e "${CYAN}[调试] 主要文件检查:${NC}"
     echo -e "${CYAN}       mqtt_tcp_bridge_server.py: $([ -f mqtt_tcp_bridge_server.py ] && echo '✓' || echo '✗')${NC}"
-    echo -e "${CYAN}       server_config.json: $([ -f server_config.json ] && echo '✓' || echo '✗')${NC}"
+    echo -e "${CYAN}       mqtt_config.yaml: $([ -f mqtt_config/mqtt_config.yaml ] && echo '✓' || echo '✗')${NC}"
     echo -e "${CYAN}       test/mqtt_test_client.py: $([ -f test/mqtt_test_client.py ] && echo '✓' || echo '✗')${NC}"
 fi
 

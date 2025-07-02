@@ -7,12 +7,42 @@ VDA5050即时动作转TCP协议转换器
 
 import json
 import uuid
+import os
 from typing import Dict, List, Any, Optional, Union
 from dataclasses import dataclass
 from enum import Enum
 import time
 import random
 from .manufacturer_a import ManufacturerATCPProtocol
+
+try:
+    import yaml
+    YAML_AVAILABLE = True
+except ImportError:
+    YAML_AVAILABLE = False
+
+
+def load_action_config_from_file():
+    """从配置文件加载动作端口配置
+    
+    Returns:
+        Dict: 动作配置字典，如果加载失败则返回默认配置
+    """
+    if not YAML_AVAILABLE:
+        return None
+        
+    try:
+        # 尝试加载YAML配置文件
+        config_file = 'mqtt_config/mqtt_config.yaml'
+        if os.path.exists(config_file):
+            with open(config_file, 'r', encoding='utf-8') as f:
+                config = yaml.safe_load(f)
+                if config and 'tcp_ports' in config and 'action_types' in config['tcp_ports']:
+                    return config['tcp_ports']['action_types']
+        return None
+    except Exception as e:
+        print(f"加载动作配置文件失败: {e}")
+        return None
 
 
 class DataFormatType(Enum):
@@ -64,28 +94,51 @@ class VDA5050InstantActionsToTCPConverter:
         'releaseAuthority': 'ReleaseAuthority'  # 释放控制权
     }
     
-    # VDA5050动作类型到端口号和报文类型的配置表
-    ACTION_CONFIG = {
-        'pick': ActionConfig(19206, 3066, DataFormatType.MOVE_TASK_LIST),
-        'drop': ActionConfig(19206, 3066, DataFormatType.MOVE_TASK_LIST),
-        'startPause': ActionConfig(19206, 3002, DataFormatType.EMPTY_DATA),
-        'stopPause': ActionConfig(19206, 3001, DataFormatType.EMPTY_DATA),
-        'cancelOrder': ActionConfig(19206, 3003, DataFormatType.EMPTY_DATA),
-        'reloc': ActionConfig(19205, 2002, DataFormatType.SINGLE_FIELD),
-        'cancelReloc': ActionConfig(19205, 2004, DataFormatType.EMPTY_DATA),
-        'clearErrors': ActionConfig(19207, 4009, DataFormatType.SINGLE_FIELD),
-        'rotateLoad': ActionConfig(19206, 3057, DataFormatType.SINGLE_FIELD),
-        'softEmc': ActionConfig(19210, 6004, DataFormatType.SINGLE_FIELD),
-        'turn': ActionConfig(19206, 3056, DataFormatType.SINGLE_FIELD),
-        'translate': ActionConfig(19206, 3055, DataFormatType.SINGLE_FIELD),
-        'grabAuthority': ActionConfig(19207, 4005, DataFormatType.SINGLE_FIELD),
-        'releaseAuthority': ActionConfig(19207, 4006, DataFormatType.EMPTY_DATA)
-    }
-    
     def __init__(self):
         """初始化转换器"""
         # 创建TCP协议处理器实例，用于统一生成task_id
         self.tcp_protocol = ManufacturerATCPProtocol()
+        
+        # 动态加载动作配置
+        self.ACTION_CONFIG = self._load_action_config()
+    
+    def _load_action_config(self):
+        """加载动作配置，优先从配置文件读取，否则使用默认配置"""
+        # 默认配置
+        default_config = {
+            'pick': ActionConfig(19206, 3066, DataFormatType.MOVE_TASK_LIST),
+            'drop': ActionConfig(19206, 3066, DataFormatType.MOVE_TASK_LIST),
+            'startPause': ActionConfig(19206, 3002, DataFormatType.EMPTY_DATA),
+            'stopPause': ActionConfig(19206, 3001, DataFormatType.EMPTY_DATA),
+            'cancelOrder': ActionConfig(19206, 3003, DataFormatType.EMPTY_DATA),
+            'reloc': ActionConfig(19205, 2002, DataFormatType.SINGLE_FIELD),
+            'cancelReloc': ActionConfig(19205, 2004, DataFormatType.EMPTY_DATA),
+            'clearErrors': ActionConfig(19207, 4009, DataFormatType.SINGLE_FIELD),
+            'rotateLoad': ActionConfig(19206, 3057, DataFormatType.SINGLE_FIELD),
+            'softEmc': ActionConfig(19210, 6004, DataFormatType.SINGLE_FIELD),
+            'turn': ActionConfig(19206, 3056, DataFormatType.SINGLE_FIELD),
+            'translate': ActionConfig(19206, 3055, DataFormatType.SINGLE_FIELD),
+            'grabAuthority': ActionConfig(19207, 4005, DataFormatType.SINGLE_FIELD),
+            'releaseAuthority': ActionConfig(19207, 4006, DataFormatType.EMPTY_DATA)
+        }
+        
+        # 尝试从配置文件加载
+        file_config = load_action_config_from_file()
+        if file_config:
+            try:
+                # 用配置文件中的端口和消息类型更新默认配置
+                for action_type, config in default_config.items():
+                    if action_type in file_config:
+                        port = file_config[action_type].get('port', config.port)
+                        message_type = file_config[action_type].get('message_type', config.message_type)
+                        default_config[action_type] = ActionConfig(port, message_type, config.data_format)
+                print("成功从配置文件加载动作端口配置")
+            except Exception as e:
+                print(f"处理配置文件中的动作配置时出错: {e}")
+        else:
+            print("使用默认动作端口配置")
+        
+        return default_config
     
     def generate_tcp_task_id(self, base_id: Optional[str] = None, counter: int = 1) -> str:
         """生成TCP协议task_id，使用统一的ID生成逻辑

@@ -32,6 +32,76 @@ mqtt_options:
   # QoS等级 (0, 1, 2)
   qos_level: 1
 
+# AGV配置 (从server_config.json合并)
+agv:
+  # AGV IP地址
+  ip: "192.168.1.100"
+  # 制造商名称
+  manufacturer: "Demo_Manufacturer"
+  # 序列号
+  serial_number: "AGV_001"
+  # 车辆名称
+  vehicle_name: "TestAGV"
+
+# TCP端口配置 (从server_config.json合并)
+tcp_ports:
+  # 状态报告端口
+  state_reporting: 19301
+  # 命令控制端口
+  command_control:
+    # 重定位端口
+    relocation: 19205
+    # 移动控制端口
+    movement: 19206
+    # 权限控制端口
+    authority: 19207
+    # 安全端口
+    safety: 19210
+  # 动作类型配置
+  action_types:
+    pick:
+      port: 19206
+      message_type: 3066
+    drop:
+      port: 19206
+      message_type: 3066
+    startPause:
+      port: 19206
+      message_type: 3002
+    stopPause:
+      port: 19206
+      message_type: 3001
+    cancelOrder:
+      port: 19206
+      message_type: 3003
+    reloc:
+      port: 19205
+      message_type: 2002
+    cancelReloc:
+      port: 19205
+      message_type: 2004
+    clearErrors:
+      port: 19207
+      message_type: 4009
+    rotateLoad:
+      port: 19206
+      message_type: 3057
+    softEmc:
+      port: 19210
+      message_type: 6004
+    turn:
+      port: 19206
+      message_type: 3056
+    translate:
+      port: 19206
+      message_type: 3055
+    grabAuthority:
+      port: 19207
+      message_type: 4005
+    releaseAuthority:
+      port: 19207
+      message_type: 4006
+
 # VDA5050主题配置 (符合VDA5050标准格式)
 vda5050_topics:
   # 主题前缀
@@ -57,6 +127,17 @@ message_config:
   max_message_size: 1048576
   # 消息编码
   encoding: "utf-8"
+
+# 服务器配置 (从server_config.json合并)
+server:
+  # 日志级别
+  log_level: "INFO"
+  # 日志文件路径
+  log_file: "logs/vda5050_server.log"
+  # 心跳间隔(秒)
+  heartbeat_interval: 30
+  # 连接超时时间(秒)
+  connection_timeout: 60
   
 # 日志配置
 logging:
