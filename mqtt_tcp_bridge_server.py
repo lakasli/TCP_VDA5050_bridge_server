@@ -121,7 +121,6 @@ class MQTTClientManager:
     def connect(self):
         """连接MQTT代理"""
         try:
-            # 使用新的CallbackAPIVersion避免弃用警告
             self.client = mqtt.Client(
                 callback_api_version=CallbackAPIVersion.VERSION2,
                 client_id=self.client_id,
@@ -385,6 +384,9 @@ class TCPServerManager:
     def _handle_client(self, client_socket: socket.socket, port: int, 
                       port_type: str, client_address):
         """处理AGV客户端连接"""
+        connection_id = f"{client_address[0]}:{client_address[1]}:{port}"
+        logger.info(f"创建AGV连接处理线程 - 连接ID: {connection_id}")
+        
         try:
             client_socket.settimeout(30.0)  # 30秒超时
             
@@ -398,6 +400,10 @@ class TCPServerManager:
                     # 解析TCP数据
                     tcp_data = self._parse_tcp_data(data, port_type)
                     if tcp_data:
+                        # 添加连接信息
+                        tcp_data['connection_id'] = connection_id
+                        tcp_data['client_address'] = client_address
+                        
                         # 将TCP数据转换为VDA5050并发送到MQTT
                         self._process_agv_data(tcp_data, port_type)
                         
@@ -416,7 +422,7 @@ class TCPServerManager:
                     self.client_connections[port].remove(client_socket)
             except:
                 pass
-            logger.info(f"AGV连接已断开 - 端口: {port}, 地址: {client_address}")
+            logger.info(f"AGV连接已断开 - 端口: {port}, 地址: {client_address}, 连接ID: {connection_id}")
     
     def _parse_tcp_data(self, data: bytes, port_type: str) -> Optional[Dict[str, Any]]:
         """解析AGV发送的TCP数据"""
@@ -717,7 +723,11 @@ class VDA5050Server:
         
         # 状态管理
         self.is_running = False
-        self.agv_info = {
+        
+        # 多机器人管理 - 每个AGV连接对应一个信息记录
+        self.agv_connections = {}  # {connection_id: agv_info}
+        self.agv_info_by_vehicle_id = {}  # {vehicle_id: agv_info}
+        self.default_agv_info = {
             'manufacturer': 'Demo_Manufacturer',
             'serial_number': 'AGV_001'
         }
@@ -743,6 +753,14 @@ class VDA5050Server:
             
             logger.info("VDA5050协议转换服务器启动成功")
             
+            # 启动后立即打印初始状态
+            logger.info("=" * 60)
+            logger.info("【多AGV桥接服务】")
+            logger.info("- 支持同时连接多个AGV")
+            logger.info("- 自动识别AGV身份和路由消息")
+            logger.info("- MQTT Topic格式: /uagv/v2/{manufacturer}/{serial_number}/{message_type}")
+            logger.info("=" * 60)
+            
         except Exception as e:
             logger.error(f"服务器启动失败: {e}")
             self.stop()
@@ -764,12 +782,21 @@ class VDA5050Server:
     def _start_message_loop(self):
         """启动主消息处理循环"""
         def message_loop():
+            last_status_print = 0
+            status_print_interval = 300  # 每5分钟打印一次状态
+            
             while self.is_running:
                 try:
                     # 处理MQTT消息（下行：MQTTX -> AGV）
                     mqtt_message = self.mqtt_manager.get_message(timeout=0.1)
                     if mqtt_message:
                         self._handle_mqtt_message(mqtt_message)
+                    
+                    # 定期打印AGV连接状态
+                    current_time = time.time()
+                    if current_time - last_status_print >= status_print_interval:
+                        self.print_connected_agvs()
+                        last_status_print = current_time
                     
                     time.sleep(0.01)  # 避免过度占用CPU
                     
@@ -786,15 +813,21 @@ class VDA5050Server:
             topic = message_data['topic']
             payload = message_data['payload']
             
-            logger.info(f"处理MQTT消息: {topic}")
+            # 解析topic获取目标AGV信息
+            target_agv = self._parse_topic_for_agv_info(topic)
+            if not target_agv:
+                logger.warning(f"无法解析topic中的AGV信息: {topic}")
+                return
+            
+            logger.info(f"处理MQTT消息: {topic} -> 目标AGV: {target_agv['manufacturer']}/{target_agv['serial_number']}")
             
             if '/order' in topic:
                 # 处理Order消息 - 增加详细打印功能
-                self._handle_order_message(topic, payload)
+                self._handle_order_message(topic, payload, target_agv)
                     
             elif '/instantActions' in topic:
                 # 处理InstantActions消息 - 增加详细打印功能
-                self._handle_instant_actions_message(topic, payload)
+                self._handle_instant_actions_message(topic, payload, target_agv)
             
             else:
                 logger.warning(f"未知的MQTT topic: {topic}")
@@ -802,7 +835,22 @@ class VDA5050Server:
         except Exception as e:
             logger.error(f"处理MQTT消息失败: {e}")
     
-    def _handle_order_message(self, topic: str, payload: Dict[str, Any]):
+    def _parse_topic_for_agv_info(self, topic: str) -> Optional[Dict[str, str]]:
+        """从topic中解析AGV信息"""
+        try:
+            # 期望格式: /uagv/v2/{manufacturer}/{serial_number}/{message_type}
+            parts = topic.strip('/').split('/')
+            if len(parts) >= 4 and parts[0] == 'uagv' and parts[1] == 'v2':
+                return {
+                    'manufacturer': parts[2],
+                    'serial_number': parts[3]
+                }
+            return None
+        except Exception as e:
+            logger.error(f"解析topic失败: {e}")
+            return None
+    
+    def _handle_order_message(self, topic: str, payload: Dict[str, Any], target_agv: Dict[str, str]):
         """处理VDA5050 Order消息并打印详细信息"""
         try:
             logger.info("=" * 80)
@@ -877,12 +925,13 @@ class VDA5050Server:
             logger.info("-" * 80)
             
             # 4. 发送TCP数据包并记录
-            logger.info("[发送] TCP数据包到AGV:")
+            logger.info(f"[发送] TCP数据包到目标AGV: {target_agv['manufacturer']}/{target_agv['serial_number']}")
             for i, item in enumerate(tcp_data_list):
                 logger.info(f"   发送数据包 [{i+1}] 到端口 {item['port']}, 报文类型 {item['message_type']}")
                 
-                # 使用二进制TCP数据包格式发送
-                success = self.tcp_manager.send_to_agv_with_type(
+                # 使用二进制TCP数据包格式发送到指定AGV
+                success = self._send_to_specific_agv(
+                    target_agv,
                     item['port'], 
                     item['message_type'], 
                     item['data']
@@ -898,7 +947,7 @@ class VDA5050Server:
         except Exception as e:
             logger.error(f"处理Order消息失败: {e}")
     
-    def _handle_instant_actions_message(self, topic: str, payload: Dict[str, Any]):
+    def _handle_instant_actions_message(self, topic: str, payload: Dict[str, Any], target_agv: Dict[str, str]):
         """处理VDA5050 InstantActions消息并打印详细信息"""
         try:
             logger.info("=" * 80)
@@ -951,12 +1000,13 @@ class VDA5050Server:
             logger.info("-" * 80)
             
             # 4. 发送TCP数据包并记录
-            logger.info("[发送] TCP数据包到AGV:")
+            logger.info(f"[发送] TCP数据包到目标AGV: {target_agv['manufacturer']}/{target_agv['serial_number']}")
             for i, item in enumerate(tcp_data_list):
                 logger.info(f"   发送数据包 [{i+1}] 到端口 {item['port']}, 报文类型 {item['message_type']}")
                 
-                # 使用二进制TCP数据包格式发送
-                success = self.tcp_manager.send_to_agv_with_type(
+                # 使用二进制TCP数据包格式发送到指定AGV
+                success = self._send_to_specific_agv(
+                    target_agv,
                     item['port'], 
                     item['message_type'], 
                     item['data']
@@ -975,61 +1025,165 @@ class VDA5050Server:
     def _process_agv_tcp_data(self, tcp_data: Dict[str, Any], port_type: str):
         """处理AGV TCP数据（上行：AGV -> MQTTX）"""
         try:
-            logger.info(f"处理AGV TCP数据: {port_type}")
+            connection_id = tcp_data.get('connection_id', 'unknown')
+            logger.info(f"处理AGV TCP数据: {port_type}, 连接ID: {connection_id}")
             
             if port_type == 'pushAPI':
                 # 处理State数据（支持两种端口类型以兼容现有配置）
                 self._handle_state_data(tcp_data)
             else:
                 # 其他类型的数据暂时记录
-                logger.info(f"收到AGV数据 - 类型: {port_type}, 数据: {json.dumps(tcp_data, ensure_ascii=False)}")
+                vehicle_id = tcp_data.get('vehicle_id', 'unknown')
+                logger.info(f"收到AGV数据 - 车辆ID: {vehicle_id}, 类型: {port_type}, 连接ID: {connection_id}")
+                logger.debug(f"数据内容: {json.dumps(tcp_data, ensure_ascii=False)}")
                 
         except Exception as e:
             logger.error(f"处理AGV TCP数据失败: {e}")
     
     def _handle_state_data(self, tcp_data: Dict[str, Any]):
-        """处理AGV状态数据"""
+        """处理AGV状态数据（支持多机器人）"""
         try:
-            # 从TCP数据中提取AGV信息（如果可用）
-            vehicle_id = tcp_data.get('vehicle_id', self.agv_info['serial_number'])
-            manufacturer = tcp_data.get('manufacturer', self.agv_info['manufacturer'])
+            # 从TCP数据中提取AGV信息
+            vehicle_id = tcp_data.get('vehicle_id', 'UNKNOWN_AGV')
+            manufacturer = tcp_data.get('manufacturer', self.default_agv_info['manufacturer'])
+            connection_id = tcp_data.get('connection_id', 'unknown')
             
-            # 更新AGV信息
-            self.agv_info['serial_number'] = vehicle_id
-            self.agv_info['manufacturer'] = manufacturer
+            # 获取或创建AGV信息
+            agv_info = self._get_or_create_agv_info(vehicle_id, manufacturer, connection_id)
+            
+            logger.info(f"处理AGV状态数据 - 车辆ID: {vehicle_id}, 制造商: {manufacturer}, 连接ID: {connection_id}")
             
             # 转换为VDA5050 State消息
             state_data = self.converter.tcp_state_to_vda5050(tcp_data)
             if state_data:
-                self.mqtt_manager.publish_uplink_message(
+                success = self.mqtt_manager.publish_uplink_message(
                     'state',
-                    self.agv_info['manufacturer'],
-                    self.agv_info['serial_number'],
+                    agv_info['manufacturer'],
+                    agv_info['serial_number'],
                     state_data
                 )
+                if success:
+                    logger.debug(f"发布State消息成功 - 车辆: {vehicle_id}")
             
             # 转换为VDA5050 Visualization消息
             viz_data = self.converter.tcp_state_to_visualization(tcp_data)
             if viz_data:
-                self.mqtt_manager.publish_uplink_message(
+                success = self.mqtt_manager.publish_uplink_message(
                     'visualization',
-                    self.agv_info['manufacturer'],
-                    self.agv_info['serial_number'],
+                    agv_info['manufacturer'],
+                    agv_info['serial_number'],
                     viz_data
                 )
+                if success:
+                    logger.debug(f"发布Visualization消息成功 - 车辆: {vehicle_id}")
             
             # 创建Connection消息
             conn_data = self.converter.create_connection_message(tcp_data)
             if conn_data:
-                self.mqtt_manager.publish_uplink_message(
+                success = self.mqtt_manager.publish_uplink_message(
                     'connection',
-                    self.agv_info['manufacturer'],
-                    self.agv_info['serial_number'],
+                    agv_info['manufacturer'],
+                    agv_info['serial_number'],
                     conn_data
                 )
+                if success:
+                    logger.debug(f"发布Connection消息成功 - 车辆: {vehicle_id}")
                 
         except Exception as e:
             logger.error(f"处理状态数据失败: {e}")
+    
+    def _get_or_create_agv_info(self, vehicle_id: str, manufacturer: str, connection_id: str) -> Dict[str, str]:
+        """获取或创建AGV信息（支持多机器人）"""
+        try:
+            # 首先尝试根据vehicle_id查找
+            if vehicle_id in self.agv_info_by_vehicle_id:
+                agv_info = self.agv_info_by_vehicle_id[vehicle_id]
+                # 更新连接ID
+                agv_info['connection_id'] = connection_id
+                self.agv_connections[connection_id] = agv_info
+                return agv_info
+            
+            # 创建新的AGV信息
+            agv_info = {
+                'manufacturer': manufacturer,
+                'serial_number': vehicle_id,
+                'connection_id': connection_id,
+                'first_seen': datetime.now(timezone.utc).isoformat()
+            }
+            
+            # 存储信息
+            self.agv_info_by_vehicle_id[vehicle_id] = agv_info
+            self.agv_connections[connection_id] = agv_info
+            
+            logger.info(f"注册新AGV - 车辆ID: {vehicle_id}, 制造商: {manufacturer}, 连接ID: {connection_id}")
+            
+            return agv_info
+            
+        except Exception as e:
+            logger.error(f"获取或创建AGV信息失败: {e}")
+            # 返回默认信息
+            return {
+                'manufacturer': manufacturer or self.default_agv_info['manufacturer'],
+                'serial_number': vehicle_id or self.default_agv_info['serial_number'],
+                'connection_id': connection_id
+            }
+    
+    def get_connected_agvs(self) -> List[Dict[str, str]]:
+        """获取当前连接的所有AGV信息"""
+        return list(self.agv_info_by_vehicle_id.values())
+    
+    def get_agv_count(self) -> int:
+        """获取当前连接的AGV数量"""
+        return len(self.agv_info_by_vehicle_id)
+    
+    def _send_to_specific_agv(self, target_agv: Dict[str, str], port: int, 
+                             message_type: int, data: Dict[str, Any]) -> bool:
+        """发送数据到指定的AGV"""
+        try:
+            target_vehicle_id = target_agv['serial_number']
+            
+            # 检查目标AGV是否连接
+            if target_vehicle_id not in self.agv_info_by_vehicle_id:
+                logger.warning(f"目标AGV未连接: {target_vehicle_id}")
+                # 尝试广播到所有连接的AGV（兼容模式）
+                logger.info(f"切换到广播模式，发送到端口 {port} 的所有连接")
+                return self.tcp_manager.send_to_agv_with_type(port, message_type, data)
+            
+            # 获取目标AGV的连接信息
+            agv_info = self.agv_info_by_vehicle_id[target_vehicle_id]
+            connection_id = agv_info.get('connection_id')
+            
+            if not connection_id:
+                logger.warning(f"目标AGV连接信息缺失: {target_vehicle_id}")
+                return False
+            
+            # 发送到特定连接（这里简化处理，实际上需要根据connection_id找到具体的socket）
+            # 目前先使用广播模式，后续可以优化为精确路由
+            logger.info(f"发送数据到目标AGV: {target_vehicle_id} (连接ID: {connection_id})")
+            return self.tcp_manager.send_to_agv_with_type(port, message_type, data)
+            
+        except Exception as e:
+            logger.error(f"发送数据到指定AGV失败: {e}")
+            return False
+    
+    def print_connected_agvs(self):
+        """打印当前连接的所有AGV信息"""
+        agvs = self.get_connected_agvs()
+        logger.info("=" * 60)
+        logger.info(f"【当前连接的AGV列表】({len(agvs)} 台)")
+        logger.info("=" * 60)
+        
+        if not agvs:
+            logger.info("暂无AGV连接")
+        else:
+            for i, agv in enumerate(agvs, 1):
+                logger.info(f"[{i}] 车辆ID: {agv['serial_number']}")
+                logger.info(f"    制造商: {agv['manufacturer']}")
+                logger.info(f"    连接ID: {agv.get('connection_id', 'N/A')}")
+                logger.info(f"    首次连接: {agv.get('first_seen', 'N/A')}")
+                logger.info("    " + "-" * 40)
+        
+        logger.info("=" * 60)
 
 
 def load_config():

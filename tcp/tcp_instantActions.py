@@ -284,6 +284,21 @@ class VDA5050InstantActionsToTCPConverter:
                 else:
                     tcp_data['status'] = bool(status)
         
+        elif action_type == 'grabAuthority':
+            # 抢夺控制权动作特殊处理
+            action_params = self._parse_action_parameters(action)
+            # 默认使用固定的nick_name，也支持从参数中获取
+            nick_name = action_params.get('nick_name', 'srd-seer-mizhan')
+            tcp_data['nick_name'] = nick_name
+        
+        elif action_type == 'releaseAuthority':
+            # 释放控制权动作特殊处理
+            # 注意：releaseAuthority应该是空数据区，但这里先保持SINGLE_FIELD配置的兼容性
+            action_params = self._parse_action_parameters(action)
+            # 如果有参数则添加，否则保持空
+            if action_params:
+                tcp_data.update(action_params)
+        
         return tcp_data
     
     def _parse_action_parameters(self, action: Dict[str, Any]) -> Dict[str, Any]:
