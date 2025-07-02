@@ -1,10 +1,10 @@
 # VDA5050机器人配置文件 v2.0
-# 完整支持VDA5050标准和多厂家协议扩展
+# 支持VDA5050标准和多厂家协议扩展
 # ===============================================
 
 # 配置文件版本信息
 config_version: "2.0.0"
-config_description: "完整VDA5050标准配置文件"
+config_description: "VDA5050标准配置文件"
 last_updated: "2025-06-30"
 
 # 机器人基本信息 (对应VDA5050 Factsheet)
