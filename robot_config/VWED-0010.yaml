@@ -166,8 +166,8 @@ protocol_adapters:
       instant_actions:
         pick: {type: 3066, port: 19206, format: "move_task_list"}
         drop: {type: 3066, port: 19206, format: "move_task_list"}
-        startPause: {type: 3001, port: 19206, format: "empty_data"}
-        stopPause: {type: 3002, port: 19206, format: "empty_data"}
+        startPause: {type: 3002, port: 19206, format: "empty_data"}
+        stopPause: {type: 3001, port: 19206, format: "empty_data"}
         cancelOrder: {type: 3003, port: 19206, format: "empty_data"}
         reloc: {type: 2002, port: 19205, format: "single_field"}
         cancelReloc: {type: 2004, port: 19205, format: "empty_data"}
@@ -176,6 +176,8 @@ protocol_adapters:
         softEmc: {type: 6004, port: 19210, format: "single_field"}
         turn: {type: 3056, port: 19206, format: "single_field"}
         translate: {type: 3055, port: 19206, format: "single_field"}
+        grabAuthority: {type: 4005, port: 19207, format: "single_field"}
+        releaseAuthority: {type: 4006, port: 19207, format: "empty_data"}
       
       # 控制权管理
       authority_control:
@@ -203,14 +205,14 @@ vda5050_actions:
     startPause:
       supported: true
       tcp_port: 19206
-      tcp_message_type: 3001
+      tcp_message_type: 3002
       tcp_format: "empty_data"
       blocking_type: "HARD"
       description: "暂停任务执行"
     stopPause:
       supported: true
       tcp_port: 19206
-      tcp_message_type: 3002  
+      tcp_message_type: 3001  
       tcp_format: "empty_data"
       blocking_type: "HARD"
       description: "恢复任务执行"

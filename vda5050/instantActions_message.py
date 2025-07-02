@@ -50,6 +50,10 @@ class InstantActionType(Enum):
     START_CHARGING = "startCharging"
     STOP_CHARGING = "stopCharging"
     SAFE_CHECK = "safeCheck"
+    
+    # 控制权管理
+    GRAB_AUTHORITY = "grabAuthority"
+    RELEASE_AUTHORITY = "releaseAuthority"
 
 
 class InstantActionBuilder:
@@ -611,6 +615,37 @@ class InstantActionBuilder:
             blocking_type="SOFT",
             action_description="通过脚本实现，需要脚本中实现检查逻辑"
         )
+    
+    @staticmethod
+    def create_grab_authority(action_id: Optional[str] = None,
+                             authority_type: str = "FULL") -> Action:
+        """创建抢夺控制权动作
+        
+        Args:
+            action_id: 动作ID，若不指定则自动生成
+            authority_type: 控制权类型，如"FULL", "MOVEMENT", "OPERATION"等
+        """
+        grab_authority_parameters = [
+            ActionParameter("authority_type", authority_type)
+        ]
+        
+        return Action(
+            action_id=action_id or str(uuid.uuid4()),
+            action_type=InstantActionType.GRAB_AUTHORITY.value,
+            blocking_type="HARD",
+            action_description="抢夺AGV控制权",
+            action_parameters=grab_authority_parameters
+        )
+    
+    @staticmethod
+    def create_release_authority(action_id: Optional[str] = None) -> Action:
+        """创建释放控制权动作"""
+        return Action(
+            action_id=action_id or str(uuid.uuid4()),
+            action_type=InstantActionType.RELEASE_AUTHORITY.value,
+            blocking_type="HARD",
+            action_description="释放AGV控制权"
+        )
 
 
 class InstantActionsMessage(VDA5050BaseMessage):
@@ -757,4 +792,13 @@ class InstantActionsMessage(VDA5050BaseMessage):
     
     def add_stop_charging(self, action_id: Optional[str] = None):
         """添加停止充电动作"""
-        self.add_action(InstantActionBuilder.create_stop_charging(action_id)) 
+        self.add_action(InstantActionBuilder.create_stop_charging(action_id))
+    
+    def add_grab_authority(self, action_id: Optional[str] = None,
+                          authority_type: str = "FULL"):
+        """添加抢夺控制权动作"""
+        self.add_action(InstantActionBuilder.create_grab_authority(action_id, authority_type))
+    
+    def add_release_authority(self, action_id: Optional[str] = None):
+        """添加释放控制权动作"""
+        self.add_action(InstantActionBuilder.create_release_authority(action_id)) 

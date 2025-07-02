@@ -26,8 +26,8 @@
         "action_types": {
             "pick": {"port": 19206, "message_type": 3066},
             "drop": {"port": 19206, "message_type": 3066},
-            "startPause": {"port": 19206, "message_type": 3001},
-            "stopPause": {"port": 19206, "message_type": 3002},
+            "startPause": {"port": 19206, "message_type": 3002},
+            "stopPause": {"port": 19206, "message_type": 3001},
             "cancelOrder": {"port": 19206, "message_type": 3003},
             "reloc": {"port": 19205, "message_type": 2002},
             "cancelReloc": {"port": 19205, "message_type": 2004},
@@ -35,7 +35,9 @@
             "rotateLoad": {"port": 19206, "message_type": 3057},
             "softEmc": {"port": 19210, "message_type": 6004},
             "turn": {"port": 19206, "message_type": 3056},
-            "translate": {"port": 19206, "message_type": 3055}
+            "translate": {"port": 19206, "message_type": 3055},
+            "grabAuthority": {"port": 19207, "message_type": 4005},
+            "releaseAuthority": {"port": 19207, "message_type": 4006}
         }
     },
     "vda5050_topics": {

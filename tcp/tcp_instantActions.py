@@ -59,15 +59,17 @@ class VDA5050InstantActionsToTCPConverter:
         'cancelOrder': 'Cancel',      # 取消订单
         'reloc': 'Reloc',             # 重定位
         'cancelReloc': 'CancelReloc', # 取消重定位
-        'clearErrors': 'ClearErrors'  # 清除错误
+        'clearErrors': 'ClearErrors', # 清除错误
+        'grabAuthority': 'GrabAuthority',    # 抢夺控制权
+        'releaseAuthority': 'ReleaseAuthority'  # 释放控制权
     }
     
     # VDA5050动作类型到端口号和报文类型的配置表
     ACTION_CONFIG = {
         'pick': ActionConfig(19206, 3066, DataFormatType.MOVE_TASK_LIST),
         'drop': ActionConfig(19206, 3066, DataFormatType.MOVE_TASK_LIST),
-        'startPause': ActionConfig(19206, 3001, DataFormatType.EMPTY_DATA),
-        'stopPause': ActionConfig(19206, 3002, DataFormatType.EMPTY_DATA),
+        'startPause': ActionConfig(19206, 3002, DataFormatType.EMPTY_DATA),
+        'stopPause': ActionConfig(19206, 3001, DataFormatType.EMPTY_DATA),
         'cancelOrder': ActionConfig(19206, 3003, DataFormatType.EMPTY_DATA),
         'reloc': ActionConfig(19205, 2002, DataFormatType.SINGLE_FIELD),
         'cancelReloc': ActionConfig(19205, 2004, DataFormatType.EMPTY_DATA),
@@ -75,7 +77,9 @@ class VDA5050InstantActionsToTCPConverter:
         'rotateLoad': ActionConfig(19206, 3057, DataFormatType.SINGLE_FIELD),
         'softEmc': ActionConfig(19210, 6004, DataFormatType.SINGLE_FIELD),
         'turn': ActionConfig(19206, 3056, DataFormatType.SINGLE_FIELD),
-        'translate': ActionConfig(19206, 3055, DataFormatType.SINGLE_FIELD)
+        'translate': ActionConfig(19206, 3055, DataFormatType.SINGLE_FIELD),
+        'grabAuthority': ActionConfig(19207, 4005, DataFormatType.SINGLE_FIELD),
+        'releaseAuthority': ActionConfig(19207, 4006, DataFormatType.EMPTY_DATA)
     }
     
     def __init__(self):

@@ -36,8 +36,8 @@ class VDA5050ToTCPConverter:
     INSTANT_ACTION_CONFIG = {
         'pick': {'port': 19206, 'message_type': 3066},           # 托盘抬升
         'drop': {'port': 19206, 'message_type': 3066},           # 托盘下降
-        'startPause': {'port': 19206, 'message_type': 3001},     # 暂停任务
-        'stopPause': {'port': 19206, 'message_type': 3002},      # 继续任务
+        'startPause': {'port': 19206, 'message_type': 3002},     # 暂停任务
+        'stopPause': {'port': 19206, 'message_type': 3001},      # 继续任务
         'cancelOrder': {'port': 19206, 'message_type': 3003},    # 取消订单
         'reloc': {'port': 19205, 'message_type': 2002},          # 重定位
         'cancelReloc': {'port': 19205, 'message_type': 2004},    # 取消重定位
@@ -45,7 +45,9 @@ class VDA5050ToTCPConverter:
         'rotateLoad': {'port': 19206, 'message_type': 3057},     # 托盘旋转
         'softEmc': {'port': 19210, 'message_type': 6004},        # 软急停
         'turn': {'port': 19206, 'message_type': 3056},           # 转动
-        'translate': {'port': 19206, 'message_type': 3055}       # 平动
+        'translate': {'port': 19206, 'message_type': 3055},      # 平动
+        'grabAuthority': {'port': 19207, 'message_type': 4005},  # 抢夺控制权
+        'releaseAuthority': {'port': 19207, 'message_type': 4006}  # 释放控制权
     }
     
     def __init__(self):

@@ -172,7 +172,8 @@ class VDA5050TCPDemo:
         # 动作类型下拉栏
         self.action_type_var = tk.StringVar()
         action_types = ["pick", "drop", "translate", "turn", "reloc", "startPause", "stopPause", 
-                       "cancelOrder", "cancelReloc", "clearErrors", "rotateLoad", "softEmc"]
+                       "cancelOrder", "cancelReloc", "clearErrors", "rotateLoad", "softEmc",
+                       "grabAuthority", "releaseAuthority"]
         self.action_type_combo = ttk.Combobox(action_frame, textvariable=self.action_type_var, 
                                              values=action_types, state="readonly", width=15)
         self.action_type_combo.pack(side=tk.LEFT, padx=(0, 10))
@@ -712,7 +713,7 @@ class VDA5050TCPDemo:
                 action_params = []
                 action_params.append(ActionParameter(
                     key="status",
-                    value=str(random.choice([True, False]).lower())
+                    value=str(random.choice([True, False])).lower()
                 ))
                 action = Action(
                     action_id="action_1",
@@ -736,6 +737,29 @@ class VDA5050TCPDemo:
                     action_parameters=action_params,
                     blocking_type="HARD",
                     action_description="清除错误动作"
+                )
+            elif selected_action_type == "grabAuthority":
+                # 抢夺控制权动作
+                action_params = []
+                action_params.append(ActionParameter(
+                    key="authority_type",
+                    value=random.choice(["FULL", "MOVEMENT", "OPERATION", "SAFETY"])
+                ))
+                action = Action(
+                    action_id="action_1",
+                    action_type=selected_action_type,
+                    action_parameters=action_params,
+                    blocking_type="HARD",
+                    action_description="抢夺AGV控制权"
+                )
+            elif selected_action_type == "releaseAuthority":
+                # 释放控制权动作（无参数）
+                action = Action(
+                    action_id="action_1",
+                    action_type=selected_action_type,
+                    action_parameters=[],
+                    blocking_type="HARD",
+                    action_description="释放AGV控制权"
                 )
             else:
                 # 使用简单动作 (pick, drop, startPause, stopPause, cancelOrder, cancelReloc)
@@ -789,7 +813,8 @@ class VDA5050TCPDemo:
             # 创建随机即时动作
             actions = []
             action_types = ["pick", "drop", "translate", "turn", "reloc", "startPause", "stopPause",
-                           "cancelOrder", "cancelReloc", "clearErrors", "rotateLoad", "softEmc"]
+                           "cancelOrder", "cancelReloc", "clearErrors", "rotateLoad", "softEmc",
+                           "grabAuthority", "releaseAuthority"]
             
             # 生成1-3个动作
             num_actions = random.randint(1, 3)
@@ -846,7 +871,7 @@ class VDA5050TCPDemo:
                     action_params = []
                     action_params.append(ActionParameter(
                         key="status",
-                        value=str(random.choice([True, False]).lower())
+                        value=str(random.choice([True, False])).lower()
                     ))
                     action = Action(
                         action_id=f"action_{i+1}",
@@ -870,6 +895,29 @@ class VDA5050TCPDemo:
                         action_parameters=action_params,
                         blocking_type="HARD",
                         action_description="清除错误动作"
+                    )
+                elif action_type == "grabAuthority":
+                    # 抢夺控制权动作
+                    action_params = []
+                    action_params.append(ActionParameter(
+                        key="authority_type",
+                        value=random.choice(["FULL", "MOVEMENT", "OPERATION", "SAFETY"])
+                    ))
+                    action = Action(
+                        action_id=f"action_{i+1}",
+                        action_type=action_type,
+                        action_parameters=action_params,
+                        blocking_type="HARD",
+                        action_description="抢夺AGV控制权"
+                    )
+                elif action_type == "releaseAuthority":
+                    # 释放控制权动作（无参数）
+                    action = Action(
+                        action_id=f"action_{i+1}",
+                        action_type=action_type,
+                        action_parameters=[],
+                        blocking_type="HARD",
+                        action_description="释放AGV控制权"
                     )
                 else:
                     # 使用简单动作 (pick, drop, startPause, stopPause, cancelOrder, cancelReloc)
