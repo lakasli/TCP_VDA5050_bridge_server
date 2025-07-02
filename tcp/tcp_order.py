@@ -274,7 +274,7 @@ class VDA5050ToTCPConverter:
                             'type': 'empty_data',
                             'port': action_config['port'],
                             'message_type': action_config['message_type'],
-                            'data': {},
+                            'data': {"__empty_data__": True},
                             'action_type': action_type,
                             'description': f"{action_type}（数据区为空）"
                         }
@@ -405,7 +405,7 @@ def create_sample_instant_action_tcp() -> List[Dict[str, Any]]:
             'type': 'empty_data',
             'port': 19206,
             'message_type': 3001,
-            'data': {},
+            'data': {"__empty_data__": True},
             'action_type': 'startPause',
             'description': 'startPause（数据区为空）'
         }

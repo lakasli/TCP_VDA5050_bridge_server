@@ -9135,3 +9135,247 @@
 2025-07-01 23:44:51,224 - __main__ - INFO - ����MQTT��Ϣ�ɹ� - Topic: /uagv/v2/SEER/VWED-0010/state
 2025-07-01 23:44:51,226 - __main__ - INFO - ����MQTT��Ϣ�ɹ� - Topic: /uagv/v2/SEER/VWED-0010/visualization
 2025-07-01 23:44:51,227 - __main__ - INFO - ����MQTT��Ϣ�ɹ� - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 00:10:38,999 - __main__ - INFO - 使用配置文件中的MQTT设置
+2025-07-02 00:10:39,000 - __main__ - INFO - 正在启动VDA5050协议转换服务器...
+2025-07-02 00:10:39,000 - __main__ - INFO - 正在连接MQTT代理: 172.31.232.152:1883
+2025-07-02 00:10:39,000 - __main__ - INFO - 使用客户端ID: vda5050_tcp_server_854e3aa9
+2025-07-02 00:10:39,165 - __main__ - INFO - MQTT连接建立成功
+2025-07-02 00:10:39,165 - __main__ - INFO - 订阅topic: /uagv/v2/+/+/order
+2025-07-02 00:10:39,165 - __main__ - INFO - 订阅topic: /uagv/v2/+/+/instantActions
+2025-07-02 00:10:39,224 - __main__ - INFO - MQTT连接成功
+2025-07-02 00:10:39,225 - __main__ - INFO - 启动TCP服务器 - 端口: 19204, 类型: stateAPI
+2025-07-02 00:10:39,225 - __main__ - INFO - TCP服务器已启动 - 端口: 19204
+2025-07-02 00:10:39,225 - __main__ - INFO - 启动TCP服务器 - 端口: 19205, 类型: controlAPI
+2025-07-02 00:10:39,226 - __main__ - INFO - TCP服务器已启动 - 端口: 19205
+2025-07-02 00:10:39,227 - __main__ - INFO - 启动TCP服务器 - 端口: 19206, 类型: navigationAPI
+2025-07-02 00:10:39,227 - __main__ - INFO - TCP服务器已启动 - 端口: 19206
+2025-07-02 00:10:39,227 - __main__ - INFO - 启动TCP服务器 - 端口: 19207, 类型: configAPI
+2025-07-02 00:10:39,227 - __main__ - INFO - TCP服务器已启动 - 端口: 19207
+2025-07-02 00:10:39,228 - __main__ - INFO - TCP服务器已启动 - 端口: 19210
+2025-07-02 00:10:39,228 - __main__ - INFO - 启动TCP服务器 - 端口: 19210, 类型: otherAPI
+2025-07-02 00:10:39,228 - __main__ - INFO - 启动TCP服务器 - 端口: 19301, 类型: pushAPI
+2025-07-02 00:10:39,229 - __main__ - INFO - TCP服务器已启动 - 端口: 19301
+2025-07-02 00:10:39,229 - __main__ - INFO - VDA5050协议转换服务器启动成功
+2025-07-02 00:10:39,229 - __main__ - INFO - 服务器运行中，按Ctrl+C停止...
+2025-07-02 00:10:43,336 - __main__ - INFO - AGV连接成功 - 端口: 19210, 地址: ('127.0.0.1', 56616)
+2025-07-02 00:10:43,336 - __main__ - INFO - AGV连接成功 - 端口: 19207, 地址: ('127.0.0.1', 56615)
+2025-07-02 00:10:43,336 - __main__ - INFO - AGV连接成功 - 端口: 19206, 地址: ('127.0.0.1', 56617)
+2025-07-02 00:10:43,336 - __main__ - INFO - AGV连接成功 - 端口: 19205, 地址: ('127.0.0.1', 56614)
+2025-07-02 00:10:43,337 - __main__ - INFO - AGV连接成功 - 端口: 19301, 地址: ('127.0.0.1', 56613)
+2025-07-02 00:10:43,337 - tcp.manufacturer_a - INFO - [INFO] 构建二进制TCP包 - 类型: 4005, 序列: 1, 数据长度: 31
+2025-07-02 00:10:43,339 - __main__ - INFO - ============================================================
+2025-07-02 00:10:43,339 - __main__ - INFO - 【控制权抢夺】实际发送的TCP数据包详情:
+2025-07-02 00:10:43,339 - __main__ - INFO - 目标端口: 19207
+2025-07-02 00:10:43,339 - __main__ - INFO - 报文类型: 4005
+2025-07-02 00:10:43,339 - __main__ - INFO - 数据内容: {"nick_name": "srd-seer-mizhan"}
+2025-07-02 00:10:43,339 - __main__ - INFO - 数据包长度: 47 字节
+2025-07-02 00:10:43,339 - __main__ - INFO - 十六进制数据: 5A0100010000001F0FA50000000000007B226E69636B5F6E616D65223A227372642D736565722D6D697A68616E227D
+2025-07-02 00:10:43,340 - __main__ - INFO - 二进制数据包结构解析:
+2025-07-02 00:10:43,340 - __main__ - INFO -   - 同步头: 0x5A
+2025-07-02 00:10:43,340 - __main__ - INFO -   - 版本: 0x01
+2025-07-02 00:10:43,340 - __main__ - INFO -   - 序列号: 1
+2025-07-02 00:10:43,340 - __main__ - INFO -   - 数据长度: 31
+2025-07-02 00:10:43,340 - __main__ - INFO -   - 报文类型: 4005
+2025-07-02 00:10:43,341 - __main__ - INFO -   - 保留字段: 000000000000
+2025-07-02 00:10:43,341 - __main__ - INFO -   - 数据内容: {"nick_name":"srd-seer-mizhan"}
+2025-07-02 00:10:43,341 - __main__ - INFO - ============================================================
+2025-07-02 00:10:43,341 - __main__ - INFO - 控制权抢夺指令发送成功 - 端口: 19207
+2025-07-02 00:10:46,334 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-02 00:10:46,335 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 00:10:46,335 - tcp.tcp_visualization - WARNING - [WARNING] 位置信息不完整：x=None, y=None, angle=None
+2025-07-02 00:10:46,336 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vx值：None
+2025-07-02 00:10:46,336 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vy值：None
+2025-07-02 00:10:46,336 - tcp.tcp_visualization - WARNING - [WARNING] 无效的角速度值：None
+2025-07-02 00:10:46,336 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 00:10:46,337 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 00:10:49,336 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-02 00:10:49,337 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 00:10:49,337 - tcp.tcp_visualization - WARNING - [WARNING] 位置信息不完整：x=None, y=None, angle=None
+2025-07-02 00:10:49,337 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vx值：None
+2025-07-02 00:10:49,337 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vy值：None
+2025-07-02 00:10:49,337 - tcp.tcp_visualization - WARNING - [WARNING] 无效的角速度值：None
+2025-07-02 00:10:49,337 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 00:10:49,337 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 00:10:52,337 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-02 00:10:52,338 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 00:10:52,338 - tcp.tcp_visualization - WARNING - [WARNING] 位置信息不完整：x=None, y=None, angle=None
+2025-07-02 00:10:52,338 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vx值：None
+2025-07-02 00:10:52,338 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vy值：None
+2025-07-02 00:10:52,338 - tcp.tcp_visualization - WARNING - [WARNING] 无效的角速度值：None
+2025-07-02 00:10:52,339 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 00:10:52,339 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 00:10:55,338 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-02 00:10:55,339 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 00:10:55,339 - tcp.tcp_visualization - WARNING - [WARNING] 位置信息不完整：x=None, y=None, angle=None
+2025-07-02 00:10:55,339 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vx值：None
+2025-07-02 00:10:55,339 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vy值：None
+2025-07-02 00:10:55,339 - tcp.tcp_visualization - WARNING - [WARNING] 无效的角速度值：None
+2025-07-02 00:10:55,340 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 00:10:55,340 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 00:10:55,813 - __main__ - ERROR - 处理AGV数据错误 - 端口: 19206, 错误: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+2025-07-02 00:10:55,813 - __main__ - ERROR - 处理AGV数据错误 - 端口: 19205, 错误: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+2025-07-02 00:10:55,813 - __main__ - ERROR - 处理AGV数据错误 - 端口: 19210, 错误: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+2025-07-02 00:10:55,813 - __main__ - ERROR - 处理AGV数据错误 - 端口: 19301, 错误: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+2025-07-02 00:10:55,813 - __main__ - ERROR - 处理AGV数据错误 - 端口: 19207, 错误: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+2025-07-02 00:10:55,813 - __main__ - INFO - AGV连接已断开 - 端口: 19206, 地址: ('127.0.0.1', 56617)
+2025-07-02 00:10:55,814 - __main__ - INFO - AGV连接已断开 - 端口: 19205, 地址: ('127.0.0.1', 56614)
+2025-07-02 00:10:55,814 - __main__ - INFO - AGV连接已断开 - 端口: 19210, 地址: ('127.0.0.1', 56616)
+2025-07-02 00:10:55,814 - __main__ - INFO - AGV连接已断开 - 端口: 19301, 地址: ('127.0.0.1', 56613)
+2025-07-02 00:10:55,814 - __main__ - INFO - AGV连接已断开 - 端口: 19207, 地址: ('127.0.0.1', 56615)
+2025-07-02 00:11:12,128 - __main__ - INFO - 使用配置文件中的MQTT设置
+2025-07-02 00:11:12,128 - __main__ - INFO - 正在启动VDA5050协议转换服务器...
+2025-07-02 00:11:12,128 - __main__ - INFO - 正在连接MQTT代理: 172.31.232.152:1883
+2025-07-02 00:11:12,128 - __main__ - INFO - 使用客户端ID: vda5050_tcp_server_599f3af8
+2025-07-02 00:11:12,180 - __main__ - INFO - MQTT连接建立成功
+2025-07-02 00:11:12,181 - __main__ - INFO - 订阅topic: /uagv/v2/+/+/order
+2025-07-02 00:11:12,181 - __main__ - INFO - 订阅topic: /uagv/v2/+/+/instantActions
+2025-07-02 00:11:12,233 - __main__ - INFO - MQTT连接成功
+2025-07-02 00:11:12,233 - __main__ - INFO - 启动TCP服务器 - 端口: 19204, 类型: stateAPI
+2025-07-02 00:11:12,233 - __main__ - INFO - TCP服务器已启动 - 端口: 19204
+2025-07-02 00:11:12,234 - __main__ - INFO - 启动TCP服务器 - 端口: 19205, 类型: controlAPI
+2025-07-02 00:11:12,234 - __main__ - INFO - TCP服务器已启动 - 端口: 19206
+2025-07-02 00:11:12,234 - __main__ - INFO - 启动TCP服务器 - 端口: 19206, 类型: navigationAPI
+2025-07-02 00:11:12,234 - __main__ - INFO - TCP服务器已启动 - 端口: 19205
+2025-07-02 00:11:12,235 - __main__ - INFO - 启动TCP服务器 - 端口: 19207, 类型: configAPI
+2025-07-02 00:11:12,235 - __main__ - INFO - 启动TCP服务器 - 端口: 19210, 类型: otherAPI
+2025-07-02 00:11:12,235 - __main__ - INFO - TCP服务器已启动 - 端口: 19207
+2025-07-02 00:11:12,235 - __main__ - INFO - TCP服务器已启动 - 端口: 19210
+2025-07-02 00:11:12,236 - __main__ - INFO - 启动TCP服务器 - 端口: 19301, 类型: pushAPI
+2025-07-02 00:11:12,236 - __main__ - INFO - VDA5050协议转换服务器启动成功
+2025-07-02 00:11:12,236 - __main__ - INFO - TCP服务器已启动 - 端口: 19301
+2025-07-02 00:11:12,236 - __main__ - INFO - 服务器运行中，按Ctrl+C停止...
+2025-07-02 00:11:16,249 - __main__ - INFO - AGV连接成功 - 端口: 19206, 地址: ('127.0.0.1', 56757)
+2025-07-02 00:11:16,249 - __main__ - INFO - AGV连接成功 - 端口: 19210, 地址: ('127.0.0.1', 56756)
+2025-07-02 00:11:16,249 - __main__ - INFO - AGV连接成功 - 端口: 19205, 地址: ('127.0.0.1', 56758)
+2025-07-02 00:11:16,249 - __main__ - INFO - AGV连接成功 - 端口: 19207, 地址: ('127.0.0.1', 56759)
+2025-07-02 00:11:16,250 - __main__ - INFO - AGV连接成功 - 端口: 19301, 地址: ('127.0.0.1', 56760)
+2025-07-02 00:11:16,253 - tcp.manufacturer_a - INFO - [INFO] 构建二进制TCP包 - 类型: 4005, 序列: 1, 数据长度: 31
+2025-07-02 00:11:16,256 - __main__ - INFO - ============================================================
+2025-07-02 00:11:16,257 - __main__ - INFO - 【控制权抢夺】实际发送的TCP数据包详情:
+2025-07-02 00:11:16,260 - __main__ - INFO - 目标端口: 19207
+2025-07-02 00:11:16,263 - __main__ - INFO - 报文类型: 4005
+2025-07-02 00:11:16,265 - __main__ - INFO - 数据内容: {"nick_name": "srd-seer-mizhan"}
+2025-07-02 00:11:16,265 - __main__ - INFO - 数据包长度: 47 字节
+2025-07-02 00:11:16,265 - __main__ - INFO - 十六进制数据: 5A0100010000001F0FA50000000000007B226E69636B5F6E616D65223A227372642D736565722D6D697A68616E227D
+2025-07-02 00:11:16,265 - __main__ - INFO - 二进制数据包结构解析:
+2025-07-02 00:11:16,266 - __main__ - INFO -   - 同步头: 0x5A
+2025-07-02 00:11:16,268 - __main__ - INFO -   - 版本: 0x01
+2025-07-02 00:11:16,272 - __main__ - INFO -   - 序列号: 1
+2025-07-02 00:11:16,275 - __main__ - INFO -   - 数据长度: 31
+2025-07-02 00:11:16,277 - __main__ - INFO -   - 报文类型: 4005
+2025-07-02 00:11:16,281 - __main__ - INFO -   - 保留字段: 000000000000
+2025-07-02 00:11:16,283 - __main__ - INFO -   - 数据内容: {"nick_name":"srd-seer-mizhan"}
+2025-07-02 00:11:16,284 - __main__ - INFO - ============================================================
+2025-07-02 00:11:16,285 - __main__ - INFO - 控制权抢夺指令发送成功 - 端口: 19207
+2025-07-02 00:11:19,249 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-02 00:11:19,250 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 00:11:19,250 - tcp.tcp_visualization - WARNING - [WARNING] 位置信息不完整：x=None, y=None, angle=None
+2025-07-02 00:11:19,251 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vx值：None
+2025-07-02 00:11:19,252 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vy值：None
+2025-07-02 00:11:19,252 - tcp.tcp_visualization - WARNING - [WARNING] 无效的角速度值：None
+2025-07-02 00:11:19,252 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 00:11:19,253 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 00:11:22,250 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-02 00:11:22,251 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 00:11:22,251 - tcp.tcp_visualization - WARNING - [WARNING] 位置信息不完整：x=None, y=None, angle=None
+2025-07-02 00:11:22,251 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vx值：None
+2025-07-02 00:11:22,251 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vy值：None
+2025-07-02 00:11:22,251 - tcp.tcp_visualization - WARNING - [WARNING] 无效的角速度值：None
+2025-07-02 00:11:22,251 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 00:11:22,252 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 00:11:25,254 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-02 00:11:25,254 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 00:11:25,254 - tcp.tcp_visualization - WARNING - [WARNING] 位置信息不完整：x=None, y=None, angle=None
+2025-07-02 00:11:25,255 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vx值：None
+2025-07-02 00:11:25,255 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vy值：None
+2025-07-02 00:11:25,255 - tcp.tcp_visualization - WARNING - [WARNING] 无效的角速度值：None
+2025-07-02 00:11:25,255 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 00:11:25,255 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 00:11:28,255 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-02 00:11:28,256 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 00:11:28,256 - tcp.tcp_visualization - WARNING - [WARNING] 位置信息不完整：x=None, y=None, angle=None
+2025-07-02 00:11:28,256 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vx值：None
+2025-07-02 00:11:28,257 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vy值：None
+2025-07-02 00:11:28,257 - tcp.tcp_visualization - WARNING - [WARNING] 无效的角速度值：None
+2025-07-02 00:11:28,257 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 00:11:28,257 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 00:11:31,259 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-02 00:11:31,259 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 00:11:31,260 - tcp.tcp_visualization - WARNING - [WARNING] 位置信息不完整：x=None, y=None, angle=None
+2025-07-02 00:11:31,260 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vx值：None
+2025-07-02 00:11:31,260 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vy值：None
+2025-07-02 00:11:31,260 - tcp.tcp_visualization - WARNING - [WARNING] 无效的角速度值：None
+2025-07-02 00:11:31,261 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 00:11:31,261 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 00:11:34,262 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-02 00:11:34,262 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 00:11:34,262 - tcp.tcp_visualization - WARNING - [WARNING] 位置信息不完整：x=None, y=None, angle=None
+2025-07-02 00:11:34,262 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vx值：None
+2025-07-02 00:11:34,262 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vy值：None
+2025-07-02 00:11:34,263 - tcp.tcp_visualization - WARNING - [WARNING] 无效的角速度值：None
+2025-07-02 00:11:34,263 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 00:11:34,263 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 00:11:37,264 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-02 00:11:37,265 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 00:11:37,274 - tcp.tcp_visualization - WARNING - [WARNING] 位置信息不完整：x=None, y=None, angle=None
+2025-07-02 00:11:37,274 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vx值：None
+2025-07-02 00:11:37,274 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vy值：None
+2025-07-02 00:11:37,276 - tcp.tcp_visualization - WARNING - [WARNING] 无效的角速度值：None
+2025-07-02 00:11:37,276 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 00:11:37,276 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 00:11:40,266 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-02 00:11:40,266 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 00:11:40,266 - tcp.tcp_visualization - WARNING - [WARNING] 位置信息不完整：x=None, y=None, angle=None
+2025-07-02 00:11:40,266 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vx值：None
+2025-07-02 00:11:40,266 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vy值：None
+2025-07-02 00:11:40,267 - tcp.tcp_visualization - WARNING - [WARNING] 无效的角速度值：None
+2025-07-02 00:11:40,267 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 00:11:40,267 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 00:11:43,270 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-02 00:11:43,271 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 00:11:43,276 - tcp.tcp_visualization - WARNING - [WARNING] 位置信息不完整：x=None, y=None, angle=None
+2025-07-02 00:11:43,276 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vx值：None
+2025-07-02 00:11:43,276 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vy值：None
+2025-07-02 00:11:43,276 - tcp.tcp_visualization - WARNING - [WARNING] 无效的角速度值：None
+2025-07-02 00:11:43,277 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 00:11:43,277 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 00:11:46,271 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-02 00:11:46,271 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 00:11:46,272 - tcp.tcp_visualization - WARNING - [WARNING] 位置信息不完整：x=None, y=None, angle=None
+2025-07-02 00:11:46,272 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vx值：None
+2025-07-02 00:11:46,272 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vy值：None
+2025-07-02 00:11:46,272 - tcp.tcp_visualization - WARNING - [WARNING] 无效的角速度值：None
+2025-07-02 00:11:46,273 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 00:11:46,273 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 00:11:49,273 - __main__ - INFO - 处理AGV TCP数据: pushAPI
+2025-07-02 00:11:49,274 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 00:11:49,274 - tcp.tcp_visualization - WARNING - [WARNING] 位置信息不完整：x=None, y=None, angle=None
+2025-07-02 00:11:49,274 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vx值：None
+2025-07-02 00:11:49,275 - tcp.tcp_visualization - WARNING - [WARNING] 无效的vy值：None
+2025-07-02 00:11:49,277 - tcp.tcp_visualization - WARNING - [WARNING] 无效的角速度值：None
+2025-07-02 00:11:49,281 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 00:11:49,281 - __main__ - INFO - 发布MQTT消息成功 - Topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 00:15:27,264 - __main__ - INFO - 使用配置文件中的MQTT设置
+2025-07-02 00:15:27,265 - __main__ - INFO - 正在启动VDA5050协议转换服务器...
+2025-07-02 00:15:27,265 - __main__ - INFO - 正在连接MQTT代理: 172.31.232.152:1883
+2025-07-02 00:15:27,265 - __main__ - INFO - 使用客户端ID: vda5050_tcp_server_e8cf6881
+2025-07-02 00:15:27,376 - __main__ - INFO - MQTT连接建立成功
+2025-07-02 00:15:27,377 - __main__ - INFO - 订阅topic: /uagv/v2/+/+/order
+2025-07-02 00:15:27,377 - __main__ - INFO - 订阅topic: /uagv/v2/+/+/instantActions
+2025-07-02 00:15:27,381 - __main__ - INFO - MQTT连接成功
+2025-07-02 00:15:27,382 - __main__ - INFO - 启动TCP服务器 - 端口: 19204, 类型: stateAPI
+2025-07-02 00:15:27,383 - __main__ - INFO - TCP服务器已启动 - 端口: 19204
+2025-07-02 00:15:27,383 - __main__ - INFO - 启动TCP服务器 - 端口: 19205, 类型: controlAPI
+2025-07-02 00:15:27,383 - __main__ - INFO - TCP服务器已启动 - 端口: 19205
+2025-07-02 00:15:27,385 - __main__ - INFO - 启动TCP服务器 - 端口: 19206, 类型: navigationAPI
+2025-07-02 00:15:27,385 - __main__ - INFO - TCP服务器已启动 - 端口: 19206
+2025-07-02 00:15:27,386 - __main__ - INFO - 启动TCP服务器 - 端口: 19207, 类型: configAPI
+2025-07-02 00:15:27,386 - __main__ - INFO - TCP服务器已启动 - 端口: 19207
+2025-07-02 00:15:27,387 - __main__ - INFO - 启动TCP服务器 - 端口: 19210, 类型: otherAPI
+2025-07-02 00:15:27,388 - __main__ - INFO - TCP服务器已启动 - 端口: 19210
+2025-07-02 00:15:27,389 - __main__ - INFO - 启动TCP服务器 - 端口: 19301, 类型: pushAPI
+2025-07-02 00:15:27,390 - __main__ - INFO - TCP服务器已启动 - 端口: 19301
+2025-07-02 00:15:27,390 - __main__ - INFO - VDA5050协议转换服务器启动成功
+2025-07-02 00:15:27,391 - __main__ - INFO - 服务器运行中，按Ctrl+C停止...
+2025-07-02 00:15:49,669 - __main__ - INFO - 收到停止信号...
+2025-07-02 00:15:49,670 - __main__ - INFO - 正在停止VDA5050协议转换服务器...

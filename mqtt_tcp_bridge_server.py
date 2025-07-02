@@ -39,8 +39,7 @@ try:
     YAML_AVAILABLE = True
 except ImportError:
     YAML_AVAILABLE = False
-    logger = logging.getLogger(__name__)
-    # 这里暂时不能用logger，因为还没有配置
+    print("yaml库导入失败")
 
 # 添加父目录到Python路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

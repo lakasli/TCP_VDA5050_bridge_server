@@ -31,3 +31,25 @@
 2025-07-01 23:44:25,308 - __main__ - INFO -   1 - 发送Order消息
 2025-07-01 23:44:25,309 - __main__ - INFO -   2 - 发送InstantActions消息
 2025-07-01 23:44:25,309 - __main__ - INFO -   q - 退出
+2025-07-02 00:10:46,451 - __main__ - INFO - 正在连接MQTT代理: broker.emqx.io:1883
+2025-07-02 00:10:46,452 - __main__ - INFO - 使用客户端ID: mqtt_test_client_1751386246
+2025-07-02 00:10:47,167 - __main__ - INFO - MQTT连接建立成功
+2025-07-02 00:10:47,226 - __main__ - INFO - MQTT连接成功
+2025-07-02 00:10:47,227 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 00:10:47,227 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 00:10:47,228 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 00:10:47,228 - __main__ - INFO - 可用命令:
+2025-07-02 00:10:47,228 - __main__ - INFO -   1 - 发送Order消息
+2025-07-02 00:10:47,228 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-02 00:10:47,228 - __main__ - INFO -   q - 退出
+2025-07-02 00:11:19,372 - __main__ - INFO - 正在连接MQTT代理: broker.emqx.io:1883
+2025-07-02 00:11:19,373 - __main__ - INFO - 使用客户端ID: mqtt_test_client_1751386279
+2025-07-02 00:11:19,850 - __main__ - INFO - MQTT连接建立成功
+2025-07-02 00:11:19,925 - __main__ - INFO - MQTT连接成功
+2025-07-02 00:11:19,925 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/state
+2025-07-02 00:11:19,925 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/visualization
+2025-07-02 00:11:19,926 - __main__ - INFO - 订阅上行topic: /uagv/v2/SEER/VWED-0010/connection
+2025-07-02 00:11:19,926 - __main__ - INFO - 可用命令:
+2025-07-02 00:11:19,926 - __main__ - INFO -   1 - 发送Order消息
+2025-07-02 00:11:19,926 - __main__ - INFO -   2 - 发送InstantActions消息
+2025-07-02 00:11:19,926 - __main__ - INFO -   q - 退出

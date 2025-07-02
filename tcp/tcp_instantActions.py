@@ -166,7 +166,8 @@ class VDA5050InstantActionsToTCPConverter:
         
         elif config.data_format == DataFormatType.EMPTY_DATA:
             # 空数据格式（startPause, stopPause, cancelOrder, cancelReloc）
-            return {}
+            # 返回特殊标记表示空数据，而不是空字典
+            return {"__empty_data__": True}
         
         elif config.data_format == DataFormatType.SINGLE_FIELD:
             # 单独字段格式

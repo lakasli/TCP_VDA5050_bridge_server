@@ -160,10 +160,17 @@ class ManufacturerATCPProtocol:
             bytes: 完整的二进制TCP数据包
         """
         try:
-            # 将数据转换为JSON字符串，移除不必要的空格
-            data_json = json.dumps(data, ensure_ascii=False, separators=(',', ':'))
-            data_bytes = data_json.encode('utf-8')
-            data_length = len(data_bytes)
+            # 检查是否为空数据标记
+            if isinstance(data, dict) and data.get("__empty_data__"):
+                # 空数据区，数据长度为0
+                data_bytes = b''
+                data_length = 0
+                logger.info(f"[INFO] 构建空数据区TCP包 - 类型: {message_type}")
+            else:
+                # 将数据转换为JSON字符串，移除不必要的空格
+                data_json = json.dumps(data, ensure_ascii=False, separators=(',', ':'))
+                data_bytes = data_json.encode('utf-8')
+                data_length = len(data_bytes)
             
             # 获取序列号
             sequence = self._get_next_sequence()
