@@ -204,14 +204,15 @@ class DynamicTableDisplay:
         print("[系统信息]")
         print("-" * 60)
         
-        # 线程信息
+        # 线程信息 - 并排显示
         active_threads = threading.active_count()
-        print(f"[活动线程数] {active_threads}")
         
         # 重连线程状态
+        reconnect_threads = 0
         if hasattr(self.tcp_manager, 'reconnect_threads'):
             reconnect_threads = len([t for t in self.tcp_manager.reconnect_threads.values() if t.is_alive()])
-            print(f"[重连线程数] {reconnect_threads}")
+        
+        print(f"[活动线程数] {active_threads:<8} | [重连线程数] {reconnect_threads}")
         
         print()
         print("[提示] 按 Ctrl+C 退出服务 | [日志文件] logs/vda5050_server.log")
