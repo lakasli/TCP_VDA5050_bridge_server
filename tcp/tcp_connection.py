@@ -539,10 +539,13 @@ def main():
     """主函数 - 用于测试"""
     import logging
     
-    # 配置日志
+    # 配置日志 - 修复编码问题
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.StreamHandler(sys.stdout)
+        ]
     )
     
     # 创建TCP连接监听器

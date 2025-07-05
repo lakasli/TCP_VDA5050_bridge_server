@@ -596,10 +596,13 @@ def generate_sample_factsheet(vehicle_id: Optional[str] = None) -> Dict[str, Any
 
 if __name__ == "__main__":
     """测试代码"""
-    # 配置日志
+    # 配置日志 - 修复编码问题
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.StreamHandler(sys.stdout)
+        ]
     )
     
     # 创建转换器

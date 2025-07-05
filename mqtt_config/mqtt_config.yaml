@@ -3,8 +3,9 @@
 
 # MQTT服务器连接配置
 mqtt_server:
-  # MQTT服务器地址 - 使用公共的EMQX服务器
-  host: "172.31.232.152"
+  # MQTT服务器地址
+  # host: "172.31.232.152"
+  host: "broker.emqx.io"
   # MQTT服务器端口
   port: 1883
   # 连接超时时间(秒)
@@ -32,18 +33,7 @@ mqtt_options:
   # QoS等级 (0, 1, 2)
   qos_level: 1
 
-# AGV配置 (从server_config.json合并)
-agv:
-  # AGV IP地址
-  ip: "192.168.1.100"
-  # 制造商名称
-  manufacturer: "Demo_Manufacturer"
-  # 序列号
-  serial_number: "AGV_001"
-  # 车辆名称
-  vehicle_name: "TestAGV"
-
-# TCP端口配置 (从server_config.json合并)
+# TCP端口配置 
 tcp_ports:
   # 状态报告端口
   state_reporting: 19301

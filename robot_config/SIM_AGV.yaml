@@ -1,0 +1,539 @@
+# VDA5050机器人配置文件 v2.0
+# 支持VDA5050标准和多厂家协议扩展
+# ===============================================
+
+# 配置文件版本信息
+config_version: "2.0.0"
+config_description: "VDA5050标准配置文件"
+last_updated: "2025-06-30"
+
+
+
+# 网络配置
+network:
+  # 基础网络设置
+  ip_address: "127.0.0.1"    # 虚拟AGV的IP地址
+  server_ip: "127.0.0.1"     # 运行MQTT-TCP桥接服务器的机器IP地址
+
+# MQTT消息上报频率配置（单位：毫秒）
+mqtt_reporting:
+  # 启用定时上报功能
+  enable_scheduled_reporting: true
+  
+  # 各类消息的上报频率
+  reporting_intervals:
+    # 状态消息上报频率（默认1000ms = 1秒）
+    state: 1000
+    
+    # 可视化消息上报频率（默认2000ms = 1秒）
+    visualization: 1000
+    
+    # 连接消息上报频率（默认1000ms = 1秒）
+    connection: 1000
+    
+    # Factsheet消息上报频率（默认30000ms = 30秒）
+    factsheet: 30000
+  
+  # 上报配置选项
+  reporting_options:
+    # 是否只在有数据时上报
+    report_only_when_data_available: true
+    
+    # 是否在AGV断开连接时停止上报
+    stop_on_disconnect: true
+    
+    # 消息缓存选项
+    cache_latest_data: true
+
+# 机器人基本信息 (对应VDA5050 Factsheet)
+robot_info:
+  # 基础标识
+  vehicle_id: "SIM_AGV-02"
+  manufacturer: "SIM_AGV"
+  serial_number: "SIM_AGV-02"
+  model: "AGV-Virtual-Test"
+  firmware_version: "v1.0.0"
+  hardware_version: "v1.0.0"
+  
+  # 类型规格 (TypeSpecification)
+  type_specification:
+    series_name: "SIM_AGV-AGV-Series"
+    series_description: "SIM_AGV AGV测试系列"
+    agv_kinematic: "DIFF"  # DIFF, OMNI, THREEWHEEL, ACKERMANN
+    agv_class: "CARRIER"   # FORKLIFT, CONVEYOR, TUGGER, CARRIER
+    max_load_mass: 50.0   # kg
+    localization_types:
+      - "NATURAL"
+      - "REFLECTOR" 
+      - "RFID"
+    navigation_types:
+      - "AUTONOMOUS"
+      - "VIRTUAL_LINE_GUIDED"
+  
+  # 物理参数 (PhysicalParameters)
+  physical_parameters:
+    speed_min: 0.0         # m/s
+    speed_max: 2.0         # m/s
+    acceleration_max: 1.0  # m/s²
+    deceleration_max: 1.5  # m/s²
+    height_min: 0.1        # m
+    height_max: 2.0        # m
+    width: 0.8             # m
+    length: 1.2            # m
+    turning_radius: 0.0    # m (0表示原地转向)
+    
+  # AGV几何结构
+  agv_geometry:
+    wheel_definitions:
+      - name: "left_wheel"
+        type: "DRIVE_WHEEL"
+        position: {x: 0.0, y: 0.25, z: 0.0}
+        diameter: 0.2
+      - name: "right_wheel"
+        type: "DRIVE_WHEEL"
+        position: {x: 0.0, y: -0.25, z: 0.0}
+        diameter: 0.2
+    envelope2d:
+      - {x: 0.6, y: 0.4}
+      - {x: -0.6, y: 0.4}
+      - {x: -0.6, y: -0.4}
+      - {x: 0.6, y: -0.4}
+  
+  # 负载规格
+  load_specification:
+    load_positions:
+      - name: "default_load_position"
+        load_type: "PALLET"
+        load_dimensions: {length: 1.0, width: 0.8, height: 0.1}
+        max_weight: 500.0
+        bounding_box_reference: {x: 0.0, y: 0.0, z: 0.5}
+
+# robot_config/huaqing-01.yaml 中添加
+vda5050:
+  # 主题配置
+  topic_config:
+    # 主题前缀
+    topic_prefix: "uagv/v2"
+    # 主题模式
+    topic_patterns:
+      order: "{topic_prefix}/{manufacturer}/{serial_number}/order"
+      instantActions: "{topic_prefix}/{manufacturer}/{serial_number}/instantActions"
+      state: "{topic_prefix}/{manufacturer}/{serial_number}/state"
+      visualization: "{topic_prefix}/{manufacturer}/{serial_number}/visualization"
+      connection: "{topic_prefix}/{manufacturer}/{serial_number}/connection"
+      factsheet: "{topic_prefix}/{manufacturer}/{serial_number}/factsheet"
+    # 订阅模式
+    subscription_patterns:
+      order: "{topic_prefix}/+/+/order"
+      instantActions: "{topic_prefix}/+/+/instantActions"
+
+# VDA5050协议配置
+vda5050:
+  # 协议版本和特性
+  protocol_version: "2.0.0"
+  protocol_features:
+    optional_parameters: true
+    action_parameter_support: true
+    optional_node_actions: true
+    optional_edge_actions: true
+    
+  # 协议限制
+  protocol_limits:
+    max_string_lens:
+      topic: 100
+      serialNumber: 50
+      nodeId: 50
+      edgeId: 50
+      actionId: 50
+      actionType: 50
+      zoneSetId: 50
+      orderId: 50
+      headerId: 50
+    max_array_lens:
+      nodes: 100
+      edges: 100
+      actions: 20
+      actionParameters: 20
+      nodeStates: 100
+      edgeStates: 100
+      actionStates: 20
+      errors: 20
+    timing:
+      max_header_id: 1000000
+      max_order_update_id: 1000000
+      max_sequence_id: 10000
+      heartbeat_interval: 30.0
+      message_timeout: 30.0
+  
+  # 支持的消息类型
+  supported_messages:
+    - "order"
+    - "instantActions" 
+    - "state"
+    - "visualization"
+    - "connection"
+    - "factsheet"
+
+# 协议适配器配置 (支持多厂家)
+protocol_adapters:
+  # SIM_AGV协议适配器
+  seer:
+    name: "SIM_AGV AGV Protocol Adapter"
+    version: "1.0.0"
+    description: "SIM_AGV AGV TCP协议适配器"
+    active: true
+    priority: 1
+    
+    # TCP端口配置
+    tcp_ports:
+      # 状态上报端口
+      state_reporting: 19301
+      # 控制指令端口  
+      command_control:
+        relocation: 19205
+        movement: 19206
+        authority: 19207
+        safety: 19210
+      # 数据推送端口
+      data_push: 19301
+    
+    # 消息类型映射 (完整的ACTION_CONFIG映射)
+    message_type_mapping:
+      # VDA5050即时动作到TCP协议的完整映射
+      instant_actions:
+        pick: {type: 3066, port: 19206, format: "move_task_list"}
+        drop: {type: 3066, port: 19206, format: "move_task_list"}
+        startPause: {type: 3002, port: 19206, format: "empty_data"}
+        stopPause: {type: 3001, port: 19206, format: "empty_data"}
+        cancelOrder: {type: 3003, port: 19206, format: "empty_data"}
+        reloc: {type: 2002, port: 19205, format: "single_field"}
+        cancelReloc: {type: 2004, port: 19205, format: "empty_data"}
+        clearErrors: {type: 4009, port: 19207, format: "single_field"}
+        rotateLoad: {type: 3057, port: 19206, format: "single_field"}
+        softEmc: {type: 6004, port: 19210, format: "single_field"}
+        turn: {type: 3056, port: 19206, format: "single_field"}
+        translate: {type: 3055, port: 19206, format: "single_field"}
+        grabAuthority: {type: 4005, port: 19207, format: "single_field"}
+        releaseAuthority: {type: 4006, port: 19207, format: "empty_data"}
+      
+      # 控制权管理
+      authority_control:
+        grab_authority: {type: 4005, port: 19207, format: "single_field"}
+        release_authority: {type: 4006, port: 19207, format: "empty_data"}
+      
+      # 状态推送
+      status_push:
+        robot_status: {type: 9300, port: 19301, format: "status_data"}
+
+# VDA5050动作类型完整映射
+vda5050_actions:
+  # 订单和任务控制
+  order_control:
+    cancelOrder:
+      supported: true
+      tcp_port: 19206
+      tcp_message_type: 3003
+      tcp_format: "empty_data"
+      blocking_type: "HARD"
+      description: "取消当前订单"
+      
+  # 任务暂停控制
+  pause_control:
+    startPause:
+      supported: true
+      tcp_port: 19206
+      tcp_message_type: 3002
+      tcp_format: "empty_data"
+      blocking_type: "HARD"
+      description: "暂停任务执行"
+    stopPause:
+      supported: true
+      tcp_port: 19206
+      tcp_message_type: 3001  
+      tcp_format: "empty_data"
+      blocking_type: "HARD"
+      description: "恢复任务执行"
+  
+  # 紧急停止和错误处理
+  safety_control:
+    softEmc:
+      supported: true
+      tcp_port: 19210
+      tcp_message_type: 6004
+      tcp_format: "single_field"
+      blocking_type: "HARD"
+      description: "软件紧急停止"
+      parameters:
+        - name: "status"
+          type: "boolean"
+          required: true
+          description: "急停状态"
+    clearErrors:
+      supported: true  
+      tcp_port: 19207
+      tcp_message_type: 4009
+      tcp_format: "single_field"
+      blocking_type: "SOFT"
+      description: "清除错误状态"
+      parameters:
+        - name: "error_codes"
+          type: "array"
+          required: false
+          description: "要清除的错误代码列表"
+  
+  # 信息请求
+  information_request:
+    stateRequest:
+      supported: true
+      tcp_mapping: null
+      blocking_type: "NONE"
+      description: "请求状态信息"
+    factsheetRequest:
+      supported: true
+      tcp_mapping: null
+      blocking_type: "NONE"
+      description: "请求设备信息"
+  
+  # 运动控制
+  motion_control:
+    translate:
+      supported: true
+      tcp_port: 19206
+      tcp_message_type: 3055
+      tcp_format: "single_field"
+      blocking_type: "HARD"
+      description: "平移运动"
+      parameters:
+        - name: "dist"
+          type: "number"
+          required: true
+          description: "移动距离"
+        - name: "vx"
+          type: "number"
+          required: false
+          description: "X轴速度"
+        - name: "vy"
+          type: "number"
+          required: false
+          description: "Y轴速度"
+        - name: "mode"
+          type: "integer"
+          required: false
+          description: "运动模式"
+    turn:
+      supported: true
+      tcp_port: 19206
+      tcp_message_type: 3056
+      tcp_format: "single_field"
+      blocking_type: "HARD"
+      description: "转向运动"
+      parameters:
+        - name: "angle"
+          type: "number"
+          required: true
+          description: "转向角度"
+        - name: "vw"
+          type: "number"
+          required: false
+          description: "角速度"
+        - name: "mode"
+          type: "integer"
+          required: false
+          description: "转向模式"
+  
+  # 定位控制
+  localization_control:
+    reloc:
+      supported: true
+      tcp_port: 19205
+      tcp_message_type: 2002
+      tcp_format: "single_field"
+      blocking_type: "HARD"
+      description: "重定位操作"
+      parameters:
+        - name: "isAuto"
+          type: "boolean"
+          required: false
+          description: "是否自动重定位"
+        - name: "home"
+          type: "boolean"
+          required: false
+          description: "是否回到原点"
+        - name: "x"
+          type: "number"
+          required: false
+          description: "目标X坐标"
+        - name: "y"
+          type: "number"
+          required: false
+          description: "目标Y坐标"
+        - name: "angle"
+          type: "number"
+          required: false
+          description: "目标角度"
+        - name: "length"
+          type: "number"
+          required: false
+          description: "长度参数"
+    cancelReloc:
+      supported: true
+      tcp_port: 19205
+      tcp_message_type: 2004
+      tcp_format: "empty_data"
+      blocking_type: "HARD"
+      description: "取消重定位"
+  
+  # 货物操作
+  load_handling:
+    pick:
+      supported: true
+      tcp_port: 19206
+      tcp_message_type: 3066
+      tcp_format: "move_task_list"
+      blocking_type: "HARD"
+      description: "抬升货物"
+      parameters:
+        - name: "start_height"
+          type: "number"
+          required: false
+          description: "起始高度"
+        - name: "end_height"
+          type: "number"
+          required: false
+          description: "结束高度"
+        - name: "loadId"
+          type: "string"
+          required: false
+          description: "载荷ID"
+        - name: "loadType"
+          type: "string"
+          required: false
+          description: "载荷类型"
+    drop:
+      supported: true
+      tcp_port: 19206
+      tcp_message_type: 3066
+      tcp_format: "move_task_list"
+      blocking_type: "HARD"
+      description: "放下货物"
+      parameters:
+        - name: "start_height"
+          type: "number"
+          required: false
+          description: "起始高度"
+        - name: "end_height"
+          type: "number"
+          required: false
+          description: "结束高度"
+        - name: "loadId"
+          type: "string"
+          required: false
+          description: "载荷ID"
+        - name: "loadType"
+          type: "string"
+          required: false
+          description: "载荷类型"
+    rotateLoad:
+      supported: true
+      tcp_port: 19206
+      tcp_message_type: 3057
+      tcp_format: "single_field"
+      blocking_type: "HARD"
+      description: "旋转货物"
+      parameters:
+        - name: "increase_spin_angle"
+          type: "number"
+          required: false
+          description: "增量旋转角度"
+        - name: "robot_spin_angle"
+          type: "number"
+          required: false
+          description: "机器人旋转角度"
+        - name: "global_spin_angle"
+          type: "number"
+          required: false
+          description: "全局旋转角度"
+        - name: "spin_direction"
+          type: "integer"
+          required: false
+          description: "旋转方向 (1/-1)"
+  
+  # 系统控制
+  system_control:
+    switchMap:
+      supported: false
+      tcp_mapping: null
+      blocking_type: "HARD"
+      description: "切换地图"
+    switchMode:
+      supported: false
+      tcp_mapping: null
+      blocking_type: "HARD"
+      description: "切换模式"
+    startCharging:
+      supported: false
+      tcp_mapping: null
+      blocking_type: "SOFT"
+      description: "开始充电"
+    stopCharging:
+      supported: false
+      tcp_mapping: null
+      blocking_type: "SOFT"
+      description: "停止充电"
+    safeCheck:
+      supported: false
+      tcp_mapping: null
+      blocking_type: "NONE"
+      description: "安全检查"
+
+# 数据转换配置
+data_transformation:
+  # 坐标系转换
+  coordinate_systems:
+    world_to_agv:
+      translation: {x: 0.0, y: 0.0, z: 0.0}
+      rotation: {roll: 0.0, pitch: 0.0, yaw: 0.0}
+    agv_to_tcp:
+      angle_unit: "radians"  # radians or degrees
+      position_scale: 1.0
+      
+  # 数据格式映射
+  format_mapping:
+    empty_data: "null"
+    single_field: "{\"value\": %value%}"
+    boolean_field: "{\"status\": %status%}"
+    position_data: "{\"x\": %x%, \"y\": %y%, \"angle\": %angle%}"
+    move_task_list: "{\"taskType\": \"%task_type%\", \"parameters\": %parameters%}"
+    status_data: "raw_json"
+
+# 错误处理配置
+error_handling:
+  # 错误级别映射
+  error_levels:
+    tcp_connection_lost: "WARNING"
+    protocol_parse_error: "ERROR"
+    action_execution_failed: "ERROR"
+    safety_violation: "FATAL"
+  
+  # 重试策略
+  retry_policies:
+    tcp_reconnect:
+      max_retries: 5
+      retry_interval: 2.0
+      backoff_multiplier: 1.5
+    message_resend:
+      max_retries: 3
+      retry_interval: 1.0
+      backoff_multiplier: 1.0
+
+# 日志和调试配置
+logging:
+  level: "INFO"
+  categories:
+    protocol_conversion: true
+    tcp_communication: true
+    message_validation: true
+    error_handling: true
+  file_rotation:
+    max_size: "10MB"
+    backup_count: 5 

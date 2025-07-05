@@ -7,20 +7,58 @@ config_version: "2.0.0"
 config_description: "VDA5050标准配置文件"
 last_updated: "2025-06-30"
 
+
+
+# 网络配置
+network:
+  # 基础网络设置
+  ip_address: "192.168.9.121"    # 真实AGV的IP地址
+  server_ip: "192.168.9.105"     # 运行MQTT-TCP桥接服务器的机器IP地址（请修改为实际IP）
+
+# MQTT消息上报频率配置（单位：毫秒）
+mqtt_reporting:
+  # 启用定时上报功能
+  enable_scheduled_reporting: true
+  
+  # 各类消息的上报频率
+  reporting_intervals:
+    # 状态消息上报频率（默认1000ms = 1秒）
+    state: 1000
+    
+    # 可视化消息上报频率（默认2000ms = 1秒）
+    visualization: 1000
+    
+    # 连接消息上报频率（默认1000ms = 1秒）
+    connection: 1000
+    
+    # Factsheet消息上报频率（默认30000ms = 30秒）
+    factsheet: 30000
+  
+  # 上报配置选项
+  reporting_options:
+    # 是否只在有数据时上报
+    report_only_when_data_available: true
+    
+    # 是否在AGV断开连接时停止上报
+    stop_on_disconnect: true
+    
+    # 消息缓存选项
+    cache_latest_data: true
+
 # 机器人基本信息 (对应VDA5050 Factsheet)
 robot_info:
   # 基础标识
-  vehicle_id: "VWED-0010"
-  manufacturer: "SEER"
-  serial_number: "VWED-0010"
+  vehicle_id: "HUAQING-01"
+  manufacturer: "HUAQING"
+  serial_number: "HUAQING-01"
   model: "AGV-Virtual-Test"
   firmware_version: "v1.0.0"
   hardware_version: "v1.0.0"
   
   # 类型规格 (TypeSpecification)
   type_specification:
-    series_name: "SEER-AGV-Series"
-    series_description: "SEER AGV测试系列"
+    series_name: "HUAQING-AGV-Series"
+    series_description: "HUAQING AGV测试系列"
     agv_kinematic: "DIFF"  # DIFF, OMNI, THREEWHEEL, ACKERMANN
     agv_class: "CARRIER"   # FORKLIFT, CONVEYOR, TUGGER, CARRIER
     max_load_mass: 50.0   # kg
@@ -70,46 +108,24 @@ robot_info:
         max_weight: 500.0
         bounding_box_reference: {x: 0.0, y: 0.0, z: 0.5}
 
-# 网络配置
-network:
-  # 基础网络设置
-  ip_address: "127.0.0.1"
-  server_ip: "127.0.0.1"
-  subnet_mask: "255.255.255.0"
-  gateway: "127.0.0.1"
-  dns_servers:
-    - "8.8.8.8"
-    - "114.114.114.114"
-
-# MQTT消息上报频率配置（单位：毫秒）
-mqtt_reporting:
-  # 启用定时上报功能
-  enable_scheduled_reporting: true
-  
-  # 各类消息的上报频率
-  reporting_intervals:
-    # 状态消息上报频率（默认1000ms = 1秒）
-    state: 1000
-    
-    # 可视化消息上报频率（默认2000ms = 1秒）
-    visualization: 1000
-    
-    # 连接消息上报频率（默认1000ms = 1秒）
-    connection: 1000
-    
-    # Factsheet消息上报频率（默认30000ms = 30秒）
-    factsheet: 30000
-  
-  # 上报配置选项
-  reporting_options:
-    # 是否只在有数据时上报
-    report_only_when_data_available: true
-    
-    # 是否在AGV断开连接时停止上报
-    stop_on_disconnect: true
-    
-    # 消息缓存选项
-    cache_latest_data: true
+# robot_config/huaqing-01.yaml 中添加
+vda5050:
+  # 主题配置
+  topic_config:
+    # 主题前缀
+    topic_prefix: "uagv/v2"
+    # 主题模式
+    topic_patterns:
+      order: "{topic_prefix}/{manufacturer}/{serial_number}/order"
+      instantActions: "{topic_prefix}/{manufacturer}/{serial_number}/instantActions"
+      state: "{topic_prefix}/{manufacturer}/{serial_number}/state"
+      visualization: "{topic_prefix}/{manufacturer}/{serial_number}/visualization"
+      connection: "{topic_prefix}/{manufacturer}/{serial_number}/connection"
+      factsheet: "{topic_prefix}/{manufacturer}/{serial_number}/factsheet"
+    # 订阅模式
+    subscription_patterns:
+      order: "{topic_prefix}/+/+/order"
+      instantActions: "{topic_prefix}/+/+/instantActions"
 
 # VDA5050协议配置
 vda5050:
@@ -160,11 +176,11 @@ vda5050:
 
 # 协议适配器配置 (支持多厂家)
 protocol_adapters:
-  # SEER协议适配器
+  # HUAQING协议适配器
   seer:
-    name: "SEER AGV Protocol Adapter"
+    name: "HUAQING AGV Protocol Adapter"
     version: "1.0.0"
-    description: "SEER AGV TCP协议适配器"
+    description: "HUAQING AGV TCP协议适配器"
     active: true
     priority: 1
     
